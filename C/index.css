@@ -1,0 +1,235 @@
+/* ================================
+   GLOBAL SCP STYLE (MATCHES BROADCAST PAGE)
+   ================================ */
+
+:root{
+  --bg:#070707;
+  --panel:#0f0f10;
+  --red:#ff1e1e;
+  --muted:#a8a8a8;
+  --green-console:#00ff66;
+  --glass: rgba(255,255,255,0.03);
+  --accent: rgba(255,26,26,0.12);
+  --radius:10px;
+  --mono: "Roboto Mono", "Courier New", monospace;
+}
+
+/* Background identical to broadcast */
+body{
+  margin:0;
+  background: linear-gradient(180deg,#070505 0%, #140909 60%);
+  color:#eee;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Main panel identical visual style */
+.menu-wrap{
+  width: min(700px, 90vw);
+  background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));
+  border: 1px solid rgba(255,0,0,0.12);
+  padding: 32px;
+  border-radius:12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  position:relative;
+  overflow:hidden;
+}
+
+/* Watermark effect identical */
+.menu-wrap::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image: url('images/watermark.png'); /* pon aquí la misma que uses en broadcast */
+  background-size: 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity:0.06;
+  mix-blend-mode: screen;
+  pointer-events:none;
+}
+
+/* Title identical */
+.menu-wrap h1{
+  margin:0;
+  font-size:26px;
+  letter-spacing:1px;
+  color:var(--red);
+  text-shadow: 0 2px 6px rgba(255,0,0,0.08);
+}
+
+.menu-wrap p{
+  margin:6px 0 26px;
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* BUTTON STYLE (same as .primary from broadcast) */
+.main-btn{
+  width: 260px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, rgba(255,0,0,0.10), rgba(255,0,0,0.04));
+  border:1px solid rgba(255,0,0,0.22);
+  color:white;
+  font-weight:700;
+  letter-spacing:0.8px;
+  border-radius:8px;
+  cursor:pointer;
+  text-transform:uppercase;
+  position:relative;
+  transition: 0.18s ease;
+  box-shadow: 0 6px 14px rgba(255,0,0,0.18), inset 0 -6px 12px rgba(255,0,0,0.06);
+  margin: 14px 0;
+}
+
+.main-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:2px solid var(--red);
+  opacity:0;
+  transition:0.2s ease;
+  border-radius:8px;
+  pointer-events:none;
+}
+
+.main-btn:hover{
+  background: rgba(255,0,0,0.12);
+  color:#fff;
+  transform: translateY(-2px);
+}
+
+.main-btn:hover::before{
+  opacity:0.8;
+}
+
+.main-btn:active{
+  transform: translateY(0);
+  background: rgba(255,0,0,0.25);
+}
+/* Contenedor en fila */
+.options-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 60px;
+  margin-top: 30px;
+}
+
+/* Cada caja individual */
+.menu-box {
+  width: 350px;
+  text-align: center;
+  padding: 25px;
+  border: 1px solid rgba(255,0,0,0.12);
+  background: rgba(0,0,0,0.35);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.menu-box {
+  width: 350px;
+  min-height: 220px; /* 👈 MISMA ALTURA PARA LAS DOS */
+  text-align: center;
+  padding: 25px;
+  border: 1px solid rgba(255,0,0,0.12);
+  background: rgba(0,0,0,0.35);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Botón siempre abajo */
+}
+
+.menu-box h2 {
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.menu-box p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.scp914-box {
+  position: relative;
+  overflow: visible;
+}
+.home-copyright {
+    position: absolute;
+    bottom: 20px;
+    right: 25px;
+    color: #a8a8a8;
+    font-size: 12px;
+    opacity: 0.65;
+    pointer-events: none; /* No bloquea clics */
+}
+
+.home-copyright:hover {
+    opacity: 1;
+}
+.home-layout {
+    display: inline-flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    padding-top: 40px;
+    transform: translateX(-90px); /* 👈 AJUSTA ESTE VALOR */
+}
+
+/* LEFT UPDATES PANEL (now aligned properly) */
+.updates-panel {
+    width: 260px;
+    padding: 18px 10px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,0,0,0.12);
+    border-radius: 12px;
+    color: #eee;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    max-height: 300px;     /* ⬅ AJUSTA este valor para que coincida con tu Control Panel */
+    overflow-y: auto;      /* Activa scroll vertical */
+    padding-right: 8px;    /* Espacio para evitar que el scroll tape texto */
+}
+
+.updates-panel h2 {
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    color: var(--red);
+    font-size: 17px;
+    border-bottom: 1px solid rgba(255,0,0,0.25);
+}
+
+.updates-panel ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.updates-panel li {
+    margin: 8px 0;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.updates-panel li::before {
+    content: "✔ ";
+    color: var(--red);
+}
+/* Scroll bonito estilo SCP */
+.updates-panel::-webkit-scrollbar {
+    width: 6px;
+}
+.updates-panel::-webkit-scrollbar-track {
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 6px;
+}
+.updates-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 0, 0, 0.4);
+    border-radius: 6px;
+}
+.updates-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 0, 0, 0.7);
+}
