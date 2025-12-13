@@ -1,7 +1,7 @@
 # Project Roadmap: SCP Broadcast Generator
 
 ## Core Features & Modules
-- [ ] **[Feature] "Advanced Mode" Toggle**
+- [x] **[Feature] "Advanced Mode" Toggle**
   - Create a slider/switch allowing users to choose between the current "Simple" view and a new "Advanced" dashboard.
 - [x] **[Feature] Breached SCPs Module**
   - Add a selector to list specific breachable SCPs (e.g., enable specific SCPs currently out of containment).
