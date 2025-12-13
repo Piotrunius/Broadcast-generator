@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SCP-914 Recipes Lab</title>
+  <link rel="stylesheet" href="C/SCP914.css" />
+  <link rel="stylesheet" href="C/animations.css" />
+</head>
+<body>
+  <div class="home-layout animate-page-enter">
+  <aside class="guideline-panel animate-slide-left stagger-1">
+      <h2>GUIDELINE</h2>
+      <ul>
+          <li>TAB will autocomplete with the first element u are searching</li>
+          <li>ENTER will have the same function as hitting "Calculate Recipes"</li>
+          <li>Choosing only the OUTPUT will give u all the 1 step outputs for that element</li>
+          <li>Highlighted settings show refinement type</li>
+          <li>CLEAR resets all fields</li>
+          <li>Best route is always optimized</li>
+          <li>
+              All these recipes are taken from the website:
+              <a href="https://visceraleds-scp-site-roleplay.fandom.com/wiki/SCP-914" 
+                target="_blank" 
+                rel="noopener noreferrer">
+                SCP-914 Wiki Source
+              </a>
+          </li>
+      </ul>
+  </aside>
+  <main class="wrap animate-fade-in-up stagger-2">
+    <header class="header">
+      <h1>- SCP-914 Recipes Analyzer -</h1>
+    </header>
+
+    <section class="controls-914 animate-fade-in-up stagger-3">
+      <div class="menus-914">
+
+        <!-- MENU INPUT -->
+        <div class="menu-row">
+            
+            <div class="search-block">
+                <span class="led-input led-off"></span>
+                <label class="dropdown-label">INPUT</label>
+
+                <div class="search-select" id="inputSelect">
+                    <input type="text" placeholder="Search Input..." autocomplete="off">
+                    <ul class="options"></ul>
+                </div>
+            </div>
+
+            <div class="search-block">
+                <span class="led-output led-off"></span>
+                <label class="dropdown-label">OUTPUT</label>
+
+                <div class="search-select" id="outputSelect">
+                    <input type="text" placeholder="Search Output..." autocomplete="off">
+                    <ul class="options"></ul>
+                </div>
+            </div>
+
+            <button id="clearFields" class="btn-clear">CLEAR</button>
+
+        </div>
+
+
+      </div>
+
+      <div class="actions-914">
+        <button id="calcBtn" class="primary">CALCULATE RECIPES</button>
+        <button class="primary back-btn" onclick="window.location.href='index.html'">BACK</button>
+      </div>
+    </section>
+
+    <section class="output-area animate-fade-in-up stagger-4">
+      <h2>Calculated recipes:</h2>
+      <div id="result" class="console-914"></div>
+    </section>
+
+    <footer class="footer">
+      <small>victorbot365 • SCP-914 Recipes Interface</small>
+    </footer>
+  </main>
+  <div class="home-copyright">
+      © 2025 victorbot365 — All rights reserved.
+  </div>
+  </div>
+  <script src="J/animation-controller.js"></script>
+  <script src="J/particles.js"></script>
+  <script src="J/button-effects.js"></script>
+  <script type="module" src="J/SCP-914.js"></script>
+</body>
+</html>
