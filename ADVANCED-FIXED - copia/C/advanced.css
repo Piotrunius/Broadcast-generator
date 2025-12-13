@@ -1,0 +1,400 @@
+:root{
+  --bg:#070707;
+  --panel:#0f0f10;
+  --red:#ff1e1e;
+  --muted:#a8a8a8;
+  --green-console:#00ff66;
+  --purple: #8A2BE2;
+  --radius:10px;
+  --mono: "Roboto Mono", "Courier New", monospace;
+  --led-gray: #555;
+}
+
+html {
+  height: 100%;
+  overflow: hidden; /* Prevent body scrolling */
+}
+
+body {
+  background: linear-gradient(180deg, #070505 0%, #140909 100%);
+  color: #eee;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 2rem 1rem; /* Responsive padding */
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Prevent body scrolling */
+}
+
+.wrap{
+  width: 1200px;
+  max-width: 95vw;
+  /* margin: 0 auto; <-- Replaced by flex centering */
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,0,0,0.12);
+  padding: 28px;
+  border-radius:12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  position: relative;
+  /* max-height: calc(100vh - 4rem);  REMOVED */
+  /* overflow-y: auto; REMOVED */
+}
+
+.sidebar {
+  flex: 1;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.output-area {
+  flex: 2;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header{ text-align:left; margin-bottom:10px; }
+.header h1{ margin:0; font-size:22px; color:var(--red); }
+.subtitle{ margin:4px 0 0; font-size:13px; color:var(--muted); }
+
+/* Controls */
+.controls{ display:flex; flex-direction: column; gap:15px; margin-top:14px; }
+.menus{ display:flex; flex-direction: column; gap:10px; width: 100%; }
+.menu{ position: relative; width: 100%; }
+
+/* Menu Buttons */
+.menu-btn{ width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 10px; white-space: nowrap; background: linear-gradient(180deg, rgba(255,0,0,0.06), rgba(255,0,0,0.02)); border:1px solid rgba(255,0,0,0.16); color: #fff; padding:12px 14px; text-align:center; border-radius:8px; font-weight:700; letter-spacing:0.6px; cursor:pointer; }
+.menu-btn .led{ width:12px; height:12px; border-radius:50%; background: var(--led-gray); flex:0 0 12px; }
+.menu-btn .btn-text { flex-grow: 1; }
+.caret{ margin-left:auto; color:var(--muted); font-size:13px; }
+
+/* LEDs */
+.led.high{ background: var(--red); }
+.led.medium{ background: yellow; }
+.led.low{ background: var(--green-console); }
+.led.allowed{ background: var(--green-console); }
+.led.prohibited{ background: var(--red); }
+.led.black { background: var(--purple); } 
+.led.white { background: #fff; }
+.led.blink { animation: blinker 1s step-start infinite; }
+@keyframes blinker { 50% { opacity: 0; } }
+
+/* Floating Panels */
+.menu-list, .collapsible-content {
+  width: auto;
+  min-width: 100%; /* Make sure it doesn't shrink more than the button */
+  box-sizing: border-box;
+  list-style:none;
+  margin:0;
+  padding:15px;
+  border-radius:8px;
+  background: linear-gradient(180deg, rgba(10,10,10,0.95), rgba(0,0,0,0.95));
+  border:1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+  opacity:0;
+  transform: translateY(-10px) scale(0.98);
+  transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.9,.3,1);
+  display:none;
+  position: absolute;
+  z-index: 100;
+
+  pointer-events: none; /* GHOST BUG FIX: Disable clicks when hidden */
+}
+
+/* Specific panels that should have scrolling */
+#statusContent {
+  max-height: 120px; /* Increased height by 40px (approx 1cm) for Status */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#breachedScpsContent {
+  max-height: 120px; /* Increased height by 40px (approx 1cm) for Breached SCPs */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#requirementsContent {
+  max-height: 80px; /* Reduced height to prevent overflow */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.menu-list.show, .collapsible-content.show {
+  opacity:1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto; /* GHOST BUG FIX: Re-enable clicks when shown */
+  justify-content: center; /* Center grid tracks horizontally */
+  align-items: center;   /* Center grid tracks vertically */
+  justify-items: center; /* Center grid items horizontally within their cells */
+}
+
+/* Specific column layouts for menu-list panels (judgment-based) */
+#alarmContent.show {
+  grid-template-columns: repeat(3, max-content); /* Threats: 3 columns, size to content */
+  gap: 20px; /* Increased gap */
+}
+
+#statusContent.show {
+  grid-template-columns: repeat(2, max-content); /* Status: 2 columns, size to content */
+  gap: 20px; /* Increased gap */
+}
+
+#eventsContent.show {
+  grid-template-columns: repeat(2, max-content); /* Events: 2 columns, size to content */
+  gap: 20px; /* Increased gap */
+}
+
+#testingContent.show {
+  grid-template-columns: repeat(2, max-content); /* Testing: 2 columns, size to content */
+  gap: 20px; /* Increased gap */
+}
+
+/* Specific column layouts for collapsible-content panels */
+#breachedScpsContent.show {
+  grid-template-columns: repeat(2, max-content); /* Breached SCPs: 2 columns, size to content */
+  gap: 20px; /* Increased gap */
+}
+
+#requirementsContent.show {
+  grid-template-columns: repeat(3, max-content); /* Requirements: 3 columns, size to content */
+  gap: 20px; /* Increased gap */
+  overflow-x: hidden; /* Ensure content doesn't overflow horizontally */
+}
+
+
+.menu-list.show, .collapsible-content.show {
+
+  display: grid; /* Unified to grid */
+
+}
+
+
+
+.collapsible-content {
+
+  gap: 8px; /* Added spacing between items */
+
+}
+
+/* Columns for Requirements only */
+#requirementsContent.show {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columns, allow shrinking */
+  gap: 8px;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+/* Specific item styles within panels */
+.menu-list li { margin: 0; }
+.breached-scp-selector label, #requirementsContent label { margin-bottom: 8px; }
+
+
+/* Unify font styles */
+.menu-list button, .checkbox-btn {
+  /* width:100%; REMOVED */
+  text-align:center; /* Changed from left to center */
+  background:transparent;
+  color:#fff;
+  border:0;
+  padding:10px;
+  font-weight:600;
+  font-size: 14px;
+  cursor:pointer;
+  border-radius:6px;
+  transition: background 140ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center !important; /* Added for flex centering, forced */
+  overflow: hidden;           /* Hide overflowing content */
+  text-overflow: ellipsis;    /* Show ellipsis for truncated text */
+  white-space: nowrap;        /* Prevent text from wrapping */
+  min-width: 0;               /* Allow flex/grid item to shrink */
+}
+.menu-list button:hover, .checkbox-btn:hover { background: rgba(255,255,255,0.05); }
+
+/* Output Area */
+.output-area h2{ margin:1rem 0 8px; color:var(--muted); font-size:15px; }
+textarea#output, #customTextInput {
+    width: 100%;
+    box-sizing: border-box;
+}
+textarea#output{ min-height:150px; background:#050805; color:var(--green-console); border:1px solid rgba(0,255,90,0.06); padding:10px; font-family:var(--mono); font-size:13px; border-radius:8px; resize:vertical; margin-bottom: 10px; }
+#customTextInput { padding: 8px; background: #050805; color: var(--green-console); border: 1px solid rgba(0,255,90,0.06); border-radius: 4px; font-family: var(--mono); font-size: 13px; margin-bottom: 5px; }
+.char-counter { text-align: right; font-size: 12px; color: var(--muted); }
+
+/* bottom controls & footer */
+.bottom-controls{ margin-top:auto; padding-top: 10px; display:flex; justify-content:space-between; align-items: center; }
+.controls-left, .controls-right { display: flex; gap: 10px; }
+.primary, .btn-secondary { padding: 10px 14px; border:1px solid; color:white; font-weight:700; letter-spacing:0.8px; border-radius:8px; cursor:pointer; text-transform:uppercase; }
+.primary { background: linear-gradient(180deg, rgba(255,0,0,0.10), rgba(255,0,0,0.04)); border-color: rgba(255,0,0,0.22); }
+.btn-secondary { background: linear-gradient(180deg, rgba(120,120,120,0.10), rgba(120,120,120,0.04)); border-color: rgba(120,120,120,0.22); }
+.footer{ margin-top: auto; padding-top: 16px; text-align:right; font-size:11px; }
+.credits p { margin: 3px 0; }
+.bio-link { color: var(--red); text-decoration: none; font-style: italic; }
+
+/* Selection Styles */
+.checkbox-btn{ border: 1px solid transparent; }
+.checkbox-btn input{ display: none; }
+.checkbox-btn.selected,
+.menu-list button.selected { background: rgba(0, 255, 90, 0.15) !important; font-weight: 700; }
+.checkbox-btn.selected::before,
+.menu-list button.selected::before { content: '✓'; margin-right: 8px; color: var(--green-console); }
+
+/* Glitch Effect for Easter Egg */
+body.glitch-active {
+  animation: global-glitch 0.2s infinite alternate; /* Apply to whole body */
+  filter: saturate(1.2) hue-rotate(5deg); /* Subtle color shift */
+}
+
+@keyframes global-glitch {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(1px, -1px);
+    filter: hue-rotate(10deg);
+  }
+  66% {
+    transform: translate(-1px, 1px);
+    filter: hue-rotate(-10deg);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Individual text element glitches within a glitched body */
+.glitch-active h1,
+.glitch-active h2,
+.glitch-active p,
+.glitch-active button,
+.glitch-active input,
+.glitch-active textarea,
+.glitch-active .led {
+  animation: text-glitch 0.5s infinite alternate;
+  text-shadow: 1px 1px 0px var(--red), -1px -1px 0px var(--green-console);
+  position: relative; /* Needed for text-shadow to work on some elements */
+}
+
+@keyframes text-glitch {
+  0% {
+    transform: translate(0);
+    color: inherit;
+  }
+  20% {
+    transform: translate(-1px, 1px);
+    color: var(--red);
+  }
+  40% {
+    transform: translate(-1px, -1px);
+    color: var(--green-console);
+  }
+  60% {
+    transform: translate(1px, 1px);
+    color: var(--purple);
+  }
+  80% {
+    transform: translate(1px, -1px);
+    color: var(--red);
+  }
+  100% {
+    transform: translate(0);
+    color: inherit;
+  }
+}
+
+/* Custom Scrollbar Styling for Webkit Browsers */
+.menu-list, .collapsible-content {
+  /* For Firefox, if you want some styling, you'd use scrollbar-width and scrollbar-color */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,0,0,0.2) transparent; /* thumb and track color */
+}
+
+.menu-list::-webkit-scrollbar, .collapsible-content::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+  height: 8px; /* Height of the scrollbar (for horizontal) */
+}
+
+.menu-list::-webkit-scrollbar-track, .collapsible-content::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+  border-radius: 10px; /* Rounded track corners */
+}
+
+.menu-list::-webkit-scrollbar-thumb, .collapsible-content::-webkit-scrollbar-thumb {
+  background: rgba(255,0,0,0.2); /* Red thumb */
+  border-radius: 10px; /* Rounded thumb corners */
+  border: 1px solid rgba(255,0,0,0.1); /* Border to match container */
+}
+
+.menu-list::-webkit-scrollbar-thumb:hover, .collapsible-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,0,0,0.4); /* Darker red on hover */
+}
+/* Mode Switch Bar */
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.mode-toggle .label {
+  color: var(--muted);
+}
+
+.switch {
+  position: relative;
+  width: 55px;
+  height: 26px;
+  background: rgba(255, 0, 0, 0.18);
+  border: 1px solid rgba(255,0,0,0.25);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+}
+
+.switch.active {
+  background: rgba(0, 255, 100, 0.25);
+  border-color: rgba(0,255,120,0.4);
+}
+
+.switch.active::after {
+  transform: translateX(28px);
+}
+.home-copyright {
+    position: absolute;
+    bottom: 10px;
+    right: 25px;
+    color: #a8a8a8;
+    font-size: 12px;
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.home-copyright:hover {
+    opacity: 1;
+}
