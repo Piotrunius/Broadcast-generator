@@ -26,3 +26,5 @@
 ## Future Ideas / Expansion
 - [ ] **[Expansion] Facility Map Sub-page**
   - Add a searchable/viewable map of the facility on a separate tab or web page.
+- [ ] **[Expansion] Credit page**
+  - Add a separate subpage with info about everyone who contributed to the project.
