@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           if (panelId === 'breachedScpsContent') {
-            if (checkedCount >= 4) led.classList.add('black', 'blink'); // >= 4 breaches = purple
+            if (checkedCount >= 4) led.classList.add('black', 'blink-fast'); // >= 4 breaches = purple
             else if (checkedCount === 3) led.classList.add('high', 'blink');
             else if (checkedCount === 2) led.classList.add('medium');
             else if (checkedCount === 1) led.classList.add('allowed');
@@ -169,31 +169,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const generatedOutput = generator.generate(getBroadcastOptions()); // Regenerate to get the final message and overflow status
         // Use the message length from the generator's *final* output for decision
         if(generatedOutput.overflow) { 
-            outputEl.classList.add('error'); // Add error class for visual shake
+            // Add red background + shake animation
+            outputEl.classList.add('copy-error');
             outputEl.style.animation = 'none';
             outputEl.offsetHeight; // Trigger reflow to restart animation
             outputEl.style.animation = 'shake 0.5s'; 
             
             let errorEl = document.getElementById('char-limit-error');
-            const container = document.querySelector('.output-container');
-            if (container) container.style.position = 'relative';
+            const container = document.getElementById('error-message-slot');
             
             if (!errorEl) {
                 errorEl = document.createElement('div');
                 errorEl.id = 'char-limit-error';
-                errorEl.textContent = 'Too much info! Cannot fit all details below 200 chars.'; // Specific overflow error
+                errorEl.textContent = 'MESSAGE TOO LONG! Exceeds 200 character limit.';
                 errorEl.style.color = 'var(--red)';
                 errorEl.style.textAlign = 'center';
-                errorEl.style.fontSize = '14px';
+                errorEl.style.fontSize = '12px';
                 errorEl.style.fontWeight = 'bold';
-                errorEl.style.marginTop = '5px'; 
+                errorEl.style.padding = '10px 20px';
+                errorEl.style.background = 'rgba(255, 0, 0, 0.15)';
+                errorEl.style.border = '1px solid rgba(255, 0, 0, 0.4)';
+                errorEl.style.borderRadius = '6px';
+                errorEl.style.width = '100%';
+                errorEl.style.maxWidth = '500px';
                 container.appendChild(errorEl);
             } else {
-                errorEl.textContent = 'Too much info! Cannot fit all details below 200 chars.'; // Update text if already exists
+                errorEl.textContent = 'MESSAGE TOO LONG! Exceeds 200 character limit.';
                 errorEl.style.display = 'block';
             }
 
-            setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
+            setTimeout(() => { 
+                errorEl.style.display = 'none';
+                outputEl.classList.remove('copy-error');
+            }, 3000);
             
             audioManager.playError();
             return; // Block copying
@@ -266,7 +274,7 @@ function updateStatusLED(status) {
              led.classList.add('high', 'blink');
              break;
         case "NUCLEAR PROTOCOL":
-             led.classList.add('black', 'blink');
+             led.classList.add('black', 'blink-fast');
              break;
         case "CLASS-D ESCAPE":
              led.classList.add('medium');

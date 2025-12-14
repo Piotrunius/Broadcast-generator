@@ -19,6 +19,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Broadcast Generator</title>
+  <link rel="icon" type="image/png" href="iconos/46cdc8fcba432e472244667b09459743.png" />
   <link rel="stylesheet" href="C/advanced.css" />
   <link rel="stylesheet" href="C/animations.css" />
   <link rel="stylesheet" href="C/extra-animations.css" />
@@ -129,15 +130,18 @@
     <section class="output-area animate-slide-right stagger-2">
 
       <h2>Broadcast generated:</h2>
+      <div class="info-banner">
+        <span class="info-text">Always use the COPY button below - it has built-in validation to prevent sending invalid or too long messages.</span>
+      </div>
       <div class="output-container">
         <textarea id="output" rows="8" aria-label="Broadcast generado" readonly></textarea>
-
       </div>
       <div class="bottom-controls">
         <div class="controls-left">
           <button id="clearBtn" class="btn-secondary">Clear</button>
           <button id="copyBtn" class="primary">COPY</button>
         </div>
+        <div id="error-message-slot"></div>
         <div class="controls-right">
           <button class="primary back-btn" onclick="window.location.href='index.html'">BACK</button>
         </div>
