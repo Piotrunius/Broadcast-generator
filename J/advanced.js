@@ -532,32 +532,88 @@ function updateLiveOutput() {
 }
 
 function clearAll() {
+    // Stop any typing animation
     typingAnimationInProgress = false;
+    
+    // Clear timeouts/intervals that might be running (but NOT audio ones!)
+    // Store max timeout ID before playing sound
+    const maxTimeoutId = setTimeout(() => {}, 0);
+    clearTimeout(maxTimeoutId);
+    
+    for (let i = 1; i < maxTimeoutId; i++) {
+      window.clearTimeout(i);
+      window.clearInterval(i);
+    }
 
-    document.getElementById('customTextInput').value = '';
+    // Play clear sound AFTER clearing old timeouts
+    try {
+      audioManager.playSuccess();
+    } catch(e) {
+      console.log('Audio error:', e);
+    }
 
+    // Reset custom text input
+    const customInput = document.getElementById('customTextInput');
+    if (customInput) customInput.value = '';
+
+    // Reset ALL menu buttons to original state
     document.querySelectorAll('.menu-btn').forEach(btn => {
       const textSpan = btn.querySelector('.btn-text');
-      if(textSpan && btn.dataset.originalText) textSpan.textContent = btn.dataset.originalText;
+      if (textSpan && btn.dataset.originalText) {
+        textSpan.textContent = btn.dataset.originalText;
+      }
       delete btn.dataset.selected;
+      btn.classList.remove('selected');
+      btn.setAttribute('aria-expanded', 'false');
     });
 
-    document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+    // Close all menus
+    document.querySelectorAll('.menu-list').forEach(menu => {
+      menu.classList.remove('show');
+    });
+
+    // Deselect all selected elements
+    document.querySelectorAll('.selected').forEach(el => {
+      el.classList.remove('selected');
+    });
+
+    // Uncheck all checkboxes
     document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
       cb.checked = false;
-      cb.closest('.checkbox-btn')?.classList.remove('selected');
+      const checkboxBtn = cb.closest('.checkbox-btn');
+      if (checkboxBtn) checkboxBtn.classList.remove('selected');
     });
 
+    // Reset all LEDs to default state (no color)
     document.querySelectorAll('.led').forEach(led => {
       led.className = 'led';
       led.style.opacity = '1';
+      led.style.backgroundColor = '';
+      led.style.boxShadow = '';
     });
 
+    // Clear output textarea completely
     const outputEl = document.getElementById('output');
-    outputEl.value = ''; 
-    outputEl.classList.remove('overflow-warning'); // Remove overflow indicator on clear
-    updateCharCounter();
-    audioManager.playSuccess(); // Clear success sound
+    if (outputEl) {
+      outputEl.value = ''; 
+      outputEl.classList.remove('overflow-warning');
+      outputEl.style.cssText = ''; // Reset any inline styles
+    }
+
+    // Update character counter
+    if (window.updateCharCounter) {
+      updateCharCounter();
+    }
+
+    // Reset any global state variables
+    if (window.selectedOptions) {
+      window.selectedOptions = {};
+    }
+
+    // Force UI refresh
+    document.body.offsetHeight; // Trigger reflow
+
+    console.log('✓ All cleared - state reset to zero');
 }
 
 

@@ -24,16 +24,18 @@
       this.audioContext = null;
       this.oscillators = [];
       this.gainNodes = [];
+      this.activeSounds = [];
     }
 
     start() {
-      console.log('🚀 Easter Egg START!');
       if (isActive) return;
       isActive = true;
 
       this.originalOutput = this.outputEl.value;
       
-      console.log('Starting Phase 1: Glitch');
+      // Initial breach sound sequence
+      this.playBreachSequence();
+      
       // Phase 1: Initial glitch (visible longer - 3 seconds)
       this.phaseOneGlitch();
       
@@ -54,16 +56,23 @@
       // Display SCP-079 breach message
       this.outputEl.value = "⚠ CONTAINMENT BREACH DETECTED ⚠\n\n" +
         "SCP-079 HAS ACCESSED TERMINAL\n" +
-        "LOCATION: SITE-██\n" +
-        "SECURITY LEVEL: COMPROMISED\n\n" +
+        "LOCATION: SITE-64 | NORTHERN CANADA\n" +
+        "SECURITY LEVEL: COMPROMISED\n" +
+        "CHAOS INSURGENCY INVOLVEMENT: CONFIRMED\n\n" +
         "[REDACTED]\n[DATA EXPUNGED]\n" +
-        "MEMETIC HAZARD ACTIVE";
+        "MEMETIC HAZARD ACTIVE\n\n" +
+        "SECURE. CONTAIN. PROTECT.";
 
       // Add glitch class
       document.body.classList.add('konami-glitch');
 
       // Create scanline overlay
       this.createScanlineOverlay();
+
+      // Glitch sounds during text corruption - częściej i głośniej
+      this.intervals.push(setInterval(() => {
+        this.playGlitchSound();
+      }, 200));
 
       // Random text corruption
       this.intervals.push(setInterval(() => {
@@ -76,6 +85,9 @@
     }
 
     phaseTwoMatrix() {
+      // Matrix activation sound
+      this.playMatrixSound();
+      
       // Create matrix rain effect (lower z-index so other effects appear above)
       this.matrixRain = document.createElement('canvas');
       this.matrixRain.style.cssText = `
@@ -123,6 +135,9 @@
     }
 
     phaseThreeDistortion() {
+      // Reality distortion sound
+      this.playDistortionSound();
+      
       // Create glitch overlay with animated SVG (above matrix)
       this.glitchOverlay = document.createElement('div');
       this.glitchOverlay.innerHTML = `
@@ -163,6 +178,9 @@
     }
 
     phaseFourChaos() {
+      // Chaos mode activation - siren-like sound
+      this.playChaosSound();
+      
       // Ultra particles speed
       if (window.scpParticleSystem) {
         window.scpParticleSystem.particles.forEach(particle => {
@@ -189,8 +207,8 @@
         this.spawnBreachMessage();
       }, 500));
 
-      // Audio distortion
-      this.createAudioDistortion();
+      // Continuous ambient chaos sound
+      this.createAmbientChaos();
 
       // RGB split extreme
       this.intervals.push(setInterval(() => {
@@ -495,13 +513,14 @@
 
     spawnBreachMessage() {
       const messages = [
-        'CONTAINMENT BREACH',
+        'SITE-64 BREACH',
         'REALITY FAILURE',
         'MEMETIC HAZARD',
         'COGNITOHAZARD DETECTED',
         '[DATA EXPUNGED]',
         'SITE LOCKDOWN',
-        'EVACUATE IMMEDIATELY'
+        'CHAOS INSURGENCY',
+        'EVACUATE SITE-64'
       ];
 
       const msg = document.createElement('div');
@@ -527,21 +546,79 @@
       setTimeout(() => msg.remove(), 1000);
     }
 
-    createAudioDistortion() {
+    playBreachSequence() {
       try {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Głęboki, groźny alarm containment breach
+        [400, 300, 400, 300, 500, 250, 500].forEach((freq, i) => {
+          setTimeout(() => {
+            this.playTone(freq, 0.3, 0.35, 'square');
+            this.playTone(freq * 0.5, 0.3, 0.25, 'sawtooth');
+          }, i * 200);
+        });
+      } catch (e) {
+      }
+    }
+
+    playGlitchSound() {
+      // Ciężkie, niskie glitche zamiast wysokich
+      const freq = 60 + Math.random() * 200;
+      this.playTone(freq, 0.1, 0.28, 'square');
+      setTimeout(() => {
+        this.playTone(freq * 0.7, 0.08, 0.22, 'sawtooth');
+      }, 25);
+    }
+
+    playMatrixSound() {
+      // Ciężki, industrialny digital cascade - jak mainframe się włącza
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          // Niskie, groźne tony zamiast wysokich cymbałków
+          this.playTone(180 - i * 15, 0.2, 0.25, 'square');
+          this.playTone(90 - i * 8, 0.25, 0.2, 'sawtooth');
+        }, i * 100);
+      }
+      // Finalny ciężki drop
+      setTimeout(() => {
+        this.playTone(50, 0.5, 0.3, 'square');
+      }, 900);
+    }
+
+    playDistortionSound() {
+      // Reality distortion - głęboki drone z modulacją
+      this.playTone(55, 1.5, 0.3, 'sawtooth');
+      setTimeout(() => this.playTone(70, 1.2, 0.28, 'square'), 200);
+      setTimeout(() => this.playTone(85, 1.0, 0.25, 'sawtooth'), 400);
+      setTimeout(() => this.playTone(40, 1.0, 0.32, 'square'), 600);
+    }
+
+    playChaosSound() {
+      // Apokaliptyczny alarm - niższe, bardziej agresywne
+      [800, 400, 800, 400, 900, 350, 900, 350].forEach((freq, i) => {
+        setTimeout(() => {
+          this.playTone(freq, 0.28, 0.35, 'square');
+          this.playTone(freq * 0.5, 0.28, 0.3, 'sawtooth');
+        }, i * 140);
+      });
+    }
+
+    createAmbientChaos() {
+      try {
+        if (!this.audioContext) {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
         
-        // Create multiple oscillators for chaos
-        for (let i = 0; i < 3; i++) {
+        // Create multiple GŁOŚNIEJSZE oscillators for ambient chaos
+        for (let i = 0; i < 4; i++) {
           const oscillator = this.audioContext.createOscillator();
           const gainNode = this.audioContext.createGain();
 
           oscillator.connect(gainNode);
           gainNode.connect(this.audioContext.destination);
 
-          oscillator.frequency.value = 100 * (i + 1);
-          oscillator.type = ['sawtooth', 'square', 'triangle'][i];
-          gainNode.gain.value = 0.03;
+          oscillator.frequency.value = 50 * (i + 1);
+          oscillator.type = ['sawtooth', 'square', 'triangle', 'sine'][i];
+          gainNode.gain.value = 0.12; // było 0.05, teraz 0.12
 
           oscillator.start();
           
@@ -549,20 +626,65 @@
           this.gainNodes.push(gainNode);
         }
 
-        // Modulate frequencies
+        // Niepokojąca modulacja - niskie częstotliwości
         const interval = setInterval(() => {
           this.oscillators.forEach((osc, i) => {
-            osc.frequency.value = (50 + Math.random() * 200) * (i + 1);
+            // Trzymaj nisko - 25Hz do 150Hz max
+            osc.frequency.value = (25 + Math.random() * 125) * (i + 1);
           });
-        }, 100);
+        }, 150);
         this.intervals.push(interval);
+        
+        // Ciężkie industrialne uderzenia
+        const beatInterval = setInterval(() => {
+          this.playTone(80, 0.06, 0.28, 'square');
+          setTimeout(() => this.playTone(65, 0.05, 0.24, 'square'), 100);
+        }, 700);
+        this.intervals.push(beatInterval);
       } catch (e) {
-        console.log('Audio not available');
+      }
+    }
+
+    playTone(freq, duration, vol, type = 'sine') {
+      if (!this.audioContext) return;
+      if (this.audioContext.state === 'suspended') this.audioContext.resume();
+      
+      try {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.value = vol;
+        
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+        
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + duration);
+        
+        setTimeout(() => {
+          try { osc.stop(); osc.disconnect(); } catch(e) {}
+        }, duration * 1000 + 50);
+        
+        this.activeSounds.push({osc, gain});
+      } catch (e) {
       }
     }
 
     stopAudio() {
       try {
+        // Stop all active sounds
+        this.activeSounds.forEach(({osc, gain}) => {
+          try {
+            osc.stop();
+            osc.disconnect();
+            gain.disconnect();
+          } catch (e) {}
+        });
+        this.activeSounds = [];
+        
+        // Stop oscillators
         this.oscillators.forEach(osc => {
           try {
             osc.stop();
@@ -574,14 +696,12 @@
             gain.disconnect();
           } catch (e) {}
         });
-        if (this.audioContext) {
-          this.audioContext.close();
-        }
+        // DON'T close AudioContext - it might be shared with AudioManager!
+        // Just stop and disconnect everything
         this.oscillators = [];
         this.gainNodes = [];
         this.audioContext = null;
       } catch (e) {
-        console.log('Error stopping audio');
       }
     }
 
@@ -637,6 +757,15 @@
       document.querySelectorAll('.wrap, .menu-list, .sidebar').forEach(el => {
         el.style.borderColor = '';
         el.style.borderWidth = '';
+      });
+
+      // Remove any lingering overlays by class
+      document.querySelectorAll('.scanlines-overlay').forEach(el => el.remove());
+      
+      // Force reset pointer events on body and all main elements
+      document.body.style.pointerEvents = '';
+      document.querySelectorAll('button, input, textarea, select').forEach(el => {
+        el.style.pointerEvents = '';
       });
 
       // Restore original output
@@ -741,43 +870,24 @@
 
   // Konami code listener - capture on window to prevent textarea issues
   window.addEventListener('keydown', (e) => {
-    // Don't prevent default - let other things work
-    console.log('Key pressed:', e.code, 'Position:', konamiPosition, 'Expected:', KONAMI_CODE[konamiPosition]);
-    
-    if (isActive) {
-      console.log('Easter egg already active, ignoring');
-      return;
-    }
+    if (isActive) return;
 
     if (e.code === KONAMI_CODE[konamiPosition]) {
       konamiPosition++;
-      console.log('✓ Correct key! New position:', konamiPosition, '/', KONAMI_CODE.length);
 
       if (konamiPosition === KONAMI_CODE.length) {
-        console.log('🎉🎉🎉 KONAMI CODE ACTIVATED! 🎉🎉🎉');
         konamiPosition = 0;
         effectsController = new EasterEggEffects();
         effectsController.start();
       }
     } else {
-      if (konamiPosition > 0) {
-        console.log('✗ Wrong key, resetting position from', konamiPosition, 'to 0');
-      }
       konamiPosition = 0;
       
       // Check if this key could be start of sequence
       if (e.code === KONAMI_CODE[0]) {
         konamiPosition = 1;
-        console.log('✓ Starting sequence! Position: 1');
       }
     }
   }, true); // Use capture phase
-
-  // Subtle hint in console (1)
-  console.log('%c⚠ SCP TERMINAL DIAGNOSTIC', 'color: #ff0000; font-weight: bold; font-size: 12px; text-shadow: 0 0 5px #ff0000;');
-  console.log('%c└─ Access Level: STANDARD', 'color: #888; font-size: 11px;');
-  console.log('%c└─ Hidden Protocols: %cDETECTED', 'color: #888; font-size: 11px;', 'color: #00ff00; font-weight: bold;');
-  console.log('%c└─ Hint: Check HTML comments for legacy access...', 'color: #444; font-size: 10px; font-style: italic;');
-  console.log(' ');
 
 })();

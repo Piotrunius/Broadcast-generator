@@ -281,27 +281,56 @@ if(clearBtn) {
     clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
     clearBtn.addEventListener('click', ()=>{
-      outputEl.value = '';
+      // Clear old timeouts/intervals first
+      const maxTimeoutId = setTimeout(() => {}, 0);
+      clearTimeout(maxTimeoutId);
+      
+      for (let i = 1; i < maxTimeoutId; i++) {
+        window.clearTimeout(i);
+        window.clearInterval(i);
+      }
 
+      // Play sound AFTER clearing
+      try {
+        audioManager.playSuccess();
+      } catch(e) {
+        console.log('Audio error:', e);
+      }
+
+      // Clear output
+      outputEl.value = '';
+      outputEl.style.cssText = '';
+
+      // Reset menu buttons
       menuButtons.forEach(btn=>{
         const menuId = btn.getAttribute('data-menu');
         btn.innerHTML = originalButtonHTML[menuId];
+        btn.classList.remove('selected');
       });
 
+      // Reset all LEDs
       document.querySelectorAll('.led').forEach(led=>{
         led.className = 'led';
         led.style.opacity = 1;
         led.classList.remove('blink');
+        led.style.backgroundColor = '';
+        led.style.boxShadow = '';
       });
 
-      document.getElementById("idCheck").checked = false;
-      document.getElementById("scp008").checked = false;
-      document.getElementById("scp409").checked = false;
-      document.getElementById("scp701").checked = false;
-      document.getElementById("scp035").checked = false;
-      document.getElementById("containmentCheck").checked = false;
-      
-      audioManager.playSuccess(); // Or click
+      // Uncheck all checkboxes
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+      });
+
+      // Update character counter if exists
+      if (window.updateCharCounter) {
+        window.updateCharCounter();
+      }
+
+      // Force UI refresh
+      document.body.offsetHeight;
+
+      console.log('✓ All cleared - state reset to zero');
     });
 }
 

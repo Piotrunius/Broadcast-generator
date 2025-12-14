@@ -140,6 +140,12 @@ const clearBtn = document.getElementById("clearFields");
 if (clearBtn) {
   clearBtn.addEventListener("mouseenter", () => audioManager.playHover());
   clearBtn.addEventListener("click", () => {
+    try {
+      audioManager.playSuccess();
+    } catch(e) {
+      console.log('Audio error:', e);
+    }
+
     document.querySelector("#inputSelect input").value  = "";
     document.querySelector("#outputSelect input").value = "";
 
@@ -149,7 +155,6 @@ if (clearBtn) {
 
     const resultEl = document.getElementById("result");
     if (resultEl) resultEl.textContent = "";
-    audioManager.playClick();
   });
 }
 
