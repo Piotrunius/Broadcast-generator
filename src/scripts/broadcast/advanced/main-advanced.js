@@ -1,28 +1,47 @@
 import { AudioManager } from '../../utils/audio-manager.js';
+import { isTyping, setAudioManager as setTypewriterAudio, stopAnimation, typeText as typeTextAnimation } from '../animations/typewriter.js';
 import { BroadcastGenerator } from '../engine/broadcast-generator.js';
 import { ErrorHandler } from './error-handler.js';
 
 const generator = new BroadcastGenerator();
 const audioManager = new AudioManager();
 const errorHandler = new ErrorHandler();
+
+// Initialize typewriter animation with audio
+setTypewriterAudio(audioManager);
+
 window.broadcastGenerator = generator; // Expose for error handling
 window.errorHandler = errorHandler; // Expose error handler globally for console access and recovery
 window.audioManager = audioManager; // Expose audio manager for testing
 
-// Debounced updateLiveOutput to prevent rapid re-render storms
+// Debounced updateLiveOutput - PRODUCTION GRADE
+// Guarantees animation always shows correctly
 let updateLiveOutputTimeout = null;
-let typingInProgress = false; // Flag to track if animation is ongoing
+let lastUpdateRequestTime = 0;
+
 const debouncedUpdateLiveOutput = () => {
   clearTimeout(updateLiveOutputTimeout);
-  updateLiveOutputTimeout = setTimeout(() => {
-    updateLiveOutput();
-  }, 50); // 50ms debounce
+  lastUpdateRequestTime = Date.now();
+
+  // If currently typing, stop and update immediately
+  if (isTyping()) {
+    stopAnimation();
+    // Give old animation 15ms to clean up
+    updateLiveOutputTimeout = setTimeout(async () => {
+      await updateLiveOutput();
+    }, 15);
+  } else {
+    // Otherwise debounce to prevent storms
+    updateLiveOutputTimeout = setTimeout(async () => {
+      await updateLiveOutput();
+    }, 50);
+  }
 };
 
 // Utility function for debouncing
 function debounce(func, delay) {
   let timeout;
-  return function(...args) {
+  return function (...args) {
     const context = this;
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(context, args), delay);
@@ -125,7 +144,7 @@ function initializeApp() {
       contentPanel.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         const checkboxBtn = checkbox.closest('.checkbox-btn');
         if (checkboxBtn) {
-            checkboxBtn.addEventListener('mouseenter', () => audioManager.playHover());
+          checkboxBtn.addEventListener('mouseenter', () => audioManager.playHover());
         }
 
         checkbox.addEventListener('change', () => {
@@ -168,9 +187,9 @@ function initializeApp() {
   const clearBtn = document.getElementById('clearBtn');
   console.log('Clear button element:', clearBtn);
   if (clearBtn) {
-      clearBtn.addEventListener('click', clearAll);
-      clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
-      console.log('✓ Clear button initialized');
+    clearBtn.addEventListener('click', clearAll);
+    clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
+    console.log('✓ Clear button initialized');
   }
 
   // Recovery Button - Auto-repair system
@@ -215,13 +234,17 @@ function initializeApp() {
   if (copyBtn) {
     copyBtn.addEventListener('click', () => {
       const outputEl = document.getElementById('output');
-      if (!outputEl.value.trim()) {
+
+      // Generate final message (ignores any animation in progress)
+      const generatedOutput = generator.generate(getBroadcastOptions());
+
+      // Check if message is empty
+      if (!generatedOutput.message || !generatedOutput.message.trim()) {
         audioManager.playError();
         return;
       }
 
-      const generatedOutput = generator.generate(getBroadcastOptions()); // Regenerate to get the final message and overflow status
-      // Use the message length from the generator's *final* output for decision
+      // Check for overflow
       if (generatedOutput.overflow) {
         // Add red background + shake animation
         outputEl.classList.add('copy-error');
@@ -261,10 +284,14 @@ function initializeApp() {
         return; // Block copying
       }
 
-      navigator.clipboard.writeText(generatedOutput.message).then(() => { // Copy the generator's final message
+      // Copy the COMPLETE generated message (animation status doesn't matter)
+      navigator.clipboard.writeText(generatedOutput.message).then(() => {
         copyBtn.textContent = 'COPIED!';
         setTimeout(() => copyBtn.textContent = 'COPY', 1000);
-        audioManager.playSuccess(); // Success sound!
+        audioManager.playSuccess();
+      }).catch(err => {
+        console.error('Copy failed:', err);
+        audioManager.playError();
       });
     });
     copyBtn.addEventListener('mouseenter', () => audioManager.playHover());
@@ -392,38 +419,38 @@ function showKeyboardShortcutsHelp() {
 
 // Helper function to determine Events LED color
 function updateEventsLEDColor(ledElement, selectedEventKeys) {
-    ledElement.className = 'led'; // Reset classes
-    ledElement.style.opacity = '1';
+  ledElement.className = 'led'; // Reset classes
+  ledElement.style.opacity = '1';
 
-    if (selectedEventKeys.length === 0) {
-        // No events selected, the LED should be off (gray).
-        // This is handled by default .led style when no color classes are added.
-        return;
-    }
+  if (selectedEventKeys.length === 0) {
+    // No events selected, the LED should be off (gray).
+    // This is handled by default .led style when no color classes are added.
+    return;
+  }
 
-    let has610 = selectedEventKeys.includes('610 Event');
-    let has076 = selectedEventKeys.includes('076 Event');
-    let has323 = selectedEventKeys.includes('323 Breach');
-    let hasClassDRiot = selectedEventKeys.includes('Class-D Riot');
+  let has610 = selectedEventKeys.includes('610 Event');
+  let has076 = selectedEventKeys.includes('076 Event');
+  let has323 = selectedEventKeys.includes('323 Breach');
+  let hasClassDRiot = selectedEventKeys.includes('Class-D Riot');
 
-    // Priority: BLACK (Fiolet) > HIGH (Czerwony) > MEDIUM (Żółty)
-    if (has610 || (has076 && has323 && hasClassDRiot)) {
-        ledElement.classList.add('black', 'blink-fast'); // Fioletowy, szybkie mruganie
-    } else if (has076) {
-        ledElement.classList.add('high', 'blink'); // Czerwony
-    } else if (has323 || hasClassDRiot) {
-        ledElement.classList.add('medium', 'blink'); // Żółty
-    } else {
-        // Fallback for other potential events, or just a generic active state
-        ledElement.classList.add('prohibited', 'blink'); // Default red if events selected but no specific color rule met
-    }
+  // Priority: BLACK (Fiolet) > HIGH (Czerwony) > MEDIUM (Żółty)
+  if (has610 || (has076 && has323 && hasClassDRiot)) {
+    ledElement.classList.add('black', 'blink-fast'); // Fioletowy, szybkie mruganie
+  } else if (has076) {
+    ledElement.classList.add('high', 'blink'); // Czerwony
+  } else if (has323 || hasClassDRiot) {
+    ledElement.classList.add('medium', 'blink'); // Żółty
+  } else {
+    // Fallback for other potential events, or just a generic active state
+    ledElement.classList.add('prohibited', 'blink'); // Default red if events selected but no specific color rule met
+  }
 }
 
 
 // --- LED Updaters ---
 function updateLED(target, level) {
   const led = document.querySelector(`.menu-btn[data-target="${target}"] .led`);
-  if(!led) return;
+  if (!led) return;
   led.className = 'led';
   led.style.opacity = '1';
   const upperLevel = level?.toUpperCase();
@@ -435,31 +462,31 @@ function updateLED(target, level) {
 }
 
 function updateStatusLED(status) {
-    const led = document.querySelector('.menu-btn[data-target="statusContent"] .led');
-    if(!led) return;
-    led.className = 'led';
-    led.style.opacity = '1';
-    const upperStatus = status?.toUpperCase();
-    switch(upperStatus){
-        case "SCP BREACH":
-        case "SITE LOCKDOWN":
-        case "CHAOS INSURGENCY":
-             led.classList.add('high', 'blink');
-             break;
-        case "NUCLEAR PROTOCOL":
-             led.classList.add('black', 'blink-fast');
-             break;
-        case "CLASS-D ESCAPE":
-             led.classList.add('medium');
-             break;
-        case "CLEAR":
-             led.classList.add('allowed');
-             break;
-        case "MAINTENANCE":
-        case "O5 MEETING":
-             led.classList.add('white');
-             break;
-    }
+  const led = document.querySelector('.menu-btn[data-target="statusContent"] .led');
+  if (!led) return;
+  led.className = 'led';
+  led.style.opacity = '1';
+  const upperStatus = status?.toUpperCase();
+  switch (upperStatus) {
+    case "SCP BREACH":
+    case "SITE LOCKDOWN":
+    case "CHAOS INSURGENCY":
+      led.classList.add('high', 'blink');
+      break;
+    case "NUCLEAR PROTOCOL":
+      led.classList.add('black', 'blink-fast');
+      break;
+    case "CLASS-D ESCAPE":
+      led.classList.add('medium');
+      break;
+    case "CLEAR":
+      led.classList.add('allowed');
+      break;
+    case "MAINTENANCE":
+    case "O5 MEETING":
+      led.classList.add('white');
+      break;
+  }
 }
 
 // --- Main Functions ---
@@ -573,203 +600,139 @@ function updateOutputColor() {
 // Typewriter animation with intelligent controls
 // Safely animates text reveal with built-in safeguards against freezing
 // Smart diff-based typewriter animation - natural character-by-character typing
-async function typeText(element, targetText, callback) {
-  if (!element) return;
+// NOTE: This animation system has been moved to a separate module!
+// See: src/scripts/broadcast/animations/typewriter.js for the updated implementation
+// The new system provides:
+// - Backspace + type effect (characters are backspaced then retyped)
+// - Character-by-character typing with audio feedback
+// - Human-like variable delays (35ms typing + random 20ms pauses)
+// - Better code organization and reusability
+// Functions are imported at the top of this file as:
+// - typeTextAnimation (imported as typeText from animations/typewriter.js)
+// - setTypewriterAudio (initialize audio manager)
 
-  const target = targetText ?? '';
-
-  // Prevent concurrent animations
-  if (typingInProgress) {
-    element.value = target;
-    updateCharCounter();
-    updateOutputColor();
-    if (callback) callback();
-    return;
-  }
-
-  typingInProgress = true;
-  const current = element.value;
-
-  // Find common prefix and suffix to identify changed section
-  const commonPrefix = findCommonPrefix(current, target);
-  const commonSuffix = findCommonSuffix(
-    current.substring(commonPrefix),
-    target.substring(commonPrefix)
-  );
-
-  const changeStart = commonPrefix;
-  const changeEnd = current.length - commonSuffix;
-  const newContent = target.substring(commonPrefix, target.length - commonSuffix);
-
-  // Skip animation if change is too drastic (>60% different) or very short
-  const percentChanged = newContent.length / Math.max(1, target.length);
-  if (percentChanged > 0.6 || target.length < 10) {
-    element.value = target;
-    updateCharCounter();
-    updateOutputColor();
-    typingInProgress = false;
-    if (callback) callback();
-    return;
-  }
-
-  // Animation for natural typing effect
-  let position = 0;
-  const STEP_DELAY = 25; // 25ms per character for natural feel
-  const MAX_TOTAL_TIME = 1000; // Max 1 second total
-
-  const animateStep = () => {
-    if (position < newContent.length) {
-      // Reconstruct text: prefix + what we've typed so far + suffix
-      element.value =
-        target.substring(0, changeStart) +
-        newContent.substring(0, position + 1) +
-        target.substring(target.length - commonSuffix);
-
-      updateCharCounter();
-      updateOutputColor();
-      position++;
-
-      setTimeout(animateStep, STEP_DELAY);
-    } else {
-      // Ensure we have exact final text
-      element.value = target;
-      updateCharCounter();
-      updateOutputColor();
-      typingInProgress = false;
-      if (callback) callback();
-    }
-  };
-
-  // Start animation
-  if (newContent.length > 0) {
-    animateStep();
-  } else {
-    // No visible changes, just update
-    element.value = target;
-    updateCharCounter();
-    updateOutputColor();
-    typingInProgress = false;
-    if (callback) callback();
-  }
-}
-
-// Helper functions for diff detection
-function findCommonPrefix(str1, str2) {
-  let i = 0;
-  while (i < str1.length && i < str2.length && str1[i] === str2[i]) i++;
-  return i;
-}
-
-function findCommonSuffix(str1, str2) {
-  let i = 0;
-  while (i < str1.length && i < str2.length &&
-         str1[str1.length - 1 - i] === str2[str2.length - 1 - i]) i++;
-  return i;
-}
-
-function calculateSimilarity() {
-  return 1;
-}
-
-function getCommonPrefixLength() { return 0; }
-function getCommonSuffixLength() { return 0; }
-
-function updateLiveOutput() {
+async function updateLiveOutput() {
   const outputElement = document.getElementById('output');
   if (!outputElement) return;
 
   try {
     const options = getBroadcastOptions();
-    const generatedOutput = generator.generate(options); // { message, overflow }
+    const generatedOutput = generator.generate(options);
 
-    typeText(outputElement, generatedOutput.message, () => {
-      updateCharCounter(); // Update counter after typing completes
-      if (generatedOutput.overflow) {
+    // Guarantee: Always wait for animation to complete before returning
+    const animationCompleted = await typeTextAnimation(
+      outputElement,
+      generatedOutput.message,
+      updateCharCounter,
+      updateOutputColor,
+      () => {
+        updateCharCounter();
+        if (generatedOutput.overflow) {
           outputElement.classList.add('overflow-warning');
-          audioManager.playError();
-      } else {
+          try {
+            audioManager.playError();
+          } catch (e) {
+            console.debug('Audio error:', e);
+          }
+        } else {
           outputElement.classList.remove('overflow-warning');
+        }
       }
-    });
+    );
+
+    // If animation didn't complete (was interrupted), ensure text is correct
+    if (!animationCompleted) {
+      outputElement.value = generatedOutput.message;
+      updateCharCounter();
+      updateOutputColor();
+    }
+
   } catch (err) {
-    console.error('Live output update failed', err);
-    outputElement.value = 'Error generating broadcast. Please retry.';
-    updateCharCounter();
-    outputElement.classList.add('overflow-warning');
+    console.error('Live output update failed:', err);
+    const outputElement = document.getElementById('output');
+    if (outputElement) {
+      outputElement.value = 'Error generating broadcast. Please retry.';
+      updateCharCounter();
+      outputElement.classList.add('overflow-warning');
+    }
   }
 }
 
 function clearAll() {
-    // Play clear sound first
-    try {
-      audioManager.playSuccess();
-    } catch(e) {
-      console.log('Audio error:', e);
+  // IMMEDIATELY stop any animation before clearing
+  stopAnimation();
+
+  // Play clear sound first
+  try {
+    audioManager.playSuccess();
+  } catch (e) {
+    console.log('Audio error:', e);
+  }
+
+  // Reset custom text input
+  const customInput = document.getElementById('customTextInput');
+  if (customInput) customInput.value = '';
+
+  // Reset ALL menu buttons to original state
+  document.querySelectorAll('.menu-btn').forEach(btn => {
+    const textSpan = btn.querySelector('.btn-text');
+    if (textSpan && btn.dataset.originalText) {
+      textSpan.textContent = btn.dataset.originalText;
     }
+    delete btn.dataset.selected;
+    btn.classList.remove('selected');
+    btn.setAttribute('aria-expanded', 'false');
+  });
 
-    // Reset custom text input
-    const customInput = document.getElementById('customTextInput');
-    if (customInput) customInput.value = '';
+  // Close all menus
+  document.querySelectorAll('.menu-list').forEach(menu => {
+    menu.classList.remove('show');
+  });
 
-    // Reset ALL menu buttons to original state
-    document.querySelectorAll('.menu-btn').forEach(btn => {
-      const textSpan = btn.querySelector('.btn-text');
-      if (textSpan && btn.dataset.originalText) {
-        textSpan.textContent = btn.dataset.originalText;
-      }
-      delete btn.dataset.selected;
-      btn.classList.remove('selected');
-      btn.setAttribute('aria-expanded', 'false');
-    });
+  // Deselect all selected elements
+  document.querySelectorAll('.selected').forEach(el => {
+    el.classList.remove('selected');
+  });
 
-    // Close all menus
-    document.querySelectorAll('.menu-list').forEach(menu => {
-      menu.classList.remove('show');
-    });
+  // Uncheck all checkboxes
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+    const checkboxBtn = cb.closest('.checkbox-btn');
+    if (checkboxBtn) checkboxBtn.classList.remove('selected');
+  });
 
-    // Deselect all selected elements
-    document.querySelectorAll('.selected').forEach(el => {
-      el.classList.remove('selected');
-    });
+  // Reset all LEDs to default state (no color)
+  document.querySelectorAll('.led').forEach(led => {
+    led.className = 'led';
+    led.style.opacity = '1';
+    led.style.backgroundColor = '';
+    led.style.boxShadow = '';
+  });
 
-    // Uncheck all checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      cb.checked = false;
-      const checkboxBtn = cb.closest('.checkbox-btn');
-      if (checkboxBtn) checkboxBtn.classList.remove('selected');
-    });
+  // Clear output textarea completely
+  const outputEl = document.getElementById('output');
+  if (outputEl) {
+    outputEl.value = '';
+    updateCharCounter();
+    updateOutputColor();
+    outputEl.classList.remove('overflow-warning');
+    outputEl.style.cssText = ''; // Reset any inline styles
+  }
 
-    // Reset all LEDs to default state (no color)
-    document.querySelectorAll('.led').forEach(led => {
-      led.className = 'led';
-      led.style.opacity = '1';
-      led.style.backgroundColor = '';
-      led.style.boxShadow = '';
-    });
+  // Update character counter
+  if (window.updateCharCounter) {
+    updateCharCounter();
+  }
 
-    // Clear output textarea completely
-    const outputEl = document.getElementById('output');
-    if (outputEl) {
-      outputEl.value = '';
-      updateCharCounter();
-      outputEl.classList.remove('overflow-warning');
-      outputEl.style.cssText = ''; // Reset any inline styles
-    }
+  // Reset any global state variables
+  if (window.selectedOptions) {
+    window.selectedOptions = {};
+  }
 
-    // Update character counter
-    if (window.updateCharCounter) {
-      updateCharCounter();
-    }
+  // Force UI refresh
+  document.body.offsetHeight; // Trigger reflow
 
-    // Reset any global state variables
-    if (window.selectedOptions) {
-      window.selectedOptions = {};
-    }
-
-    // Force UI refresh
-    document.body.offsetHeight; // Trigger reflow
-
-    console.log('✓ All cleared - state reset to zero');
+  console.log('✓ All cleared - state reset to zero');
 }
 
 
@@ -802,9 +765,9 @@ switchBtn.classList.add("active");
 switchBtn.addEventListener("click", () => {
   window.location.href = "../simple/index.html";
 });
-  // Note: Recovery button removed from HTML. Error modal now handles recovery with auto-repair option.
-  // Users trigger recovery through error modal interface instead of dedicated button.
-if(switchBtn) switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
+// Note: Recovery button removed from HTML. Error modal now handles recovery with auto-repair option.
+// Users trigger recovery through error modal interface instead of dedicated button.
+if (switchBtn) switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
 /*
 ================================================================================
