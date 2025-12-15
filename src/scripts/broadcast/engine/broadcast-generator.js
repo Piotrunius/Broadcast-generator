@@ -1,8 +1,9 @@
-import { STATUS_MESSAGES, EVENT_MESSAGES, REQUIREMENT_MESSAGES } from '../data/broadcast-data.js';
+import { EVENT_MESSAGES, REQUIREMENT_MESSAGES, STATUS_MESSAGES } from '../data/broadcast-data.js';
 
 export class BroadcastGenerator {
     constructor() {
         this.maxChars = 200;
+        this.maxIterations = 50; // Safety limit
     }
 
     generate(options) {
@@ -25,10 +26,10 @@ export class BroadcastGenerator {
         // 1. Status Message
         const suppressStatusForEvents = ["076 EVENT", "610 EVENT", "323 BREACH"];
         const hasSuppressingEvent = events.some(e => suppressStatusForEvents.includes(e.toUpperCase()));
-        
+
         let initialStatusLevel = 'MINIMAL'; // Start at minimal
         if (normalizedStatus === "SCP BREACH" && hasSuppressingEvent) {
-            initialStatusLevel = 'NONE'; 
+            initialStatusLevel = 'NONE';
         }
 
         messageParts.push({
@@ -73,7 +74,7 @@ export class BroadcastGenerator {
                 levels: ['LONG', 'SHORT', 'MINIMAL']
             });
         }
-        
+
         // 4. Requirements Messages
         if (requirements.idCheck) {
             messageParts.push({
@@ -124,22 +125,24 @@ export class BroadcastGenerator {
             });
             return prefix + finalOutputParts.filter(Boolean).join(" | ");
         };
-        
+
         // --- Phase 1: Shrink if initial MINIMAL is too long (should rarely happen) ---
         // This is a safeguard if even the most minimal version of *everything* doesn't fit.
         let currentMessage = getCurrentFullMessage(messageParts);
         let overflow = false;
+        let shrinkIterations = 0;
 
         // Iteratively shrink until it fits or no more options
-        while (currentMessage.length > this.maxChars) {
+        while (currentMessage.length > this.maxChars && shrinkIterations < this.maxIterations) {
+            shrinkIterations++;
             let shortenedThisIteration = false;
             let bestCandidateIndex = -1;
-            let lowestPriorityFound = Infinity; 
-            
+            let lowestPriorityFound = Infinity;
+
             for (let i = 0; i < messageParts.length; i++) {
                 const part = messageParts[i];
                 const currentLevelIndex = part.levels.indexOf(part.currentLevel);
-                
+
                 if (currentLevelIndex >= part.levels.length - 1) { // Already at shortest
                     continue;
                 }
@@ -155,7 +158,7 @@ export class BroadcastGenerator {
                     }
                 }
             }
-            
+
             if (bestCandidateIndex !== -1) {
                 const partToShorten = messageParts[bestCandidateIndex];
                 const currentLevelIndex = partToShorten.levels.indexOf(partToShorten.currentLevel);
@@ -166,48 +169,61 @@ export class BroadcastGenerator {
             if (!shortenedThisIteration) {
                 // If even after trying to shrink everything, it still doesn't fit
                 overflow = true;
-                break; 
+                break;
             }
             currentMessage = getCurrentFullMessage(messageParts);
         }
 
+        // If we hit iteration limit, mark as overflow
+        if (shrinkIterations >= this.maxIterations) {
+            overflow = true;
+        }
+
         // --- Phase 2: Expand if space is available ---
-        // Loop while there's space, trying to expand highest priority items first
-        let expandedThisIteration = true;
-        while (currentMessage.length <= this.maxChars && expandedThisIteration && !overflow) {
-            expandedThisIteration = false;
-            let bestCandidateIndex = -1;
-            let highestPriorityFound = -Infinity; 
-            
-            for (let i = 0; i < messageParts.length; i++) {
-                const part = messageParts[i];
-                const currentLevelIndex = part.levels.indexOf(part.currentLevel);
-                
-                if (currentLevelIndex === 0) { // Already at 'LONG' level
-                    continue;
-                }
+        // Only expand if we didn't overflow and there's space
+        let expandIterations = 0;
+        if (!overflow) {
+            while (currentMessage.length <= this.maxChars && expandIterations < this.maxIterations) {
+                expandIterations++;
+                let bestCandidateIndex = -1;
+                let highestPriorityFound = -Infinity;
 
-                const nextHigherLevel = part.levels[currentLevelIndex - 1];
-                const testParts = messageParts.map((p, idx) => ({ ...p, currentLevel: (idx === i ? nextHigherLevel : p.currentLevel) }));
-                const testMessage = getCurrentFullMessage(testParts);
+                for (let i = 0; i < messageParts.length; i++) {
+                    const part = messageParts[i];
+                    const currentLevelIndex = part.levels.indexOf(part.currentLevel);
 
-                if (testMessage.length <= this.maxChars) { // It fits after expansion
-                    if (part.priority > highestPriorityFound) {
-                        highestPriorityFound = part.priority;
-                        bestCandidateIndex = i;
+                    if (currentLevelIndex === 0) { // Already at 'LONG' level
+                        continue;
+                    }
+
+                    const nextHigherLevel = part.levels[currentLevelIndex - 1];
+
+                    // Quick test: temporarily change level and check length
+                    const oldLevel = part.currentLevel;
+                    part.currentLevel = nextHigherLevel;
+                    const testMessage = getCurrentFullMessage(messageParts);
+                    part.currentLevel = oldLevel;
+
+                    if (testMessage.length <= this.maxChars) { // It fits after expansion
+                        if (part.priority > highestPriorityFound) {
+                            highestPriorityFound = part.priority;
+                            bestCandidateIndex = i;
+                        }
                     }
                 }
-            }
-            
-            if (bestCandidateIndex !== -1) {
-                const partToExpand = messageParts[bestCandidateIndex];
-                const currentLevelIndex = partToExpand.levels.indexOf(partToExpand.currentLevel);
-                partToExpand.currentLevel = partToExpand.levels[currentLevelIndex - 1]; // Move up
-                expandedThisIteration = true;
-                currentMessage = getCurrentFullMessage(messageParts); // Update current message
+
+                if (bestCandidateIndex !== -1) {
+                    const partToExpand = messageParts[bestCandidateIndex];
+                    const currentLevelIndex = partToExpand.levels.indexOf(partToExpand.currentLevel);
+                    partToExpand.currentLevel = partToExpand.levels[currentLevelIndex - 1]; // Move up
+                    currentMessage = getCurrentFullMessage(messageParts); // Update current message
+                } else {
+                    break; // No more expansions possible
+                }
             }
         }
-        
+
         return { message: currentMessage, overflow: overflow };
     }
 }
+

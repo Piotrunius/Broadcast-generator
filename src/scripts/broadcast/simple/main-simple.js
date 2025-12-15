@@ -1,8 +1,9 @@
-import { BroadcastGenerator } from './engine/broadcast-generator.js';
-import { AudioManager } from './utils/audio-manager.js';
+import { AudioManager } from '../../utils/audio-manager.js';
+import { BroadcastGenerator } from '../engine/broadcast-generator.js';
 
 const generator = new BroadcastGenerator();
 const audioManager = new AudioManager();
+const ICON_BASE_PATH = "../../../assets/icons/";
 
 // Helpers
 const menuButtons = document.querySelectorAll('.menu-btn');
@@ -13,7 +14,7 @@ const originalButtonHTML = {};
 menuButtons.forEach(btn => {
   const menuId = btn.getAttribute('data-menu');
   originalButtonHTML[menuId] = btn.innerHTML;
-  
+
   // Add hover listener
   btn.addEventListener('mouseenter', () => audioManager.playHover());
 });
@@ -41,7 +42,7 @@ menuButtons.forEach(btn=>{
       btn.setAttribute('aria-expanded','true');
       list.setAttribute('aria-hidden','false');
     }
-    audioManager.playToggle(); 
+    audioManager.playToggle();
   });
 });
 
@@ -101,10 +102,10 @@ document.querySelectorAll('.menu-list button').forEach(optBtn => {
 
 // Checkboxes hover effect (Simple version has separate checkboxes)
 document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    const container = cb.closest('div') || cb.parentElement; 
+    const container = cb.closest('div') || cb.parentElement;
     // In simple version, they might just be inputs. Let's check HTML if needed, but adding to parent is safe.
     if(container) container.addEventListener('mouseenter', () => audioManager.playHover());
-    
+
     cb.addEventListener('change', () => audioManager.playClick());
 });
 
@@ -142,7 +143,7 @@ function updateEventLED(value){
     led.classList.add("prohibited", "blink");
 }
 
-// STATUS iconos
+// STATUS icons
 function updateStatusIcon(status){
     const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
     const iconHTML = getStatusIconHTML(status);
@@ -155,31 +156,31 @@ function getStatusIconHTML(status){
     switch(status){
 
         case "SCP BREACH":
-            return `<img src="iconos/breach.png">`;
+          return `<img src="${ICON_BASE_PATH}breach.png">`;
 
         case "SITE LOCKDOWN":
-            return `<img src="iconos/lockdown.png">`;
+          return `<img src="${ICON_BASE_PATH}lockdown.png">`;
 
         case "CLASS-D ESCAPE":
-            return `<img src="iconos/class-descape.png">`;
+          return `<img src="${ICON_BASE_PATH}class-descape.png">`;
 
         case "CLASS-D RIOT":
-            return `<img src="iconos/riot.png">`;
+          return `<img src="${ICON_BASE_PATH}riot.png">`;
 
         case "CHAOS INSURGENCY":
-            return `<img src="iconos/chaosinsurgency.png">`;
+          return `<img src="${ICON_BASE_PATH}chaosinsurgency.png">`;
 
         case "610 EVENT":
-            return `<img src="iconos/610.png">`;
+          return `<img src="${ICON_BASE_PATH}610.png">`;
 
         case "076 EVENT":
-            return `<img src="iconos/abel.png">`;
+          return `<img src="${ICON_BASE_PATH}abel.png">`;
 
         case "NUCLEAR PROTOCOL":
-            return `<img src="iconos/nuke.png">`;
+          return `<img src="${ICON_BASE_PATH}nuke.png">`;
 
         case "CLEAR":
-            return `<img src="iconos/clear.png">`;
+          return `<img src="${ICON_BASE_PATH}clear.png">`;
 
         default:
             return "";
@@ -201,13 +202,13 @@ function getMenuText(menuId){
 const generateBtn = document.getElementById('generateBtn');
 if (generateBtn) {
     generateBtn.addEventListener('mouseenter', () => audioManager.playHover());
-    
+
     generateBtn.addEventListener('click', ()=>{
 
       const alarm = getMenuText("alarm");
       const status = getMenuText("status").toUpperCase();
       let testingRaw = getMenuText("testing");
-      
+
       let testing = "";
       if(testingRaw.toUpperCase() === "ALLOWED") testing = "ALLOWED";
       else if(testingRaw.toUpperCase() === "PROHIBITED") testing = "PROHIBITED";
@@ -250,12 +251,12 @@ if (generateBtn) {
 const copyBtn = document.getElementById('copyBtn');
 if (copyBtn) {
     copyBtn.addEventListener('mouseenter', () => audioManager.playHover());
-    
+
     copyBtn.addEventListener('click', ()=>{
-      if(!outputEl.value.trim()) { 
-          // alert('No hay texto para copiar.'); 
+      if(!outputEl.value.trim()) {
+          // alert('No hay texto para copiar.');
           audioManager.playError();
-          return; 
+          return;
       }
       outputEl.select();
       navigator.clipboard?.writeText(outputEl.value)
@@ -284,7 +285,7 @@ if(clearBtn) {
       // Clear old timeouts/intervals first
       const maxTimeoutId = setTimeout(() => {}, 0);
       clearTimeout(maxTimeoutId);
-      
+
       for (let i = 1; i < maxTimeoutId; i++) {
         window.clearTimeout(i);
         window.clearInterval(i);
@@ -341,5 +342,5 @@ switchBtn.classList.remove("active");
 switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
 switchBtn.addEventListener("click", () => {
-  window.location.href = "advanced.html";
+  window.location.href = "../advanced/index.html";
 });

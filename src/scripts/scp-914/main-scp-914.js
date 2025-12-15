@@ -1,5 +1,5 @@
+import { AudioManager } from '../utils/audio-manager.js';
 import { RAW_RECIPES } from './data/scp-recipes.js';
-import { AudioManager } from './utils/audio-manager.js';
 
 const audioManager = new AudioManager();
 
@@ -57,7 +57,7 @@ function setupSearchDropdown(id){
   const box = document.getElementById(id);
   const input = box.querySelector("input");
   const list = box.querySelector("ul");
-  
+
   // Add hover effect to the input box container maybe? or just input focus
   input.addEventListener('focus', () => audioManager.playHover());
   input.addEventListener('input', () => audioManager.playType());
@@ -71,10 +71,10 @@ function setupSearchDropdown(id){
     filtered.forEach(item => {
       let li = document.createElement("li");
       li.textContent = item;
-      
+
       // Hover effect for list items
       li.addEventListener('mouseenter', () => audioManager.playHover());
-      
+
       li.onclick = () => {
         input.value = item;
         validateInput(box);
@@ -315,7 +315,7 @@ calcBtn.addEventListener("click", () => {
   // ➤ Caso normal INPUT + OUTPUT → ruta inteligente
   const route = findSmartRoute(inputVal, outputVal);
   resultEl.innerHTML = formatSmartRoute(inputVal, outputVal, route);
-  
+
   if(!route) {
       audioManager.playError();
   } else {

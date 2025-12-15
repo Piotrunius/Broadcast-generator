@@ -1,4 +1,4 @@
-// J/utils/audio-manager.js
+// src/scripts/utils/audio-manager.js
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 /**
@@ -32,7 +32,7 @@ function playTone(freq, duration, vol, type = 'sine', ramp = true) {
  * Updated with louder volumes and more variety.
  */
 export class AudioManager {
-    
+
     /**
      * Standard UI Click (Buttons, Selects)
      * Louder and punchier.
@@ -65,7 +65,7 @@ export class AudioManager {
         const randomFreq = 550 + Math.random() * 100;
         playTone(randomFreq, 0.04, 0.1, 'square'); // Vol 0.03 -> 0.1
     }
-    
+
     /**
      * Panel Open Sound (New)
      * A rising "whoosh" effect simulation
@@ -81,7 +81,7 @@ export class AudioManager {
     playSuccess() {
         const now = audioCtx.currentTime;
         const volume = 0.15; // Vol 0.05 -> 0.15
-        
+
         [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => { // Added C6
             setTimeout(() => {
                 playTone(freq, 0.12, volume, 'sine');

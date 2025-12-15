@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error System Test</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #0a0a0a;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px;
+            background: #1a3a1a;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #2a5a2a;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        .console {
+            background: #000;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #00ff00;
+        }
+        .console-line {
+            margin: 3px 0;
+        }
+        .error { color: #ff3333; }
+        .success { color: #00ff00; }
+        .info { color: #00ccff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Error System Test Panel</h1>
+        <p>Click a button to trigger an error and test the error modal system.</p>
+
+        <div class="buttons">
+            <button onclick="triggerError('GEN-001')">GEN-001 (Generator Loop)</button>
+            <button onclick="triggerError('UI-001')">UI-001 (Output Missing)</button>
+            <button onclick="triggerError('STY-002')">STY-002 (Color Mismatch)</button>
+            <button onclick="triggerError('AUD-001')">AUD-001 (Audio Failed)</button>
+            <button onclick="triggerError('DAT-001')">DAT-001 (Invalid Data)</button>
+            <button onclick="triggerError('NET-001')">NET-001 (Clipboard Denied)</button>
+            <button onclick="triggerError('STA-001')">STA-001 (State Corrupted)</button>
+            <button onclick="triggerError('ENV-001')">ENV-001 (Browser Unsupported)</button>
+            <button onclick="listAllErrors()">📋 List All Codes</button>
+        </div>
+
+        <h3>Quick Test:</h3>
+        <input type="text" id="errorCodeInput" placeholder="Enter error code (e.g., GEN-001)"
+               style="padding: 8px; width: 300px; font-family: monospace;">
+        <button onclick="triggerCustomError()">Trigger Custom</button>
+
+        <div class="console">
+            <div class="console-line info">💡 Console output:</div>
+            <div id="consoleOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        // Import error handler
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.textContent = `
+            import { ErrorHandler } from './src/scripts/broadcast/advanced/error-handler.js';
+            window.errorHandler = new ErrorHandler();
+
+            window.triggerError = function(code) {
+                window.errorHandler.triggerErrorForTesting(code);
+                logToConsole(\`🚨 Triggered error: \${code}\`);
+            };
+
+            window.listAllErrors = function() {
+                const codes = window.errorHandler.getAllErrorCodes();
+                logToConsole(\`📋 Total error codes: \${codes.length}\`);
+                logToConsole('Categories:');
+                const categories = new Map();
+                codes.forEach(code => {
+                    const cat = code.substring(0, 3);
+                    if (!categories.has(cat)) categories.set(cat, 0);
+                    categories.set(cat, categories.get(cat) + 1);
+                });
+                for (const [cat, count] of categories) {
+                    logToConsole(\`  \${cat}: \${count} codes\`);
+                }
+            };
+
+            window.triggerCustomError = function() {
+                const input = document.getElementById('errorCodeInput');
+                if (input.value) {
+                    window.triggerError(input.value);
+                }
+            };
+        `;
+        document.head.appendChild(script);
+
+        function logToConsole(msg) {
+            const output = document.getElementById('consoleOutput');
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            if (msg.includes('🚨')) line.className += ' error';
+            else if (msg.includes('✓')) line.className += ' success';
+            else if (msg.includes('💡')) line.className += ' info';
+            line.textContent = msg;
+            output.appendChild(line);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Global trigger functions for fallback
+        window.triggerError = function(code) {
+            logToConsole(`⏳ Loading error handler...`);
+        };
+
+        window.triggerCustomError = function() {
+            const input = document.getElementById('errorCodeInput');
+            if (input.value) {
+                window.triggerError(input.value);
+            }
+        };
+
+        window.listAllErrors = function() {
+            logToConsole(`⏳ Loading error handler...`);
+        };
+    </script>
+</body>
+</html>
