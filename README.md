@@ -55,6 +55,7 @@ Manual error modal test page:
 	- `triggerTestError('GEN-001')` — show a sample error modal
 	- `listErrorCodes()` — list all available codes
 	- `getErrorHistory()` — show logged errors
+   	- `window.__devPanel.show()` - Show A debug/easter egg window
 
 ## 🔔 Features Overview
 
