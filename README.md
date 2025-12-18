@@ -6,33 +6,47 @@ A broadcast message generator for SCP Site Roleplay, featuring advanced message 
 
 **First time? Open `index.html` in your browser for full setup instructions!**
 
-### Option 1: Quick Start Scripts (Easiest)
+### Option 1: Quick Start Scripts (Easiest) ⭐
 
 **On Windows:**
-```bash
-start-server.bat
-```
+- Double-click `start-server.bat`
 
 **On Linux/Mac:**
 ```bash
 ./start-server.sh
 ```
 
-Then open in browser: `http://localhost:8000/pages/home/index.html`
+Browser will open automatically at `http://localhost:8000`
 
-### Option 2: Manual Python Server
+### Option 2: Custom Server (Recommended for Modules)
 
-**On Linux/Mac:**
+**All Platforms:**
 ```bash
-python3 -m http.server 8000
+python server.py
 ```
+
+Or on Linux/Mac:
+```bash
+python3 server.py
+```
+
+✅ **This is the best option** - proper MIME types for JavaScript ES6 modules!
+
+### Option 3: Basic Python Server
 
 **On Windows:**
 ```bash
 python -m http.server 8000
 ```
 
-Then open in browser: `http://localhost:8000/pages/home/index.html`
+**On Linux/Mac:**
+```bash
+python3 -m http.server 8000
+```
+
+Then open: `http://localhost:8000/pages/home/index.html`
+
+⚠️ **Note:** Basic server may have issues with JavaScript modules on Windows
 
 ### Option 3: Using VS Code Live Server
 

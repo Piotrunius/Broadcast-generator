@@ -1,0 +1,68 @@
+==============================================
+   BROADCAST GENERATOR - WINDOWS SETUP
+==============================================
+
+PROBLEM: CSS and JavaScript not loading?
+SOLUTION: Follow these steps!
+
+==============================================
+  QUICK FIX (Easiest Way)
+==============================================
+
+1. Make sure Python is installed:
+   - Download from: https://www.python.org/downloads/
+   - During installation: CHECK "Add Python to PATH"!
+
+2. Double-click: start-server.bat
+
+3. Browser will open automatically!
+
+==============================================
+  MANUAL START (If script doesn't work)
+==============================================
+
+1. Open Command Prompt in this folder:
+   - Hold SHIFT + Right-click in folder
+   - Select "Open PowerShell window here" or "Open command window here"
+
+2. Run this command:
+   python server.py
+
+3. Open browser and go to:
+   http://localhost:8000/index.html
+
+==============================================
+  TROUBLESHOOTING
+==============================================
+
+❌ "python is not recognized"
+   Solution: Install Python and check "Add to PATH"
+   Or use: py server.py
+
+❌ "Port 8000 is already in use"
+   Solution: Close other servers or edit server.py
+   Change PORT = 8000 to PORT = 8080
+
+❌ CSS/JS still not loading
+   Solution:
+   - Use server.py (not basic http.server)
+   - Check browser console (F12) for errors
+   - Make sure all files are extracted properly
+
+❌ Permission denied
+   Solution: Run as administrator or check antivirus
+
+==============================================
+  ALTERNATIVE: VS Code
+==============================================
+
+1. Open project folder in VS Code
+2. Install "Live Server" extension
+3. Right-click any HTML file
+4. Click "Open with Live Server"
+
+==============================================
+
+Need more help? Check README.md or index.html
+
+==============================================
