@@ -1,18 +1,15 @@
 import { AudioManager } from '../../utils/audio-manager.js';
 import { isTyping, setAudioManager as setTypewriterAudio, stopAnimation, typeText as typeTextAnimation } from '../animations/typewriter.js';
 import { BroadcastGenerator } from '../engine/broadcast-generator.js';
-import { ErrorHandler } from './error-handler.js';
 
 const generator = new BroadcastGenerator();
 const audioManager = new AudioManager();
-const errorHandler = new ErrorHandler();
 
 // Initialize typewriter animation with audio
 setTypewriterAudio(audioManager);
 
-window.broadcastGenerator = generator; // Expose for error handling
-window.errorHandler = errorHandler; // Expose error handler globally for console access and recovery
-window.audioManager = audioManager; // Expose audio manager for testing
+window.broadcastGenerator = generator; // Expose for debugging
+window.audioManager = audioManager; // Expose audio manager for debugging
 
 // Debounced updateLiveOutput - PRODUCTION GRADE
 // Guarantees animation always shows correctly
@@ -192,41 +189,7 @@ function initializeApp() {
     console.log('✓ Clear button initialized');
   }
 
-  // Recovery Button - Auto-repair system
-  const recoveryBtn = document.getElementById('recoveryBtn');
-  console.log('Recovery button element:', recoveryBtn);
-  if (recoveryBtn) {
-    recoveryBtn.addEventListener('click', () => {
-      try {
-        // Run comprehensive diagnostics and recovery
-        const diagnostics = performDiagnostics();
 
-        if (diagnostics.hasErrors) {
-          errorHandler.showNotification('🔧 Running auto-repair...', 'info');
-          setTimeout(() => {
-            // Attempt all recoveries
-            if (!document.getElementById('output')) {
-              errorHandler.recoveryStrategies.get('RECREATE_OUTPUT_ELEMENT')();
-            }
-            if (!window.updateCharCounter) {
-              errorHandler.recoveryStrategies.get('REINITIALIZE_COUNTER')();
-            }
-            updateCharCounter();
-            updateOutputColor();
-            debouncedUpdateLiveOutput();
-
-            errorHandler.showNotification('✅ System recovered successfully!', 'success');
-          }, 500);
-        } else {
-          errorHandler.showNotification('✓ All systems operational - no repairs needed', 'success');
-        }
-      } catch (e) {
-        errorHandler.logError('STA-001', { recoveryAttemptFailed: e.message });
-      }
-      audioManager.playClick();
-    });
-    recoveryBtn.addEventListener('mouseenter', () => audioManager.playHover());
-  }
 
   // Copy Button
   const copyBtn = document.getElementById('copyBtn');
@@ -324,28 +287,7 @@ if (document.readyState === 'loading') {
 function setupKeyboardShortcuts() {
   document.addEventListener('keydown', (e) => {
     // Ctrl+Shift+R (Cmd+Shift+R on Mac) - Recovery
-    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyR') {
-      e.preventDefault();
-      const recoveryBtn = document.getElementById('recoveryBtn');
-      if (recoveryBtn) {
-        recoveryBtn.click();
-        showKeyboardFeedback('Recovery initiated');
-      }
-    }
 
-    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyR') {
-      e.preventDefault();
-      const diagnostics = performDiagnostics();
-      if (diagnostics.hasErrors) {
-        errorHandler.showNotification('🔧 Running system recovery...', 'info');
-        setTimeout(() => {
-          errorHandler.recoveryStrategies.get('FULL_PAGE_RESET')();
-        }, 500);
-      } else {
-        showKeyboardFeedback('All systems operational ✓');
-        errorHandler.showNotification('✓ No repairs needed', 'success');
-      }
-    }
     // Ctrl+Alt+C (Cmd+Option+C on Mac) - Copy
     if ((e.ctrlKey || e.metaKey) && e.altKey && e.code === 'KeyC') {
       e.preventDefault();
@@ -402,7 +344,6 @@ function showKeyboardFeedback(message) {
 // Show keyboard shortcuts reference
 function showKeyboardShortcutsHelp() {
   const shortcuts = [
-    { keys: 'Ctrl+Shift+R', mac: 'Cmd+Shift+R', action: 'Auto-recover and diagnose' },
     { keys: 'Ctrl+Alt+C', mac: 'Cmd+Option+C', action: 'Copy output to clipboard' },
     { keys: 'Ctrl+Alt+X', mac: 'Cmd+Option+X', action: 'Clear all output' },
     { keys: 'Shift+?', mac: 'Shift+?', action: 'Show this help' }
@@ -866,32 +807,6 @@ LESSONS LEARNED:
 ================================================================================
 */
 
-// System Diagnostics and Recovery
-function performDiagnostics() {
-  const issues = [];
 
-  // Check critical elements
-  const output = document.getElementById('output');
-  if (!output) issues.push('GEN-001: Output textarea missing');
-
-  const counter = document.getElementById('char-counter');
-  if (!counter) issues.push('UI-002: Character counter missing');
-
-  const menus = document.querySelectorAll('.menu');
-  if (menus.length === 0) issues.push('UI-003: No menus found');
-
-  const generator_ = window.broadcastGenerator;
-  if (!generator_) issues.push('GEN-002: Generator not initialized');
-
-  // Check functions
-  if (typeof updateCharCounter !== 'function') issues.push('GEN-003: updateCharCounter not defined');
-  if (typeof updateOutputColor !== 'function') issues.push('STY-001: updateOutputColor not defined');
-
-  return {
-    hasErrors: issues.length > 0,
-    issues,
-    timestamp: new Date().toISOString()
-  };
-}
 
 

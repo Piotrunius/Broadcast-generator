@@ -20,14 +20,14 @@ export const STATUS_MESSAGES = {
         "O5 MEETING": "O5 meeting scheduled"
     },
     MINIMAL: {
-        "SCP BREACH": "", 
-        "SITE LOCKDOWN": "", 
-        "CLASS-D ESCAPE": "", 
-        "CHAOS INSURGENCY": "", 
-        "NUCLEAR PROTOCOL": "", 
-        "CLEAR": "", 
-        "MAINTENANCE": "", 
-        "O5 MEETING": "" 
+        "SCP BREACH": "",
+        "SITE LOCKDOWN": "",
+        "CLASS-D ESCAPE": "",
+        "CHAOS INSURGENCY": "",
+        "NUCLEAR PROTOCOL": "",
+        "CLEAR": "",
+        "MAINTENANCE": "",
+        "O5 MEETING": ""
     }
 };
 
@@ -42,7 +42,7 @@ export const EVENT_MESSAGES = {
         "610 EVENT": "SCP-610 anomaly active. Avoid exposure.",
         "076 EVENT": "SCP-076 containment breach. Armed response needed.",
         "CLASS-D RIOT": "Class-D personnel rioting. Security response.",
-        "323 BREACH": "SCP-323 containment breach. Evacuate."
+        "323 BREACH": "SCP-323 containment breach. "
     },
     MINIMAL: {
         "610 EVENT": "SCP-610 active.",
@@ -62,7 +62,7 @@ export const REQUIREMENT_MESSAGES = {
     SID_PLUS_AUTH: {
         LONG: (items) => `SID+ Auth required for ${items.join(", ")} tests`,
         SHORT: (items) => `SID+ Auth req: ${items.join(", ")}`,
-        MINIMAL: (items) => `Auth: ${items.join(", ")}`
+        MINIMAL: (items) => `Auth req: ${items.join(", ")}`
     },
     // Klucze dla poszczególnych autoryzacji
     AUTH_CONX: "CON-X",
