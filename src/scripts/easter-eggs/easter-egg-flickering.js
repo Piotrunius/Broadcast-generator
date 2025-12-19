@@ -3,7 +3,7 @@
  * Click the "Broadcast Terminal" title 13 times
  */
 
-(function() {
+(function () {
   'use strict';
 
   let clickCount = 0;
@@ -49,7 +49,7 @@
         } else {
           body.style.filter = 'brightness(1.5) contrast(0.8)';
         }
-        
+
         this.flickerCount++;
         if (this.flickerCount > 50) {
           body.style.filter = '';
@@ -68,7 +68,7 @@
         '[REDACTED]',
         'THEY KNOW YOU SAW THIS',
         'BLINK AND YOU DIE',
-        'CLASS-A AMNESTETICS REQUIRED'
+        'CLASS-A AMNESTETICS REQUIRED',
       ];
 
       const interval = setInterval(() => {
@@ -90,7 +90,7 @@
         `;
         document.body.appendChild(msg);
         this.elements.push(msg);
-        
+
         setTimeout(() => msg.remove(), 150);
       }, 300);
       this.intervals.push(interval);
@@ -114,10 +114,10 @@
         opacity: 0.4;
         mix-blend-mode: overlay;
       `;
-      
+
       document.body.appendChild(staticCanvas);
       this.elements.push(staticCanvas);
-      
+
       const ctx = staticCanvas.getContext('2d');
       const interval = setInterval(() => {
         const imageData = ctx.createImageData(staticCanvas.width, staticCanvas.height);
@@ -140,11 +140,11 @@
       // Create ghost checkbox that appears and disappears
       const ghostOptions = [
         '⚠ SCP-████ BREACH',
-        '☠ MTF MOBILIZED', 
+        '☠ MTF MOBILIZED',
         '⬛ [DATA EXPUNGED]',
         '👁 YOU ARE BEING MONITORED',
         '💀 SITE-64 COMPROMISED',
-        '⚠ CHAOS INSURGENCY DETECTED'
+        '⚠ CHAOS INSURGENCY DETECTED',
       ];
 
       const interval = setInterval(() => {
@@ -168,7 +168,7 @@
         `;
         document.body.appendChild(ghost);
         this.elements.push(ghost);
-        
+
         setTimeout(() => ghost.remove(), 1000);
       }, 500);
       this.intervals.push(interval);
@@ -180,43 +180,42 @@
         const bufferSize = 2 * audioCtx.sampleRate;
         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const output = noiseBuffer.getChannelData(0);
-        
+
         for (let i = 0; i < bufferSize; i++) {
           output[i] = Math.random() * 2 - 1;
         }
-        
+
         const whiteNoise = audioCtx.createBufferSource();
         whiteNoise.buffer = noiseBuffer;
         whiteNoise.loop = true;
-        
+
         const gainNode = audioCtx.createGain();
         gainNode.gain.value = 0.1;
-        
+
         whiteNoise.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         whiteNoise.start();
-        
+
         setTimeout(() => {
           gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
           setTimeout(() => whiteNoise.stop(), 500);
         }, 3000);
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     end() {
       isActive = false;
 
       // Clear all intervals
-      this.intervals.forEach(interval => clearInterval(interval));
+      this.intervals.forEach((interval) => clearInterval(interval));
       this.intervals = [];
 
       // Clear all timeouts
-      this.timeouts.forEach(timeout => clearTimeout(timeout));
+      this.timeouts.forEach((timeout) => clearTimeout(timeout));
       this.timeouts = [];
 
       // Remove all elements
-      this.elements.forEach(el => {
+      this.elements.forEach((el) => {
         if (el && el.parentNode) {
           el.parentNode.removeChild(el);
         }
@@ -289,6 +288,4 @@
       }
     });
   });
-
-
 })();

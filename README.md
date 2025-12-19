@@ -9,9 +9,11 @@ A broadcast message generator for SCP Site Roleplay, featuring advanced message 
 ### Option 1: Quick Start Scripts (Easiest) ⭐
 
 **On Windows:**
+
 - Double-click `start-server.bat`
 
 **On Linux/Mac:**
+
 ```bash
 ./start-server.sh
 ```
@@ -21,11 +23,13 @@ Browser will open automatically at `http://localhost:8000`
 ### Option 2: Custom Server (Recommended for Modules)
 
 **All Platforms:**
+
 ```bash
 python server.py
 ```
 
 Or on Linux/Mac:
+
 ```bash
 python3 server.py
 ```
@@ -35,11 +39,13 @@ python3 server.py
 ### Option 3: Basic Python Server
 
 **On Windows:**
+
 ```bash
 python -m http.server 8000
 ```
 
 **On Linux/Mac:**
+
 ```bash
 python3 -m http.server 8000
 ```
@@ -72,11 +78,13 @@ Simply open any HTML file directly in your browser (drag & drop or File → Open
 ### Installing Python
 
 **Windows:**
+
 1. Download from [python.org](https://www.python.org/downloads/)
 2. Run installer
 3. ✅ Check "Add Python to PATH" during installation
 
 **Linux/Mac:**
+
 - Usually pre-installed
 - Or install via package manager: `apt install python3` (Ubuntu/Debian) or `brew install python3` (Mac)
 
@@ -109,10 +117,10 @@ Simply open any HTML file directly in your browser (drag & drop or File → Open
 ## ⚡ Performance Mode
 
 Click the **Performance Mode** toggle (bottom-left corner) to:
+
 - Disable all animations (typewriter, page transitions, etc.)
 - Stop particle background effects
 - Improve performance on low-end devices
 - Settings persist across pages and browser sessions
 
 Perfect for older computers or when you need maximum responsiveness!
-

@@ -3,7 +3,7 @@
  * Select Threat Levels in specific pattern: High → Low → Medium → High → Low
  */
 
-(function() {
+(function () {
   'use strict';
 
   const PATTERN = ['High', 'Low', 'Medium', 'High', 'Low'];
@@ -52,7 +52,7 @@
         box-shadow: 0 0 40px #00ff00;
         animation: unlockSlide 0.5s ease-out forwards;
       `;
-      
+
       notification.innerHTML = `
         <div style="font-size: 24px; color: #00ff00; font-weight: bold; margin-bottom: 10px;">
           🔓 PATTERN RECOGNIZED 🔓
@@ -74,20 +74,21 @@
       // Show Omega Protocol message directly without button
       const output = document.getElementById('output');
       if (output) {
-        output.value = '⚠ OMEGA PROTOCOL ACTIVATED ⚠\n\n' +
-                      '=== SITE-64 EMERGENCY BROADCAST ===\n' +
-                      'Location: Northern Canada\n' +
-                      'Status: CRITICAL CONTAINMENT FAILURE\n\n' +
-                      'SITE-WIDE EVACUATION INITIATED\n' +
-                      'ALL PERSONNEL TO DESIGNATED SHELTERS\n' +
-                      'CHAOS INSURGENCY BREACH DETECTED\n' +
-                      'MULTIPLE SCP ENTITIES COMPROMISED\n\n' +
-                      'XK-CLASS END-OF-WORLD SCENARIO IMMINENT\n\n' +
-                      'THIS IS NOT A DRILL\n' +
-                      '[O5 AUTHORIZATION CONFIRMED]\n' +
-                      '[SITE-64 COMMAND]\n\n' +
-                      'SECURE. CONTAIN. PROTECT.\n\n' +
-                      'May God have mercy on our souls.';
+        output.value =
+          '⚠ OMEGA PROTOCOL ACTIVATED ⚠\n\n' +
+          '=== SITE-64 EMERGENCY BROADCAST ===\n' +
+          'Location: Northern Canada\n' +
+          'Status: CRITICAL CONTAINMENT FAILURE\n\n' +
+          'SITE-WIDE EVACUATION INITIATED\n' +
+          'ALL PERSONNEL TO DESIGNATED SHELTERS\n' +
+          'CHAOS INSURGENCY BREACH DETECTED\n' +
+          'MULTIPLE SCP ENTITIES COMPROMISED\n\n' +
+          'XK-CLASS END-OF-WORLD SCENARIO IMMINENT\n\n' +
+          'THIS IS NOT A DRILL\n' +
+          '[O5 AUTHORIZATION CONFIRMED]\n' +
+          '[SITE-64 COMMAND]\n\n' +
+          'SECURE. CONTAIN. PROTECT.\n\n' +
+          'May God have mercy on our souls.';
       }
       this.playOmegaSound();
     }
@@ -95,20 +96,20 @@
     playUnlockSound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         // Ascending unlock sequence
-        [261.63, 329.63, 392.00, 523.25, 659.25].forEach((freq, i) => {
+        [261.63, 329.63, 392.0, 523.25, 659.25].forEach((freq, i) => {
           setTimeout(() => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            
+
             osc.type = 'sine';
             osc.frequency.value = freq;
             gain.gain.value = 0.2;
-            
+
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
+
             osc.start();
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
             setTimeout(() => osc.stop(), 300);
@@ -117,42 +118,40 @@
 
         // Success chord
         setTimeout(() => {
-          [523.25, 659.25, 783.99].forEach(freq => {
+          [523.25, 659.25, 783.99].forEach((freq) => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            
+
             osc.type = 'sine';
             osc.frequency.value = freq;
             gain.gain.value = 0.15;
-            
+
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
+
             osc.start();
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
             setTimeout(() => osc.stop(), 500);
           });
         }, 600);
-
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     playOmegaSound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         // Ominous deep tone
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        
+
         osc.type = 'sawtooth';
         osc.frequency.value = 50;
         gain.gain.value = 0.3;
-        
+
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         osc.start();
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2);
         setTimeout(() => osc.stop(), 2000);
@@ -162,27 +161,25 @@
           setTimeout(() => {
             const osc2 = audioCtx.createOscillator();
             const gain2 = audioCtx.createGain();
-            
+
             osc2.type = 'square';
             osc2.frequency.value = freq;
             gain2.gain.value = 0.2;
-            
+
             osc2.connect(gain2);
             gain2.connect(audioCtx.destination);
-            
+
             osc2.start();
             gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
             setTimeout(() => osc2.stop(), 200);
           }, i * 250);
         });
-
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     spawnPatternSymbols() {
       const symbols = ['🔓', '✓', '●', '◆', '▲'];
-      
+
       const interval = setInterval(() => {
         const symbol = document.createElement('div');
         symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -199,7 +196,7 @@
         `;
         document.body.appendChild(symbol);
         this.elements.push(symbol);
-        
+
         setTimeout(() => symbol.remove(), 3000);
       }, 300);
       this.intervals.push(interval);
@@ -212,15 +209,15 @@
       isActive = false;
 
       // Clear intervals
-      this.intervals.forEach(interval => clearInterval(interval));
+      this.intervals.forEach((interval) => clearInterval(interval));
       this.intervals = [];
 
       // Clear timeouts
-      this.timeouts.forEach(timeout => clearTimeout(timeout));
+      this.timeouts.forEach((timeout) => clearTimeout(timeout));
       this.timeouts = [];
 
       // Remove elements
-      this.elements.forEach(el => {
+      this.elements.forEach((el) => {
         if (el && el.parentNode) {
           el.parentNode.removeChild(el);
         }
@@ -269,12 +266,12 @@
 
     alarmContent.addEventListener('click', (e) => {
       if (isActive) return;
-      
+
       const button = e.target.closest('button[data-option]');
       if (!button) return;
 
       const option = button.dataset.option;
-      
+
       // Check if it's a threat level option
       if (['High', 'Medium', 'Low'].includes(option)) {
         currentSequence.push(option);
@@ -287,7 +284,7 @@
         // Check if pattern matches
         if (currentSequence.length === 5) {
           const matches = currentSequence.every((val, idx) => val === PATTERN[idx]);
-          
+
           if (matches) {
             currentSequence = [];
             const effect = new PatternEffect();
@@ -297,6 +294,4 @@
       }
     });
   });
-
-
 })();

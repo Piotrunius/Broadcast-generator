@@ -4,10 +4,21 @@
  * Code: ↑↑↓↓←→←→BA
  */
 
-(function() {
+(function () {
   'use strict';
 
-  const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+  const KONAMI_CODE = [
+    'ArrowUp',
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowLeft',
+    'ArrowRight',
+    'KeyB',
+    'KeyA',
+  ];
   let konamiPosition = 0;
   let isActive = false;
   let effectsController = null;
@@ -32,36 +43,37 @@
       isActive = true;
 
       this.originalOutput = this.outputEl.value;
-      
+
       // Initial breach sound sequence
       this.playBreachSequence();
-      
+
       // Phase 1: Initial glitch (visible longer - 3 seconds)
       this.phaseOneGlitch();
-      
+
       // Phase 2: Matrix rain (starts after 3s instead of 1s)
       this.timeouts.push(setTimeout(() => this.phaseTwoMatrix(), 3000));
-      
+
       // Phase 3: Reality distortion (starts after 5s instead of 3s)
       this.timeouts.push(setTimeout(() => this.phaseThreeDistortion(), 5000));
-      
+
       // Phase 4: Chaos mode (starts after 7s instead of 5s)
       this.timeouts.push(setTimeout(() => this.phaseFourChaos(), 7000));
-      
+
       // End after 15 seconds (extended from 12s)
       this.timeouts.push(setTimeout(() => this.end(), 15000));
     }
 
     phaseOneGlitch() {
       // Display SCP-079 breach message
-      this.outputEl.value = "⚠ CONTAINMENT BREACH DETECTED ⚠\n\n" +
-        "SCP-079 HAS ACCESSED TERMINAL\n" +
-        "LOCATION: SITE-64 | NORTHERN CANADA\n" +
-        "SECURITY LEVEL: COMPROMISED\n" +
-        "CHAOS INSURGENCY INVOLVEMENT: CONFIRMED\n\n" +
-        "[REDACTED]\n[DATA EXPUNGED]\n" +
-        "MEMETIC HAZARD ACTIVE\n\n" +
-        "SECURE. CONTAIN. PROTECT.";
+      this.outputEl.value =
+        '⚠ CONTAINMENT BREACH DETECTED ⚠\n\n' +
+        'SCP-079 HAS ACCESSED TERMINAL\n' +
+        'LOCATION: SITE-64 | NORTHERN CANADA\n' +
+        'SECURITY LEVEL: COMPROMISED\n' +
+        'CHAOS INSURGENCY INVOLVEMENT: CONFIRMED\n\n' +
+        '[REDACTED]\n[DATA EXPUNGED]\n' +
+        'MEMETIC HAZARD ACTIVE\n\n' +
+        'SECURE. CONTAIN. PROTECT.';
 
       // Add glitch class
       document.body.classList.add('konami-glitch');
@@ -70,24 +82,31 @@
       this.createScanlineOverlay();
 
       // Glitch sounds during text corruption - częściej i głośniej
-      this.intervals.push(setInterval(() => {
-        this.playGlitchSound();
-      }, 200));
+      this.intervals.push(
+        setInterval(() => {
+          this.playGlitchSound();
+        }, 200)
+      );
 
       // Random text corruption
-      this.intervals.push(setInterval(() => {
-        const chars = '!<>-_\\/[]{}—=+*^?#________';
-        let text = this.outputEl.value;
-        const pos = Math.floor(Math.random() * text.length);
-        text = text.substring(0, pos) + chars[Math.floor(Math.random() * chars.length)] + text.substring(pos + 1);
-        this.outputEl.value = text;
-      }, 100));
+      this.intervals.push(
+        setInterval(() => {
+          const chars = '!<>-_\\/[]{}—=+*^?#________';
+          let text = this.outputEl.value;
+          const pos = Math.floor(Math.random() * text.length);
+          text =
+            text.substring(0, pos) +
+            chars[Math.floor(Math.random() * chars.length)] +
+            text.substring(pos + 1);
+          this.outputEl.value = text;
+        }, 100)
+      );
     }
 
     phaseTwoMatrix() {
       // Matrix activation sound
       this.playMatrixSound();
-      
+
       // Create matrix rain effect (lower z-index so other effects appear above)
       this.matrixRain = document.createElement('canvas');
       this.matrixRain.style.cssText = `
@@ -118,7 +137,7 @@
         ctx.font = '15px monospace';
 
         for (let i = 0; i < drops.length; i++) {
-          const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+          const text = String.fromCharCode(0x30a0 + Math.random() * 96);
           ctx.fillText(text, i * 20, drops[i] * 20);
 
           if (drops[i] * 20 > this.matrixRain.height && Math.random() > 0.975) {
@@ -137,7 +156,7 @@
     phaseThreeDistortion() {
       // Reality distortion sound
       this.playDistortionSound();
-      
+
       // Create glitch overlay with animated SVG (above matrix)
       this.glitchOverlay = document.createElement('div');
       this.glitchOverlay.innerHTML = `
@@ -157,33 +176,39 @@
       // 3D transforms on main content
       const wrap = document.querySelector('.wrap');
       if (wrap) {
-        this.intervals.push(setInterval(() => {
-          const rx = (Math.random() - 0.5) * 15;
-          const ry = (Math.random() - 0.5) * 15;
-          wrap.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-        }, 200));
+        this.intervals.push(
+          setInterval(() => {
+            const rx = (Math.random() - 0.5) * 15;
+            const ry = (Math.random() - 0.5) * 15;
+            wrap.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+          }, 200)
+        );
       }
 
       // Spawn floating glitch blocks
-      this.intervals.push(setInterval(() => {
-        this.spawnGlitchBlock();
-      }, 300));
+      this.intervals.push(
+        setInterval(() => {
+          this.spawnGlitchBlock();
+        }, 300)
+      );
 
       // Color inversion waves
       let hue = 0;
-      this.intervals.push(setInterval(() => {
-        hue += 10;
-        document.body.style.filter = `hue-rotate(${hue}deg) saturate(2)`;
-      }, 50));
+      this.intervals.push(
+        setInterval(() => {
+          hue += 10;
+          document.body.style.filter = `hue-rotate(${hue}deg) saturate(2)`;
+        }, 50)
+      );
     }
 
     phaseFourChaos() {
       // Chaos mode activation - siren-like sound
       this.playChaosSound();
-      
+
       // Ultra particles speed
       if (window.scpParticleSystem) {
-        window.scpParticleSystem.particles.forEach(particle => {
+        window.scpParticleSystem.particles.forEach((particle) => {
           particle.speedX *= 20;
           particle.speedY *= 20;
           particle.size *= 2;
@@ -197,81 +222,101 @@
       this.createScreenTear();
 
       // Kaleidoscope effect
-      this.intervals.push(setInterval(() => {
-        const angle = Math.random() * 360;
-        document.body.style.transform = `rotate(${Math.sin(Date.now() / 500) * 5}deg) scale(${1 + Math.sin(Date.now() / 300) * 0.05})`;
-      }, 100));
+      this.intervals.push(
+        setInterval(() => {
+          const angle = Math.random() * 360;
+          document.body.style.transform = `rotate(${Math.sin(Date.now() / 500) * 5}deg) scale(${1 + Math.sin(Date.now() / 300) * 0.05})`;
+        }, 100)
+      );
 
       // Reality breach messages
-      this.intervals.push(setInterval(() => {
-        this.spawnBreachMessage();
-      }, 500));
+      this.intervals.push(
+        setInterval(() => {
+          this.spawnBreachMessage();
+        }, 500)
+      );
 
       // Continuous ambient chaos sound
       this.createAmbientChaos();
 
       // RGB split extreme
-      this.intervals.push(setInterval(() => {
-        const offset = Math.random() * 10;
-        document.body.style.textShadow = `
+      this.intervals.push(
+        setInterval(() => {
+          const offset = Math.random() * 10;
+          document.body.style.textShadow = `
           ${offset}px 0 red,
           ${-offset}px 0 cyan,
           0 ${offset}px lime,
           0 ${-offset}px magenta
         `;
-      }, 100));
+        }, 100)
+      );
 
       // NOWE EFEKTY - EXTREME MODE
-      
+
       // Pixel explosion - REMOVED (too distracting)
 
       // TV static bursts
-      this.intervals.push(setInterval(() => {
-        this.createTVStatic();
-      }, 300));
+      this.intervals.push(
+        setInterval(() => {
+          this.createTVStatic();
+        }, 300)
+      );
 
       // Rotating vortex - REMOVED
 
       // Laser beams
-      this.intervals.push(setInterval(() => {
-        this.createLaserBeam();
-      }, 400));
+      this.intervals.push(
+        setInterval(() => {
+          this.createLaserBeam();
+        }, 400)
+      );
 
       // Consciousness warnings
-      this.intervals.push(setInterval(() => {
-        this.spawnConsciousnessWarning();
-      }, 600));
+      this.intervals.push(
+        setInterval(() => {
+          this.spawnConsciousnessWarning();
+        }, 600)
+      );
 
       // Image duplication/echo
       this.createImageEcho();
 
       // Spiral distortion
-      this.intervals.push(setInterval(() => {
-        const spiral = (Date.now() / 50) % 360;
-        document.body.style.transform += ` rotate(${Math.sin(spiral * Math.PI / 180) * 2}deg)`;
-      }, 50));
+      this.intervals.push(
+        setInterval(() => {
+          const spiral = (Date.now() / 50) % 360;
+          document.body.style.transform += ` rotate(${Math.sin((spiral * Math.PI) / 180) * 2}deg)`;
+        }, 50)
+      );
 
       // Opacity flash chaos
-      this.intervals.push(setInterval(() => {
-        document.body.style.opacity = 0.5 + Math.random() * 0.5;
-      }, 80));
+      this.intervals.push(
+        setInterval(() => {
+          document.body.style.opacity = 0.5 + Math.random() * 0.5;
+        }, 80)
+      );
 
       // Random element displacement
-      this.intervals.push(setInterval(() => {
-        document.querySelectorAll('.menu-btn, .checkbox-btn, button').forEach(el => {
-          if (Math.random() > 0.7) {
-            el.style.transform = `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px) rotate(${Math.random() * 10 - 5}deg)`;
-          }
-        });
-      }, 150));
+      this.intervals.push(
+        setInterval(() => {
+          document.querySelectorAll('.menu-btn, .checkbox-btn, button').forEach((el) => {
+            if (Math.random() > 0.7) {
+              el.style.transform = `translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px) rotate(${Math.random() * 10 - 5}deg)`;
+            }
+          });
+        }, 150)
+      );
 
       // Borders going crazy
-      this.intervals.push(setInterval(() => {
-        document.querySelectorAll('.wrap, .menu-list, .sidebar').forEach(el => {
-          el.style.borderColor = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
-          el.style.borderWidth = `${1 + Math.random() * 5}px`;
-        });
-      }, 200));
+      this.intervals.push(
+        setInterval(() => {
+          document.querySelectorAll('.wrap, .menu-list, .sidebar').forEach((el) => {
+            el.style.borderColor = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+            el.style.borderWidth = `${1 + Math.random() * 5}px`;
+          });
+        }, 200)
+      );
     }
 
     createPixelExplosion() {
@@ -293,10 +338,10 @@
         mix-blend-mode: overlay;
         opacity: 0.7;
       `;
-      
+
       const ctx = staticCanvas.getContext('2d');
       const imageData = ctx.createImageData(staticCanvas.width, staticCanvas.height);
-      
+
       for (let i = 0; i < imageData.data.length; i += 4) {
         const value = Math.random() * 255;
         imageData.data[i] = value;
@@ -304,11 +349,11 @@
         imageData.data[i + 2] = value;
         imageData.data[i + 3] = Math.random() * 255;
       }
-      
+
       ctx.putImageData(imageData, 0, 0);
       document.body.appendChild(staticCanvas);
       this.elements.push(staticCanvas);
-      
+
       setTimeout(() => staticCanvas.remove(), 150);
     }
 
@@ -319,8 +364,9 @@
     createLaserBeam() {
       const laser = document.createElement('div');
       const isHorizontal = Math.random() > 0.5;
-      
-      laser.style.cssText = isHorizontal ? `
+
+      laser.style.cssText = isHorizontal
+        ? `
         position: fixed;
         top: ${Math.random() * 100}%;
         left: 0;
@@ -331,7 +377,8 @@
         pointer-events: none;
         box-shadow: 0 0 20px #ff0000;
         animation: laserMove 0.5s ease-out forwards;
-      ` : `
+      `
+        : `
         position: fixed;
         top: 0;
         left: ${Math.random() * 100}%;
@@ -343,7 +390,7 @@
         box-shadow: 0 0 20px #00ff00;
         animation: laserMove 0.5s ease-out forwards;
       `;
-      
+
       document.body.appendChild(laser);
       this.elements.push(laser);
       setTimeout(() => laser.remove(), 500);
@@ -358,9 +405,9 @@
         'YOU ARE NOW PART OF THE EXPERIMENT',
         'ANTIMEMES DETECTED',
         'COGNITION CORRUPTION: 87%',
-        'HUME LEVELS CRITICAL'
+        'HUME LEVELS CRITICAL',
       ];
-      
+
       const warn = document.createElement('div');
       warn.textContent = warnings[Math.floor(Math.random() * warnings.length)];
       warn.style.cssText = `
@@ -383,7 +430,7 @@
       `;
       document.body.appendChild(warn);
       this.elements.push(warn);
-      
+
       setTimeout(() => warn.remove(), 2000);
     }
 
@@ -391,9 +438,10 @@
       const wrap = document.querySelector('.wrap');
       if (!wrap) return;
 
-      this.intervals.push(setInterval(() => {
-        const clone = wrap.cloneNode(true);
-        clone.style.cssText = `
+      this.intervals.push(
+        setInterval(() => {
+          const clone = wrap.cloneNode(true);
+          clone.style.cssText = `
           position: fixed;
           top: ${Math.random() * 20 - 10}px;
           left: ${Math.random() * 20 - 10}px;
@@ -402,11 +450,12 @@
           pointer-events: none;
           filter: hue-rotate(${Math.random() * 360}deg);
         `;
-        document.body.appendChild(clone);
-        this.elements.push(clone);
-        
-        setTimeout(() => clone.remove(), 300);
-      }, 250));
+          document.body.appendChild(clone);
+          this.elements.push(clone);
+
+          setTimeout(() => clone.remove(), 300);
+        }, 250)
+      );
     }
 
     createScanlineOverlay() {
@@ -451,16 +500,17 @@
       `;
       document.body.appendChild(block);
       this.elements.push(block);
-      
+
       setTimeout(() => block.remove(), 500);
     }
 
     spawnSCPEntities() {
       const entities = ['SCP-079', 'SCP-███', '[REDACTED]', '⚠', '💀', '◼', '◆', '●'];
-      this.intervals.push(setInterval(() => {
-        const entity = document.createElement('div');
-        entity.textContent = entities[Math.floor(Math.random() * entities.length)];
-        entity.style.cssText = `
+      this.intervals.push(
+        setInterval(() => {
+          const entity = document.createElement('div');
+          entity.textContent = entities[Math.floor(Math.random() * entities.length)];
+          entity.style.cssText = `
           position: fixed;
           top: ${Math.random() * 100}%;
           left: ${Math.random() * 100}%;
@@ -472,11 +522,12 @@
           text-shadow: 0 0 20px currentColor;
           animation: entityFloat 2s ease-out forwards;
         `;
-        document.body.appendChild(entity);
-        this.elements.push(entity);
-        
-        setTimeout(() => entity.remove(), 2000);
-      }, 200));
+          document.body.appendChild(entity);
+          this.elements.push(entity);
+
+          setTimeout(() => entity.remove(), 2000);
+        }, 200)
+      );
     }
 
     createScreenTear() {
@@ -520,7 +571,7 @@
         '[DATA EXPUNGED]',
         'SITE LOCKDOWN',
         'CHAOS INSURGENCY',
-        'EVACUATE SITE-64'
+        'EVACUATE SITE-64',
       ];
 
       const msg = document.createElement('div');
@@ -542,7 +593,7 @@
       `;
       document.body.appendChild(msg);
       this.elements.push(msg);
-      
+
       setTimeout(() => msg.remove(), 1000);
     }
 
@@ -556,8 +607,7 @@
             this.playTone(freq * 0.5, 0.3, 0.25, 'sawtooth');
           }, i * 200);
         });
-      } catch (e) {
-      }
+      } catch (e) {}
     }
 
     playGlitchSound() {
@@ -607,7 +657,7 @@
         if (!this.audioContext) {
           this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
-        
+
         // Create multiple GŁOŚNIEJSZE oscillators for ambient chaos
         for (let i = 0; i < 4; i++) {
           const oscillator = this.audioContext.createOscillator();
@@ -621,7 +671,7 @@
           gainNode.gain.value = 0.12; // było 0.05, teraz 0.12
 
           oscillator.start();
-          
+
           this.oscillators.push(oscillator);
           this.gainNodes.push(gainNode);
         }
@@ -634,48 +684,52 @@
           });
         }, 150);
         this.intervals.push(interval);
-        
+
         // Ciężkie industrialne uderzenia
         const beatInterval = setInterval(() => {
           this.playTone(80, 0.06, 0.28, 'square');
           setTimeout(() => this.playTone(65, 0.05, 0.24, 'square'), 100);
         }, 700);
         this.intervals.push(beatInterval);
-      } catch (e) {
-      }
+      } catch (e) {}
     }
 
     playTone(freq, duration, vol, type = 'sine') {
       if (!this.audioContext) return;
       if (this.audioContext.state === 'suspended') this.audioContext.resume();
-      
+
       try {
         const osc = this.audioContext.createOscillator();
         const gain = this.audioContext.createGain();
-        
+
         osc.type = type;
         osc.frequency.value = freq;
         gain.gain.value = vol;
-        
+
         osc.connect(gain);
         gain.connect(this.audioContext.destination);
-        
+
         osc.start();
         gain.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + duration);
-        
-        setTimeout(() => {
-          try { osc.stop(); osc.disconnect(); } catch(e) {}
-        }, duration * 1000 + 50);
-        
-        this.activeSounds.push({osc, gain});
-      } catch (e) {
-      }
+
+        setTimeout(
+          () => {
+            try {
+              osc.stop();
+              osc.disconnect();
+            } catch (e) {}
+          },
+          duration * 1000 + 50
+        );
+
+        this.activeSounds.push({ osc, gain });
+      } catch (e) {}
     }
 
     stopAudio() {
       try {
         // Stop all active sounds
-        this.activeSounds.forEach(({osc, gain}) => {
+        this.activeSounds.forEach(({ osc, gain }) => {
           try {
             osc.stop();
             osc.disconnect();
@@ -683,15 +737,15 @@
           } catch (e) {}
         });
         this.activeSounds = [];
-        
+
         // Stop oscillators
-        this.oscillators.forEach(osc => {
+        this.oscillators.forEach((osc) => {
           try {
             osc.stop();
             osc.disconnect();
           } catch (e) {}
         });
-        this.gainNodes.forEach(gain => {
+        this.gainNodes.forEach((gain) => {
           try {
             gain.disconnect();
           } catch (e) {}
@@ -701,8 +755,7 @@
         this.oscillators = [];
         this.gainNodes = [];
         this.audioContext = null;
-      } catch (e) {
-      }
+      } catch (e) {}
     }
 
     end() {
@@ -712,15 +765,15 @@
       this.stopAudio();
 
       // Clear all intervals
-      this.intervals.forEach(interval => clearInterval(interval));
+      this.intervals.forEach((interval) => clearInterval(interval));
       this.intervals = [];
 
       // Clear all timeouts
-      this.timeouts.forEach(timeout => clearTimeout(timeout));
+      this.timeouts.forEach((timeout) => clearTimeout(timeout));
       this.timeouts = [];
 
       // Remove all created elements
-      this.elements.forEach(el => {
+      this.elements.forEach((el) => {
         if (el && el.parentNode) {
           el.parentNode.removeChild(el);
         }
@@ -729,7 +782,7 @@
 
       // Reset particles
       if (window.scpParticleSystem) {
-        window.scpParticleSystem.particles.forEach(particle => {
+        window.scpParticleSystem.particles.forEach((particle) => {
           particle.speedX /= 20;
           particle.speedY /= 20;
           particle.size /= 2;
@@ -750,21 +803,21 @@
       }
 
       // Reset all buttons and elements
-      document.querySelectorAll('.menu-btn, .checkbox-btn, button').forEach(el => {
+      document.querySelectorAll('.menu-btn, .checkbox-btn, button').forEach((el) => {
         el.style.transform = '';
       });
 
-      document.querySelectorAll('.wrap, .menu-list, .sidebar').forEach(el => {
+      document.querySelectorAll('.wrap, .menu-list, .sidebar').forEach((el) => {
         el.style.borderColor = '';
         el.style.borderWidth = '';
       });
 
       // Remove any lingering overlays by class
-      document.querySelectorAll('.scanlines-overlay').forEach(el => el.remove());
-      
+      document.querySelectorAll('.scanlines-overlay').forEach((el) => el.remove());
+
       // Force reset pointer events on body and all main elements
       document.body.style.pointerEvents = '';
-      document.querySelectorAll('button, input, textarea, select').forEach(el => {
+      document.querySelectorAll('button, input, textarea, select').forEach((el) => {
         el.style.pointerEvents = '';
       });
 
@@ -869,25 +922,28 @@
   document.head.appendChild(style);
 
   // Konami code listener - capture on window to prevent textarea issues
-  window.addEventListener('keydown', (e) => {
-    if (isActive) return;
+  window.addEventListener(
+    'keydown',
+    (e) => {
+      if (isActive) return;
 
-    if (e.code === KONAMI_CODE[konamiPosition]) {
-      konamiPosition++;
+      if (e.code === KONAMI_CODE[konamiPosition]) {
+        konamiPosition++;
 
-      if (konamiPosition === KONAMI_CODE.length) {
+        if (konamiPosition === KONAMI_CODE.length) {
+          konamiPosition = 0;
+          effectsController = new EasterEggEffects();
+          effectsController.start();
+        }
+      } else {
         konamiPosition = 0;
-        effectsController = new EasterEggEffects();
-        effectsController.start();
-      }
-    } else {
-      konamiPosition = 0;
-      
-      // Check if this key could be start of sequence
-      if (e.code === KONAMI_CODE[0]) {
-        konamiPosition = 1;
-      }
-    }
-  }, true); // Use capture phase
 
+        // Check if this key could be start of sequence
+        if (e.code === KONAMI_CODE[0]) {
+          konamiPosition = 1;
+        }
+      }
+    },
+    true
+  ); // Use capture phase
 })();

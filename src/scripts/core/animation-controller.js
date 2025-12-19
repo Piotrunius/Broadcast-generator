@@ -2,7 +2,7 @@
  * Animation Controller - Prevents stuttering and ensures smooth animations
  */
 
-(function() {
+(function () {
   'use strict';
 
   function initAnimations() {
@@ -23,19 +23,17 @@
     });
   }
 
-  // Wait for DOM and all resources to be fully loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAnimations);
-  } else {
-    // DOM already loaded
+  // Wait for full load to avoid early layout thrash before styles apply
+  if (document.readyState === 'complete') {
     initAnimations();
+  } else {
+    window.addEventListener('load', initAnimations, { once: true });
   }
 
   // Also trigger on page show (for back/forward navigation)
-  window.addEventListener('pageshow', function(event) {
+  window.addEventListener('pageshow', function (event) {
     if (event.persisted) {
       initAnimations();
     }
   });
-
 })();

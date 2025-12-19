@@ -1,9 +1,14 @@
 import { AudioManager } from '../../utils/audio-manager.js';
 import { BroadcastGenerator } from '../engine/broadcast-generator.js';
+import {
+  getStatusIconHTML as buildStatusIconHTML,
+  extractMenuButtonText,
+  setLEDByLevel,
+} from '../ui/menu-helpers.js';
 
 const generator = new BroadcastGenerator();
 const audioManager = new AudioManager();
-const ICON_BASE_PATH = "../../../assets/icons/";
+const ICON_BASE_PATH = '../../../assets/icons/';
 
 // Helpers
 const menuButtons = document.querySelectorAll('.menu-btn');
@@ -11,7 +16,7 @@ const allLists = document.querySelectorAll('.menu-list');
 const outputEl = document.getElementById('output');
 const originalButtonHTML = {};
 
-menuButtons.forEach(btn => {
+menuButtons.forEach((btn) => {
   const menuId = btn.getAttribute('data-menu');
   originalButtonHTML[menuId] = btn.innerHTML;
 
@@ -20,55 +25,49 @@ menuButtons.forEach(btn => {
 });
 
 // Toggle menu
-menuButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+menuButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
     const menuId = btn.getAttribute('data-menu');
     const list = document.querySelector(`.menu-list#${menuId}`);
-    allLists.forEach(l=>{
-      if(l !== list){
+    allLists.forEach((l) => {
+      if (l !== list) {
         l.classList.remove('show');
         const b = document.querySelector(`.menu-btn[data-menu="${l.dataset.menu}"]`);
-        if(b) b.setAttribute('aria-expanded','false');
-        l.setAttribute('aria-hidden','true');
+        if (b) b.setAttribute('aria-expanded', 'false');
+        l.setAttribute('aria-hidden', 'true');
       }
     });
     const isShown = list.classList.contains('show');
-    if(isShown){
+    if (isShown) {
       list.classList.remove('show');
-      btn.setAttribute('aria-expanded','false');
-      list.setAttribute('aria-hidden','true');
+      btn.setAttribute('aria-expanded', 'false');
+      list.setAttribute('aria-hidden', 'true');
     } else {
       list.classList.add('show');
-      btn.setAttribute('aria-expanded','true');
-      list.setAttribute('aria-hidden','false');
+      btn.setAttribute('aria-expanded', 'true');
+      list.setAttribute('aria-hidden', 'false');
     }
     audioManager.playToggle();
   });
 });
 
 // Click outside
-document.addEventListener('click', (e)=>{
-  if(!e.target.closest('.menu')){
-    allLists.forEach(l=>{
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.menu')) {
+    allLists.forEach((l) => {
       l.classList.remove('show');
-      l.setAttribute('aria-hidden','true');
+      l.setAttribute('aria-hidden', 'true');
       const b = document.querySelector(`.menu-btn[data-menu="${l.dataset.menu}"]`);
-      if(b) b.setAttribute('aria-expanded','false');
+      if (b) b.setAttribute('aria-expanded', 'false');
     });
   }
 });
 
-// Estado de parpadeo sincronizado
-let blinkVisible = true;
-let blinkInterval = setInterval(() => {
-  document.querySelectorAll('.led.blink').forEach(led=>{
-    led.style.opacity = blinkVisible ? 1 : 0;
-  });
-  blinkVisible = !blinkVisible;
-}, 200);
+// Parpadeo LED gestionado por CSS (.led.blink)
+// JS interval removed in favor of CSS animations for performance/accessibility
 
 // Actualizar LEDs al seleccionar opción
-document.querySelectorAll('.menu-list button').forEach(optBtn => {
+document.querySelectorAll('.menu-list button').forEach((optBtn) => {
   // Add hover listener
   optBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
@@ -80,267 +79,218 @@ document.querySelectorAll('.menu-list button').forEach(optBtn => {
     const caret = menuBtn.querySelector('.caret')?.outerHTML || '';
 
     // Convertir en dos líneas si contiene paréntesis
-    if(text.includes("(")) {
-      let parts = text.split("(");
+    if (text.includes('(')) {
+      let parts = text.split('(');
       text = `${parts[0].trim()}<br>(${parts[1]}`;
     }
 
     menuBtn.innerHTML = `${ledOrIcon}${text}${caret}`;
 
-    if(parentMenu.id === "alarm") updateLED(optBtn.dataset.option);
-    if(parentMenu.id === "testing") updateTestingLED(optBtn.dataset.option);
-    if(parentMenu.id === "status") updateStatusIcon(optBtn.dataset.option);
-    if(parentMenu.id === "events") updateEventLED(optBtn.dataset.option);
+    if (parentMenu.id === 'alarm') updateLED(optBtn.dataset.option);
+    if (parentMenu.id === 'testing') updateTestingLED(optBtn.dataset.option);
+    if (parentMenu.id === 'status') updateStatusIcon(optBtn.dataset.option);
+    if (parentMenu.id === 'events') updateEventLED(optBtn.dataset.option);
 
     audioManager.playClick();
 
     parentMenu.classList.remove('show');
-    parentMenu.setAttribute('aria-hidden','true');
-    menuBtn.setAttribute('aria-expanded','false');
+    parentMenu.setAttribute('aria-hidden', 'true');
+    menuBtn.setAttribute('aria-expanded', 'false');
   });
 });
 
 // Checkboxes hover effect (Simple version has separate checkboxes)
-document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    const container = cb.closest('div') || cb.parentElement;
-    // In simple version, they might just be inputs. Let's check HTML if needed, but adding to parent is safe.
-    if(container) container.addEventListener('mouseenter', () => audioManager.playHover());
+document.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+  const container = cb.closest('div') || cb.parentElement;
+  // In simple version, they might just be inputs. Let's check HTML if needed, but adding to parent is safe.
+  if (container) container.addEventListener('mouseenter', () => audioManager.playHover());
 
-    cb.addEventListener('change', () => audioManager.playClick());
+  cb.addEventListener('change', () => audioManager.playClick());
 });
 
-
 // ALARM LED
-function updateLED(level){
+function updateLED(level) {
   const led = document.querySelector('.menu-btn[data-menu="alarm"] .led');
-  led.className = 'led';
-  led.style.opacity = 1;
-  led.classList.remove('blink');
-
-  if(level === "HIGH") led.classList.add('high', 'blink');
-  else if(level === "MEDIUM") led.classList.add('medium');
-  else if(level === "LOW") led.classList.add('low');
+  setLEDByLevel(led, level);
 }
 
 // TESTING LED
-function updateTestingLED(level){
+function updateTestingLED(level) {
   const led = document.querySelector('.menu-btn[data-menu="testing"] .led');
-  led.className = 'led';
-  led.style.opacity = 1;
-  led.classList.remove('blink');
-
-  if(level.startsWith("ALLOWED")) led.classList.add('allowed');
-  else if(level === "PROHIBITED") led.classList.add('prohibited', 'blink');
+  setLEDByLevel(led, level);
 }
-function updateEventLED(value){
-    const led = document.querySelector('.menu-btn[data-menu="events"] .led');
+function updateEventLED(value) {
+  const led = document.querySelector('.menu-btn[data-menu="events"] .led');
 
-    // Reset LED
-    led.className = "led";
-    led.style.opacity = 1;
-
-    // Siempre rojo + parpadeo
-    led.classList.add("prohibited", "blink");
+  setLEDByLevel(led, 'PROHIBITED');
 }
 
 // STATUS icons
-function updateStatusIcon(status){
-    const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
-    const iconHTML = getStatusIconHTML(status);
-    const caret = menuBtn.querySelector('.caret')?.outerHTML || "";
+function updateStatusIcon(status) {
+  const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
+  const iconHTML = buildStatusIconHTML(status, ICON_BASE_PATH);
+  const caret = menuBtn.querySelector('.caret')?.outerHTML || '';
 
-    menuBtn.innerHTML = `<span class="icon">${iconHTML}</span>${status}${caret}`;
+  menuBtn.innerHTML = `<span class="icon">${iconHTML}</span>${status}${caret}`;
 }
 
-function getStatusIconHTML(status){
-    switch(status){
-
-        case "SCP BREACH":
-          return `<img src="${ICON_BASE_PATH}breach.png">`;
-
-        case "SITE LOCKDOWN":
-          return `<img src="${ICON_BASE_PATH}lockdown.png">`;
-
-        case "CLASS-D ESCAPE":
-          return `<img src="${ICON_BASE_PATH}class-descape.png">`;
-
-        case "CLASS-D RIOT":
-          return `<img src="${ICON_BASE_PATH}riot.png">`;
-
-        case "CHAOS INSURGENCY":
-          return `<img src="${ICON_BASE_PATH}chaosinsurgency.png">`;
-
-        case "610 EVENT":
-          return `<img src="${ICON_BASE_PATH}610.png">`;
-
-        case "076 EVENT":
-          return `<img src="${ICON_BASE_PATH}abel.png">`;
-
-        case "NUCLEAR PROTOCOL":
-          return `<img src="${ICON_BASE_PATH}nuke.png">`;
-
-        case "CLEAR":
-          return `<img src="${ICON_BASE_PATH}clear.png">`;
-
-        default:
-            return "";
-    }
-}
-
-function getMenuText(menuId){
+function getMenuText(menuId) {
   const menuBtn = document.querySelector(`.menu-btn[data-menu="${menuId}"]`);
-  if(!menuBtn) return "N/A";
-  for(let node of menuBtn.childNodes){
-    if(node.nodeType === Node.TEXT_NODE){
-      return node.textContent.trim();
-    }
-  }
-  return "N/A";
+  return extractMenuButtonText(menuBtn);
 }
 
 // GENERATE BROADCAST
 const generateBtn = document.getElementById('generateBtn');
 if (generateBtn) {
-    generateBtn.addEventListener('mouseenter', () => audioManager.playHover());
+  generateBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
-    generateBtn.addEventListener('click', ()=>{
+  generateBtn.addEventListener('click', () => {
+    const alarm = getMenuText('alarm');
+    const status = getMenuText('status').toUpperCase();
+    let testingRaw = getMenuText('testing');
 
-      const alarm = getMenuText("alarm");
-      const status = getMenuText("status").toUpperCase();
-      let testingRaw = getMenuText("testing");
+    let testing = '';
+    if (testingRaw.toUpperCase() === 'ALLOWED') testing = 'ALLOWED';
+    else if (testingRaw.toUpperCase() === 'PROHIBITED') testing = 'PROHIBITED';
+    else testing = testingRaw;
 
-      let testing = "";
-      if(testingRaw.toUpperCase() === "ALLOWED") testing = "ALLOWED";
-      else if(testingRaw.toUpperCase() === "PROHIBITED") testing = "PROHIBITED";
-      else testing = testingRaw;
+    const eventSelected = getMenuText('events');
+    const events = [];
+    if (eventSelected && eventSelected !== 'SELECT EVENT' && eventSelected !== 'N/A') {
+      events.push(eventSelected);
+    }
 
-      const eventSelected = getMenuText("events");
-      const events = [];
-      if (eventSelected && eventSelected !== "SELECT EVENT" && eventSelected !== "N/A") {
-          events.push(eventSelected);
-      }
+    const requirements = {
+      idCheck: document.getElementById('idCheck').checked,
+      conX: document.getElementById('containmentCheck').checked,
+      scp035: document.getElementById('scp035').checked,
+      scp008: document.getElementById('scp008').checked,
+      scp409: document.getElementById('scp409').checked,
+      scp701: document.getElementById('scp701').checked,
+    };
 
-      const requirements = {
-          idCheck: document.getElementById("idCheck").checked,
-          conX: document.getElementById("containmentCheck").checked,
-          scp035: document.getElementById("scp035").checked,
-          scp008: document.getElementById("scp008").checked,
-          scp409: document.getElementById("scp409").checked,
-          scp701: document.getElementById("scp701").checked
-      };
+    const options = {
+      status,
+      alarm,
+      testing,
+      events,
+      breachedSCPs: [],
+      requirements,
+      customText: '',
+    };
 
-      const options = {
-          status,
-          alarm,
-          testing,
-          events,
-          breachedSCPs: [],
-          requirements,
-          customText: ""
-      };
+    const broadcast = generator.generate(options);
+    outputEl.value = broadcast.message || '';
+    if (broadcast.overflow) {
+      outputEl.classList.add('copy-error');
+      setTimeout(() => outputEl.classList.remove('copy-error'), 1000);
+      audioManager.playError();
+    }
 
-      const broadcast = generator.generate(options);
-      outputEl.value = broadcast;
-
-      audioManager.playAlert(alarm);
-    });
+    audioManager.playAlert(alarm);
+  });
 }
-
 
 // COPY
 const copyBtn = document.getElementById('copyBtn');
 if (copyBtn) {
-    copyBtn.addEventListener('mouseenter', () => audioManager.playHover());
+  copyBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
-    copyBtn.addEventListener('click', ()=>{
-      if(!outputEl.value.trim()) {
-          // alert('No hay texto para copiar.');
-          audioManager.playError();
-          return;
-      }
-      outputEl.select();
-      navigator.clipboard?.writeText(outputEl.value)
-        .then(()=> {
-          const copyBtn = document.getElementById('copyBtn');
-          copyBtn.textContent = 'COPIED!';
-          setTimeout(()=> copyBtn.textContent = 'COPY',1000);
-          audioManager.playSuccess();
-        })
-        .catch(()=> {
-          document.execCommand('copy');
-          const copyBtn = document.getElementById('copyBtn');
-          copyBtn.textContent = 'COPIED!';
-          setTimeout(()=> copyBtn.textContent = 'COPY',1000);
-          audioManager.playSuccess();
-        });
-    });
+  copyBtn.addEventListener('click', () => {
+    if (!outputEl.value.trim()) {
+      // alert('No hay texto para copiar.');
+      audioManager.playError();
+      return;
+    }
+    outputEl.select();
+    navigator.clipboard
+      ?.writeText(outputEl.value)
+      .then(() => {
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.textContent = 'COPIED!';
+        setTimeout(() => (copyBtn.textContent = 'COPY'), 1000);
+        audioManager.playSuccess();
+      })
+      .catch(() => {
+        document.execCommand('copy');
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.textContent = 'COPIED!';
+        setTimeout(() => (copyBtn.textContent = 'COPY'), 1000);
+        audioManager.playSuccess();
+      });
+  });
 }
 
 // CLEAR ALL
 const clearBtn = document.getElementById('clearBtn');
-if(clearBtn) {
-    clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
+if (clearBtn) {
+  clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
-    clearBtn.addEventListener('click', ()=>{
-      // Clear old timeouts/intervals first
-      const maxTimeoutId = setTimeout(() => {}, 0);
-      clearTimeout(maxTimeoutId);
+  clearBtn.addEventListener('click', () => {
+    // Guard: no broadcast to clear
+    if (!outputEl || !outputEl.value.trim()) {
+      audioManager.playError();
+      return;
+    }
+    // Clear old timeouts/intervals first
+    const maxTimeoutId = setTimeout(() => {}, 0);
+    clearTimeout(maxTimeoutId);
 
-      for (let i = 1; i < maxTimeoutId; i++) {
-        window.clearTimeout(i);
-        window.clearInterval(i);
-      }
+    for (let i = 1; i < maxTimeoutId; i++) {
+      window.clearTimeout(i);
+      window.clearInterval(i);
+    }
 
-      // Play sound AFTER clearing
-      try {
-        audioManager.playSuccess();
-      } catch(e) {
-        console.log('Audio error:', e);
-      }
+    // Play sound AFTER clearing
+    try {
+      audioManager.playSuccess();
+    } catch (e) {
+      console.log('Audio error:', e);
+    }
 
-      // Clear output
-      outputEl.value = '';
-      outputEl.style.cssText = '';
+    // Clear output
+    outputEl.value = '';
+    outputEl.style.cssText = '';
 
-      // Reset menu buttons
-      menuButtons.forEach(btn=>{
-        const menuId = btn.getAttribute('data-menu');
-        btn.innerHTML = originalButtonHTML[menuId];
-        btn.classList.remove('selected');
-      });
-
-      // Reset all LEDs
-      document.querySelectorAll('.led').forEach(led=>{
-        led.className = 'led';
-        led.style.opacity = 1;
-        led.classList.remove('blink');
-        led.style.backgroundColor = '';
-        led.style.boxShadow = '';
-      });
-
-      // Uncheck all checkboxes
-      document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        cb.checked = false;
-      });
-
-      // Update character counter if exists
-      if (window.updateCharCounter) {
-        window.updateCharCounter();
-      }
-
-      // Force UI refresh
-      document.body.offsetHeight;
-
-      console.log('✓ All cleared - state reset to zero');
+    // Reset menu buttons
+    menuButtons.forEach((btn) => {
+      const menuId = btn.getAttribute('data-menu');
+      btn.innerHTML = originalButtonHTML[menuId];
+      btn.classList.remove('selected');
     });
+
+    // Reset all LEDs
+    document.querySelectorAll('.led').forEach((led) => {
+      led.className = 'led';
+      led.style.opacity = 1;
+      led.classList.remove('blink');
+      led.style.backgroundColor = '';
+      led.style.boxShadow = '';
+    });
+
+    // Uncheck all checkboxes
+    document.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+      cb.checked = false;
+    });
+
+    // Update character counter if exists
+    if (window.updateCharCounter) {
+      window.updateCharCounter();
+    }
+
+    // Force UI refresh
+    document.body.offsetHeight;
+
+    console.log('✓ All cleared - state reset to zero');
+  });
 }
 
 // MODE SWITCH - SIMPLE PAGE
-const switchBtn = document.getElementById("modeSwitch");
+const switchBtn = document.getElementById('modeSwitch');
 
-switchBtn.classList.remove("active");
+switchBtn.classList.remove('active');
 switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
-switchBtn.addEventListener("click", () => {
-  window.location.href = "../advanced/index.html";
+switchBtn.addEventListener('click', () => {
+  window.location.href = '../advanced/index.html';
 });

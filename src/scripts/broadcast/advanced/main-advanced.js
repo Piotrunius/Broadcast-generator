@@ -1,5 +1,10 @@
 import { AudioManager } from '../../utils/audio-manager.js';
-import { isTyping, setAudioManager as setTypewriterAudio, stopAnimation, typeText as typeTextAnimation } from '../animations/typewriter.js';
+import {
+  isTyping,
+  setAudioManager as setTypewriterAudio,
+  stopAnimation,
+  typeText as typeTextAnimation,
+} from '../animations/typewriter.js';
 import { BroadcastGenerator } from '../engine/broadcast-generator.js';
 
 const generator = new BroadcastGenerator();
@@ -45,13 +50,19 @@ function debounce(func, delay) {
   };
 }
 
-
 // --- Easter Egg Random Hint (5% chance) ---
 if (Math.random() < 0.05) {
   setTimeout(() => {
     console.log('%c⚠ ANOMALY DETECTED', 'color: #ff6600; font-weight: bold;');
-    console.log('%cClassic input sequence recognition system: %cACTIVE', 'color: #888;', 'color: #00ff00;');
-    console.log('%cTip: Gamers from the 80s know this pattern by heart...', 'color: #666; font-style: italic;');
+    console.log(
+      '%cClassic input sequence recognition system: %cACTIVE',
+      'color: #888;',
+      'color: #00ff00;'
+    );
+    console.log(
+      '%cTip: Gamers from the 80s know this pattern by heart...',
+      'color: #666; font-style: italic;'
+    );
   }, 2000);
 }
 
@@ -62,7 +73,7 @@ function initializeApp() {
   const allContent = document.querySelectorAll('.menu-list, .collapsible-content');
 
   // --- Unified Menu Toggling & Interaction Setup ---
-  document.querySelectorAll('.menu').forEach(menu => {
+  document.querySelectorAll('.menu').forEach((menu) => {
     const mainBtn = menu.querySelector('.menu-btn');
     const contentPanel = menu.querySelector('.menu-list, .collapsible-content');
 
@@ -90,11 +101,11 @@ function initializeApp() {
     });
 
     // Prevent propagation inside panels
-    contentPanel.addEventListener('click', e => e.stopPropagation());
+    contentPanel.addEventListener('click', (e) => e.stopPropagation());
 
     // --- Add specific interaction logic based on panel type ---
     if (contentPanel.classList.contains('single-select')) {
-      contentPanel.querySelectorAll('button').forEach(optionBtn => {
+      contentPanel.querySelectorAll('button').forEach((optionBtn) => {
         // Add hover sound
         optionBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
@@ -103,7 +114,9 @@ function initializeApp() {
           textSpan.textContent = selectedValue;
           mainBtn.dataset.selected = selectedValue;
 
-          contentPanel.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
+          contentPanel
+            .querySelectorAll('button')
+            .forEach((btn) => btn.classList.remove('selected'));
           optionBtn.classList.add('selected');
 
           if (panelId === 'alarmContent') updateLED(panelId, selectedValue);
@@ -116,8 +129,9 @@ function initializeApp() {
       });
     }
 
-    if (contentPanel.classList.contains('multi-select')) { // This is for Events
-      contentPanel.querySelectorAll('button').forEach(optionBtn => {
+    if (contentPanel.classList.contains('multi-select')) {
+      // This is for Events
+      contentPanel.querySelectorAll('button').forEach((optionBtn) => {
         // Add hover sound
         optionBtn.addEventListener('mouseenter', () => audioManager.playHover());
 
@@ -126,11 +140,14 @@ function initializeApp() {
           const selectedCount = contentPanel.querySelectorAll('.selected').length;
 
           // Get all currently selected events keys
-          const selectedEventKeys = Array.from(contentPanel.querySelectorAll('.selected')).map(btn => btn.dataset.option);
+          const selectedEventKeys = Array.from(contentPanel.querySelectorAll('.selected')).map(
+            (btn) => btn.dataset.option
+          );
 
           updateEventsLEDColor(mainBtn.querySelector('.led'), selectedEventKeys); // Update LED based on selection
 
-          textSpan.textContent = selectedCount > 0 ? `Events (${selectedCount})` : mainBtn.dataset.originalText;
+          textSpan.textContent =
+            selectedCount > 0 ? `Events (${selectedCount})` : mainBtn.dataset.originalText;
           debouncedUpdateLiveOutput();
           audioManager.playClick();
         });
@@ -138,7 +155,7 @@ function initializeApp() {
     }
 
     if (contentPanel.classList.contains('collapsible-content')) {
-      contentPanel.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+      contentPanel.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
         const checkboxBtn = checkbox.closest('.checkbox-btn');
         if (checkboxBtn) {
           checkboxBtn.addEventListener('mouseenter', () => audioManager.playHover());
@@ -156,16 +173,20 @@ function initializeApp() {
           }
 
           if (panelId === 'breachedScpsContent') {
-            if (checkedCount >= 4) led.classList.add('black', 'blink-fast'); // >= 4 breaches = purple
+            if (checkedCount >= 4)
+              led.classList.add('black', 'blink-fast'); // >= 4 breaches = purple
             else if (checkedCount === 3) led.classList.add('high', 'blink');
             else if (checkedCount === 2) led.classList.add('medium');
             else if (checkedCount === 1) led.classList.add('allowed');
             // No limit on selection, just visual feedback up to 4+
-            if (textSpan) textSpan.textContent = checkedCount > 0 ? `Breached SCPs (${checkedCount})` : mainBtn.dataset.originalText;
-
+            if (textSpan)
+              textSpan.textContent =
+                checkedCount > 0 ? `Breached SCPs (${checkedCount})` : mainBtn.dataset.originalText;
           } else if (panelId === 'requirementsContent') {
             if (checkedCount > 0) led.classList.add('allowed');
-            if (textSpan) textSpan.textContent = checkedCount > 0 ? `Requirements (${checkedCount})` : mainBtn.dataset.originalText;
+            if (textSpan)
+              textSpan.textContent =
+                checkedCount > 0 ? `Requirements (${checkedCount})` : mainBtn.dataset.originalText;
           }
           debouncedUpdateLiveOutput();
           audioManager.playClick();
@@ -175,8 +196,8 @@ function initializeApp() {
   });
 
   const closeAllMenus = () => {
-    allContent.forEach(content => content.classList.remove('show'));
-    allMenuBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+    allContent.forEach((content) => content.classList.remove('show'));
+    allMenuBtns.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
   };
   document.addEventListener('click', closeAllMenus);
 
@@ -189,14 +210,18 @@ function initializeApp() {
     console.log('✓ Clear button initialized');
   }
 
-
-
   // Copy Button
   const copyBtn = document.getElementById('copyBtn');
   console.log('Copy button element:', copyBtn);
   if (copyBtn) {
     copyBtn.addEventListener('click', () => {
       const outputEl = document.getElementById('output');
+
+      // Guard: no broadcast to copy
+      if (!outputEl || !outputEl.value.trim()) {
+        audioManager.playError();
+        return;
+      }
 
       // Generate final message (ignores any animation in progress)
       const generatedOutput = generator.generate(getBroadcastOptions());
@@ -248,14 +273,17 @@ function initializeApp() {
       }
 
       // Copy the COMPLETE generated message (animation status doesn't matter)
-      navigator.clipboard.writeText(generatedOutput.message).then(() => {
-        copyBtn.textContent = 'COPIED!';
-        setTimeout(() => copyBtn.textContent = 'COPY', 1000);
-        audioManager.playSuccess();
-      }).catch(err => {
-        console.error('Copy failed:', err);
-        audioManager.playError();
-      });
+      navigator.clipboard
+        .writeText(generatedOutput.message)
+        .then(() => {
+          copyBtn.textContent = 'COPIED!';
+          setTimeout(() => (copyBtn.textContent = 'COPY'), 1000);
+          audioManager.playSuccess();
+        })
+        .catch((err) => {
+          console.error('Copy failed:', err);
+          audioManager.playError();
+        });
     });
     copyBtn.addEventListener('mouseenter', () => audioManager.playHover());
   }
@@ -346,11 +374,11 @@ function showKeyboardShortcutsHelp() {
   const shortcuts = [
     { keys: 'Ctrl+Alt+C', mac: 'Cmd+Option+C', action: 'Copy output to clipboard' },
     { keys: 'Ctrl+Alt+X', mac: 'Cmd+Option+X', action: 'Clear all output' },
-    { keys: 'Shift+?', mac: 'Shift+?', action: 'Show this help' }
+    { keys: 'Shift+?', mac: 'Shift+?', action: 'Show this help' },
   ];
 
   let helpText = '⌨️ KEYBOARD SHORTCUTS\n\n';
-  shortcuts.forEach(s => {
+  shortcuts.forEach((s) => {
     const keyDisplay = navigator.platform.includes('Mac') ? s.mac : s.keys;
     helpText += `${keyDisplay.padEnd(15)} → ${s.action}\n`;
   });
@@ -387,7 +415,6 @@ function updateEventsLEDColor(ledElement, selectedEventKeys) {
   }
 }
 
-
 // --- LED Updaters ---
 function updateLED(target, level) {
   const led = document.querySelector(`.menu-btn[data-target="${target}"] .led`);
@@ -395,11 +422,11 @@ function updateLED(target, level) {
   led.className = 'led';
   led.style.opacity = '1';
   const upperLevel = level?.toUpperCase();
-  if (upperLevel === "HIGH") led.classList.add('high', 'blink');
-  else if (upperLevel === "MEDIUM") led.classList.add('medium');
-  else if (upperLevel === "LOW") led.classList.add('low');
-  else if (upperLevel === "ALLOWED") led.classList.add('allowed');
-  else if (upperLevel === "PROHIBITED") led.classList.add('prohibited', 'blink');
+  if (upperLevel === 'HIGH') led.classList.add('high', 'blink');
+  else if (upperLevel === 'MEDIUM') led.classList.add('medium');
+  else if (upperLevel === 'LOW') led.classList.add('low');
+  else if (upperLevel === 'ALLOWED') led.classList.add('allowed');
+  else if (upperLevel === 'PROHIBITED') led.classList.add('prohibited', 'blink');
 }
 
 function updateStatusLED(status) {
@@ -409,22 +436,22 @@ function updateStatusLED(status) {
   led.style.opacity = '1';
   const upperStatus = status?.toUpperCase();
   switch (upperStatus) {
-    case "SCP BREACH":
-    case "SITE LOCKDOWN":
-    case "CHAOS INSURGENCY":
+    case 'SCP BREACH':
+    case 'SITE LOCKDOWN':
+    case 'CHAOS INSURGENCY':
       led.classList.add('high', 'blink');
       break;
-    case "NUCLEAR PROTOCOL":
+    case 'NUCLEAR PROTOCOL':
       led.classList.add('black', 'blink-fast');
       break;
-    case "CLASS-D ESCAPE":
+    case 'CLASS-D ESCAPE':
       led.classList.add('medium');
       break;
-    case "CLEAR":
+    case 'CLEAR':
       led.classList.add('allowed');
       break;
-    case "MAINTENANCE":
-    case "O5 MEETING":
+    case 'MAINTENANCE':
+    case 'O5 MEETING':
       led.classList.add('white');
       break;
   }
@@ -433,14 +460,19 @@ function updateStatusLED(status) {
 // --- Main Functions ---
 
 function getBroadcastOptions() {
-  const getSelected = (target) => document.querySelector(`.menu-btn[data-target="${target}"]`)?.dataset.selected;
+  const getSelected = (target) =>
+    document.querySelector(`.menu-btn[data-target="${target}"]`)?.dataset.selected;
 
-  const alarm = getSelected("alarmContent");
-  const status = getSelected("statusContent");
-  const testing = getSelected("testingContent");
+  const alarm = getSelected('alarmContent');
+  const status = getSelected('statusContent');
+  const testing = getSelected('testingContent');
 
-  const events = Array.from(document.querySelectorAll('#eventsContent button.selected')).map(btn => btn.dataset.option);
-  const breachedSCPs = Array.from(document.querySelectorAll('#breachedScpsContent input:checked')).map(cb => cb.closest('label').textContent.trim());
+  const events = Array.from(document.querySelectorAll('#eventsContent button.selected')).map(
+    (btn) => btn.dataset.option
+  );
+  const breachedSCPs = Array.from(
+    document.querySelectorAll('#breachedScpsContent input:checked')
+  ).map((cb) => cb.closest('label').textContent.trim());
 
   const requirements = {
     idCheck: document.getElementById('idCheck')?.checked,
@@ -587,7 +619,6 @@ async function updateLiveOutput() {
       updateCharCounter();
       updateOutputColor();
     }
-
   } catch (err) {
     console.error('Live output update failed:', err);
     const outputElement = document.getElementById('output');
@@ -600,6 +631,13 @@ async function updateLiveOutput() {
 }
 
 function clearAll() {
+  const outputEl = document.getElementById('output');
+
+  // Guard: no broadcast to clear
+  if (!outputEl || !outputEl.value.trim()) {
+    audioManager.playError();
+    return;
+  }
   // IMMEDIATELY stop any animation before clearing
   stopAnimation();
 
@@ -615,7 +653,7 @@ function clearAll() {
   if (customInput) customInput.value = '';
 
   // Reset ALL menu buttons to original state
-  document.querySelectorAll('.menu-btn').forEach(btn => {
+  document.querySelectorAll('.menu-btn').forEach((btn) => {
     const textSpan = btn.querySelector('.btn-text');
     if (textSpan && btn.dataset.originalText) {
       textSpan.textContent = btn.dataset.originalText;
@@ -626,24 +664,24 @@ function clearAll() {
   });
 
   // Close all menus
-  document.querySelectorAll('.menu-list').forEach(menu => {
+  document.querySelectorAll('.menu-list').forEach((menu) => {
     menu.classList.remove('show');
   });
 
   // Deselect all selected elements
-  document.querySelectorAll('.selected').forEach(el => {
+  document.querySelectorAll('.selected').forEach((el) => {
     el.classList.remove('selected');
   });
 
   // Uncheck all checkboxes
-  document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+  document.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
     cb.checked = false;
     const checkboxBtn = cb.closest('.checkbox-btn');
     if (checkboxBtn) checkboxBtn.classList.remove('selected');
   });
 
   // Reset all LEDs to default state (no color)
-  document.querySelectorAll('.led').forEach(led => {
+  document.querySelectorAll('.led').forEach((led) => {
     led.className = 'led';
     led.style.opacity = '1';
     led.style.backgroundColor = '';
@@ -651,7 +689,6 @@ function clearAll() {
   });
 
   // Clear output textarea completely
-  const outputEl = document.getElementById('output');
   if (outputEl) {
     outputEl.value = '';
     updateCharCounter();
@@ -676,9 +713,6 @@ function clearAll() {
   console.log('✓ All cleared - state reset to zero');
 }
 
-
-
-
 const style = document.createElement('style');
 style.textContent = `
   @keyframes shake {
@@ -701,10 +735,10 @@ style.textContent = `
 document.head.appendChild(style);
 
 // MODE SWITCH - ADVANCED PAGE
-const switchBtn = document.getElementById("modeSwitch");
-switchBtn.classList.add("active");
-switchBtn.addEventListener("click", () => {
-  window.location.href = "../simple/index.html";
+const switchBtn = document.getElementById('modeSwitch');
+switchBtn.classList.add('active');
+switchBtn.addEventListener('click', () => {
+  window.location.href = '../simple/index.html';
 });
 // Note: Recovery button removed from HTML. Error modal now handles recovery with auto-repair option.
 // Users trigger recovery through error modal interface instead of dedicated button.
@@ -806,7 +840,3 @@ LESSONS LEARNED:
 - Even "simple" algorithms can have subtle infinite loop bugs
 ================================================================================
 */
-
-
-
-

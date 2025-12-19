@@ -6,9 +6,9 @@
 import performanceMode from './performance-mode.js';
 
 export function createPerformanceToggle() {
-    const toggle = document.createElement('div');
-    toggle.className = 'performance-toggle';
-    toggle.innerHTML = `
+  const toggle = document.createElement('div');
+  toggle.className = 'performance-toggle';
+  toggle.innerHTML = `
         <button class="performance-toggle-btn" title="Toggle Performance Mode (Disables animations)">
             <span class="perf-icon">⚡</span>
             <span class="perf-label">Performance Mode</span>
@@ -16,39 +16,39 @@ export function createPerformanceToggle() {
         </button>
     `;
 
-    const button = toggle.querySelector('.performance-toggle-btn');
-    const statusSpan = toggle.querySelector('.perf-status');
+  const button = toggle.querySelector('.performance-toggle-btn');
+  const statusSpan = toggle.querySelector('.perf-status');
 
-    // Update UI based on mode
-    const updateUI = (enabled) => {
-        statusSpan.textContent = enabled ? 'ON' : 'OFF';
-        button.classList.toggle('active', enabled);
-    };
+  // Update UI based on mode
+  const updateUI = (enabled) => {
+    statusSpan.textContent = enabled ? 'ON' : 'OFF';
+    button.classList.toggle('active', enabled);
+  };
 
-    // Toggle on click
-    button.addEventListener('click', () => {
-        performanceMode.toggle();
-        updateUI(performanceMode.isEnabled());
-    });
-
-    // Observe mode changes
-    performanceMode.addObserver(updateUI);
-
-    // Initial state
+  // Toggle on click
+  button.addEventListener('click', () => {
+    performanceMode.toggle();
     updateUI(performanceMode.isEnabled());
+  });
 
-    // Add styles
-    injectToggleStyles();
+  // Observe mode changes
+  performanceMode.addObserver(updateUI);
 
-    return toggle;
+  // Initial state
+  updateUI(performanceMode.isEnabled());
+
+  // Add styles
+  injectToggleStyles();
+
+  return toggle;
 }
 
 function injectToggleStyles() {
-    if (document.getElementById('performance-toggle-styles')) return;
+  if (document.getElementById('performance-toggle-styles')) return;
 
-    const style = document.createElement('style');
-    style.id = 'performance-toggle-styles';
-    style.textContent = `
+  const style = document.createElement('style');
+  style.id = 'performance-toggle-styles';
+  style.textContent = `
         .performance-toggle {
             position: fixed;
             bottom: 20px;
@@ -140,18 +140,18 @@ function injectToggleStyles() {
             }
         }
     `;
-    document.head.appendChild(style);
+  document.head.appendChild(style);
 }
 
 // Auto-add toggle to page on load
 export function initPerformanceToggle() {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = createPerformanceToggle();
-            document.body.appendChild(toggle);
-        });
-    } else {
-        const toggle = createPerformanceToggle();
-        document.body.appendChild(toggle);
-    }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle = createPerformanceToggle();
+      document.body.appendChild(toggle);
+    });
+  } else {
+    const toggle = createPerformanceToggle();
+    document.body.appendChild(toggle);
+  }
 }

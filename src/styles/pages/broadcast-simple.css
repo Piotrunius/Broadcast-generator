@@ -7,7 +7,7 @@
   --glass: rgba(255, 255, 255, 0.03);
   --accent: rgba(255, 26, 26, 0.12);
   --radius: 10px;
-  --mono: "Roboto Mono", "Courier New", monospace;
+  --mono: 'Roboto Mono', 'Courier New', monospace;
   --led-gray: #555;
 }
 
@@ -16,7 +16,13 @@ body {
   margin: 0;
   background: linear-gradient(180deg, #070505 0%, #140909 60%);
   color: #eee;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Arial;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -36,7 +42,7 @@ body {
 }
 
 .wrap::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background-size: 60%;
@@ -73,7 +79,6 @@ body {
 }
 
 @keyframes logoGlow {
-
   0%,
   100% {
     filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.4));
@@ -140,12 +145,16 @@ body {
   font-weight: 700;
   letter-spacing: 0.6px;
   cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6), inset 0 -6px 12px rgba(255, 0, 0, 0.02);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.6),
+    inset 0 -6px 12px rgba(255, 0, 0, 0.02);
 }
 
 .menu-btn:active {
-  transform: translateY(1px)
+  transform: translateY(1px);
 }
 
 .menu-btn .led {
@@ -153,10 +162,14 @@ body {
   height: 12px;
   border-radius: 50%;
   background: var(--led-gray);
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 4px rgba(0, 0, 0, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   flex: 0 0 12px;
   border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: background 0.2s, opacity 0.2s;
+  transition:
+    background 0.2s,
+    opacity 0.2s;
 }
 
 /* LEDs colores específicos */
@@ -190,9 +203,23 @@ body {
 
 /* Clase para parpadeo sincronizado */
 .led.blink {
-  transition: opacity 0.2s;
+  animation: ledBlink 1s step-start infinite;
 }
 
+@keyframes ledBlink-fast {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.led.blink-fast {
+  animation: ledBlink-fast 0.5s step-start infinite;
+}
 
 /* ICON IMAGES: tamaño fijo, separación y no rompen el layout */
 .menu-btn {
@@ -210,7 +237,7 @@ body {
   display: block;
   flex: 0 0 20px;
   margin-right: 6px;
-  filter: brightness(1.0);
+  filter: brightness(1);
 }
 
 /* status text styling */
@@ -218,7 +245,6 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
-
 
 /* caret */
 .caret {
@@ -240,7 +266,9 @@ body {
   transform-origin: top center;
   opacity: 0;
   transform: translateY(-8px) scaleY(0.98);
-  transition: opacity 220ms ease, transform 220ms cubic-bezier(.2, .9, .3, 1);
+  transition:
+    opacity 220ms ease,
+    transform 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
   display: none;
   min-width: 200px;
   /* ancho mínimo para items */
@@ -269,12 +297,24 @@ body {
   font-weight: 600;
   cursor: pointer;
   border-radius: 6px;
-  transition: background 140ms ease, transform 80ms ease;
+  transition:
+    background 140ms ease,
+    transform 80ms ease;
 }
 
 .menu-list button:hover {
   background: rgba(255, 0, 0, 0.08);
   transform: translateX(6px);
+}
+
+/* Accessible focus outlines */
+.menu-btn:focus-visible,
+.menu-list button:focus-visible,
+.primary:focus-visible,
+.action-btn:focus-visible,
+.back-btn:focus-visible {
+  outline: 2px solid var(--green-console);
+  outline-offset: 2px;
 }
 
 /* Actions aside */
@@ -295,7 +335,7 @@ body {
 
 .action-btn:hover {
   color: #fff;
-  border-color: rgba(255, 0, 0, 0.12)
+  border-color: rgba(255, 0, 0, 0.12);
 }
 
 /* Output area */
@@ -368,7 +408,7 @@ textarea#output {
 .primary {
   width: 120px;
   padding: 14px 18px;
-  background: linear-gradient(180deg, rgba(255, 0, 0, 0.10), rgba(255, 0, 0, 0.04));
+  background: linear-gradient(180deg, rgba(255, 0, 0, 0.1), rgba(255, 0, 0, 0.04));
   border: 1px solid rgba(255, 0, 0, 0.22);
   color: white;
   font-weight: 700;
@@ -378,11 +418,13 @@ textarea#output {
   text-transform: uppercase;
   position: relative;
   transition: 0.18s ease;
-  box-shadow: 0 6px 14px rgba(255, 0, 0, 0.18), inset 0 -6px 12px rgba(255, 0, 0, 0.06);
+  box-shadow:
+    0 6px 14px rgba(255, 0, 0, 0.18),
+    inset 0 -6px 12px rgba(255, 0, 0, 0.06);
 }
 
 .primary::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border: 2px solid var(--red);
@@ -416,7 +458,7 @@ textarea#output {
 }
 
 /* Responsive */
-@media (max-width:760px) {
+@media (max-width: 760px) {
   .menus {
     flex-direction: column;
     width: 100%;
@@ -455,7 +497,9 @@ textarea#output {
   color: #fff;
   letter-spacing: 0.6px;
   user-select: none;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6), inset 0 -6px 12px rgba(255, 0, 0, 0.02);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.6),
+    inset 0 -6px 12px rgba(255, 0, 0, 0.02);
 
   white-space: nowrap;
   /* NO se parte en varias líneas */
@@ -479,14 +523,20 @@ textarea#output {
   border-radius: 50%;
   background: var(--led-gray);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.7), inset 0 -2px 4px rgba(0, 0, 0, 0.3);
-  transition: background 0.25s, box-shadow 0.25s;
+  box-shadow:
+    0 0 6px rgba(0, 0, 0, 0.7),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  transition:
+    background 0.25s,
+    box-shadow 0.25s;
 }
 
 /* LED encendido (ON) */
-.checkbox-btn input:checked+.check-led {
+.checkbox-btn input:checked + .check-led {
   background: var(--green-console);
-  box-shadow: 0 0 8px rgba(0, 255, 90, 0.8), 0 0 16px rgba(0, 255, 90, 0.3);
+  box-shadow:
+    0 0 8px rgba(0, 255, 90, 0.8),
+    0 0 16px rgba(0, 255, 90, 0.3);
 }
 
 /* --- INFECTIOUS SCP SECTION --- */
@@ -590,12 +640,12 @@ textarea#output {
   text-shadow: none;
 }
 
-.switch.active~.label:first-child {
+.switch.active ~ .label:first-child {
   color: var(--muted);
   text-shadow: none;
 }
 
-.switch.active~.label:last-child {
+.switch.active ~ .label:last-child {
   color: var(--red);
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
@@ -609,18 +659,20 @@ textarea#output {
   border-radius: 30px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
     0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .switch:hover {
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
     0 6px 18px rgba(0, 0, 0, 0.4);
   transform: scale(1.05);
 }
 
 .switch::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: 30px;
@@ -636,7 +688,7 @@ textarea#output {
 }
 
 .switch::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 2px;
   left: 2px;
@@ -651,12 +703,14 @@ textarea#output {
 .switch.active {
   background: rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
     0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .switch.active:hover {
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
     0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
@@ -677,7 +731,6 @@ textarea#output {
 
 /* Mobile overflow: allow scrolling when content exceeds viewport */
 @media (max-width: 768px) {
-
   html,
   body {
     overflow-y: auto !important;

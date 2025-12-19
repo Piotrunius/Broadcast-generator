@@ -8,12 +8,11 @@ const audioManager = new AudioManager();
 // ================================
 
 // ========= PARSE DE RECETAS Y GRAFO =========
-const TRANSFORMATIONS = RAW_RECIPES
-  .split("\n")
-  .map(l => l.trim())
-  .filter(l => l && !l.startsWith("//"))
-  .map(line => {
-    const [input, setting, output] = line.split("|").map(s => s.trim());
+const TRANSFORMATIONS = RAW_RECIPES.split('\n')
+  .map((l) => l.trim())
+  .filter((l) => l && !l.startsWith('//'))
+  .map((line) => {
+    const [input, setting, output] = line.split('|').map((s) => s.trim());
     return { input, setting, output };
   });
 
@@ -28,48 +27,48 @@ for (const t of TRANSFORMATIONS) {
 }
 
 // No tiene sentido elegir "None" como item
-allItemsSet.delete("None");
+allItemsSet.delete('None');
 const ALL_ITEMS = Array.from(allItemsSet).sort();
 
 // ========= AUTOCOMPLETE + VALIDACIÓN =========
 
 // Valida y cambia el color del borde dinamicamente
-function validateInput(container){
-  const input = container.querySelector("input");
+function validateInput(container) {
+  const input = container.querySelector('input');
   const text = input.value.trim().toLowerCase();
 
-  if(text === ""){
-    container.classList.remove("valid","invalid");
+  if (text === '') {
+    container.classList.remove('valid', 'invalid');
     return;
   }
 
-  if(ALL_ITEMS.some(i => i.toLowerCase() === text)){
-    container.classList.add("valid");
-    container.classList.remove("invalid");
+  if (ALL_ITEMS.some((i) => i.toLowerCase() === text)) {
+    container.classList.add('valid');
+    container.classList.remove('invalid');
   } else {
-    container.classList.add("invalid");
-    container.classList.remove("valid");
+    container.classList.add('invalid');
+    container.classList.remove('valid');
   }
 }
 
 // Autocomplete + lista filtrada
-function setupSearchDropdown(id){
+function setupSearchDropdown(id) {
   const box = document.getElementById(id);
-  const input = box.querySelector("input");
-  const list = box.querySelector("ul");
+  const input = box.querySelector('input');
+  const list = box.querySelector('ul');
 
   // Add hover effect to the input box container maybe? or just input focus
   input.addEventListener('focus', () => audioManager.playHover());
   input.addEventListener('input', () => audioManager.playType());
 
-  function updateList(){
+  function updateList() {
     const query = input.value.toLowerCase();
-    list.innerHTML = "";
+    list.innerHTML = '';
 
-    const filtered = ALL_ITEMS.filter(i => i.toLowerCase().includes(query));
+    const filtered = ALL_ITEMS.filter((i) => i.toLowerCase().includes(query));
 
-    filtered.forEach(item => {
-      let li = document.createElement("li");
+    filtered.forEach((item) => {
+      let li = document.createElement('li');
       li.textContent = item;
 
       // Hover effect for list items
@@ -78,92 +77,89 @@ function setupSearchDropdown(id){
       li.onclick = () => {
         input.value = item;
         validateInput(box);
-        list.classList.remove("show");
+        list.classList.remove('show');
         audioManager.playClick();
       };
       list.appendChild(li);
     });
 
-    if(filtered.length > 0) list.classList.add("show");
-    else list.classList.remove("show");
+    if (filtered.length > 0) list.classList.add('show');
+    else list.classList.remove('show');
 
     validateInput(box);
   }
 
-  input.addEventListener("input", updateList);
-  input.addEventListener("focus", updateList);
+  input.addEventListener('input', updateList);
+  input.addEventListener('focus', updateList);
 
   // =====================
   //  ENTER + TAB AUTOFILL
   // =====================
-input.addEventListener("keydown", (e) => {
-
+  input.addEventListener('keydown', (e) => {
     // TAB mantiene autocomplete como antes
-    if(e.key === "Tab"){
-        e.preventDefault();
-        const suggestions = list.querySelectorAll("li");
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const suggestions = list.querySelectorAll('li');
 
-        if(suggestions.length > 0){
-            input.value = suggestions[0].textContent; // autocompleta primer item
-            validateInput(box);
-            list.classList.remove("show");
-            audioManager.playClick();
-        }
-        return;
+      if (suggestions.length > 0) {
+        input.value = suggestions[0].textContent; // autocompleta primer item
+        validateInput(box);
+        list.classList.remove('show');
+        audioManager.playClick();
+      }
+      return;
     }
 
     // ENTER YA NO AUTOCOMPLETA — AHORA CALCULA RUTA
-    if(e.key === "Enter"){
-        e.preventDefault();
-        // Simula presionar el botón CALCULATE PATH
-        document.getElementById("calcBtn")?.click();
-        return;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      // Simula presionar el botón CALCULATE PATH
+      document.getElementById('calcBtn')?.click();
+      return;
     }
-});
+  });
 
-// cerrar lista si haces clic fuera
-document.addEventListener("click", e => {
-    if(!box.contains(e.target)){
-        list.classList.remove("show");
+  // cerrar lista si haces clic fuera
+  document.addEventListener('click', (e) => {
+    if (!box.contains(e.target)) {
+      list.classList.remove('show');
     }
-});
+  });
 }
 
-
-
 // Inicializar INPUT y OUTPUT (asegúrate de que en el HTML existen estos IDs)
-setupSearchDropdown("inputSelect");
-setupSearchDropdown("outputSelect");
+setupSearchDropdown('inputSelect');
+setupSearchDropdown('outputSelect');
 
 // ========= CLEAR BUTTON =========
-const clearBtn = document.getElementById("clearFields");
+const clearBtn = document.getElementById('clearFields');
 if (clearBtn) {
-  clearBtn.addEventListener("mouseenter", () => audioManager.playHover());
-  clearBtn.addEventListener("click", () => {
+  clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
+  clearBtn.addEventListener('click', () => {
     try {
       audioManager.playSuccess();
-    } catch(e) {
+    } catch (e) {
       console.log('Audio error:', e);
     }
 
-    document.querySelector("#inputSelect input").value  = "";
-    document.querySelector("#outputSelect input").value = "";
+    document.querySelector('#inputSelect input').value = '';
+    document.querySelector('#outputSelect input').value = '';
 
-    document.querySelectorAll(".search-select").forEach(box => {
-      box.classList.remove("valid", "invalid");
+    document.querySelectorAll('.search-select').forEach((box) => {
+      box.classList.remove('valid', 'invalid');
     });
 
-    const resultEl = document.getElementById("result");
-    if (resultEl) resultEl.textContent = "";
+    const resultEl = document.getElementById('result');
+    if (resultEl) resultEl.textContent = '';
   });
 }
 
 // ========= REFERENCIAS DEL BOTÓN Y CONSOLA =========
-const calcBtn  = document.getElementById("calcBtn");
-const resultEl = document.getElementById("result");
+const calcBtn = document.getElementById('calcBtn');
+const resultEl = document.getElementById('result');
 
-if(calcBtn) {
-    calcBtn.addEventListener('mouseenter', () => audioManager.playHover());
+if (calcBtn) {
+  calcBtn.addEventListener('mouseenter', () => audioManager.playHover());
 }
 
 // ============================================================
@@ -172,7 +168,7 @@ if(calcBtn) {
 function findSmartRoute(start, goal) {
   if (start === goal) return [];
 
-  const queue   = [start];
+  const queue = [start];
   const visited = new Map();
 
   // Guardamos siempre un objeto { from, setting }
@@ -180,7 +176,7 @@ function findSmartRoute(start, goal) {
 
   while (queue.length) {
     const current = queue.shift();
-    const edges   = adjacency[current] || [];
+    const edges = adjacency[current] || [];
 
     for (const edge of edges) {
       const next = edge.to;
@@ -199,7 +195,7 @@ function findSmartRoute(start, goal) {
             path.push({
               from: info.from,
               to: node,
-              setting: info.setting
+              setting: info.setting,
             });
             node = info.from;
           }
@@ -216,110 +212,107 @@ function findSmartRoute(start, goal) {
   return null;
 }
 
-function findDirectInputsFor(output){
-    let results = [];
+function findDirectInputsFor(output) {
+  let results = [];
 
-    for(const item in adjacency){
-        adjacency[item].forEach(step=>{
-            if(step.to === output){
-                results.push({
-                    from: item,
-                    setting: step.setting,
-                    to: output
-                });
-            }
+  for (const item in adjacency) {
+    adjacency[item].forEach((step) => {
+      if (step.to === output) {
+        results.push({
+          from: item,
+          setting: step.setting,
+          to: output,
         });
-    }
-    return results.length ? results : null;
+      }
+    });
+  }
+  return results.length ? results : null;
 }
 
 // Convertir modos en colores automáticos COMPLETO y CORRECTO
-function styleSetting(text){
-    return text
-        .replace(/\bVery Fine\b/g, `<span class='veryfine'>Very Fine</span>`)
-        .replace(/\bFine\b(?!<\/span>)/g, `<span class='fine'>Fine</span>`)
-        .replace(/\bRough\b/g, `<span class='rough'>Rough</span>`)
-        .replace(/\b1:1\b/g, `<span class='equal'>1:1</span>`);
+function styleSetting(text) {
+  return text
+    .replace(/\bVery Fine\b/g, `<span class='veryfine'>Very Fine</span>`)
+    .replace(/\bFine\b(?!<\/span>)/g, `<span class='fine'>Fine</span>`)
+    .replace(/\bRough\b/g, `<span class='rough'>Rough</span>`)
+    .replace(/\b1:1\b/g, `<span class='equal'>1:1</span>`);
 }
-
 
 // 📄 NUEVO FORMATO COLOR SCP
-function highlightItem(name){
-    return `<span class="selected-item">${name}</span>`;
+function highlightItem(name) {
+  return `<span class="selected-item">${name}</span>`;
 }
 
-function formatSmartRoute(start, goal, route){
-    if(!route){
-        return `<pre>❌ No route found from "${start}" to "${goal}".</pre>`;
-    }
-    if(route.length === 0){
-        return `<pre>INPUT = OUTPUT\nNo refinement required.</pre>`;
-    }
+function formatSmartRoute(start, goal, route) {
+  if (!route) {
+    return `<pre>❌ No route found from "${start}" to "${goal}".</pre>`;
+  }
+  if (route.length === 0) {
+    return `<pre>INPUT = OUTPUT\nNo refinement required.</pre>`;
+  }
 
-    const startLabel = highlightItem(start);
-    const goalLabel  = highlightItem(goal);
+  const startLabel = highlightItem(start);
+  const goalLabel = highlightItem(goal);
 
-    let out = `<pre>======   SCP-914 RECIPE ROUTE REPORT   ======\n\n`;
-    out += `STEPS   ➜  ${route.length}\n`;
-    out += `PROCESS PATH:\n\n`;
+  let out = `<pre>======   SCP-914 RECIPE ROUTE REPORT   ======\n\n`;
+  out += `STEPS   ➜  ${route.length}\n`;
+  out += `PROCESS PATH:\n\n`;
 
-    route.forEach((step,i)=>{
-        // si el from/to coincide con start/goal, lo pintamos en amarillo
-        const fromLabel = (step.from === start) ? startLabel :
-                          (step.from === goal)  ? goalLabel  : step.from;
+  route.forEach((step, i) => {
+    // si el from/to coincide con start/goal, lo pintamos en amarillo
+    const fromLabel = step.from === start ? startLabel : step.from === goal ? goalLabel : step.from;
 
-        const toLabel   = (step.to === goal)   ? goalLabel   :
-                          (step.to === start)  ? startLabel  : step.to;
+    const toLabel = step.to === goal ? goalLabel : step.to === start ? startLabel : step.to;
 
-        out += `${i+1}. ${fromLabel}\n`;
-        out += `    └─► ${styleSetting(step.setting)}  ➜  ${toLabel}\n\n`;
-    });
+    out += `${i + 1}. ${fromLabel}\n`;
+    out += `    └─► ${styleSetting(step.setting)}  ➜  ${toLabel}\n\n`;
+  });
 
-    return out;
+  return out;
 }
 
 // ========== BOTÓN CALCULATE — usa la ruta inteligente ==========
 if (calcBtn) {
-calcBtn.addEventListener("click", () => {
-  const inputVal  = document.querySelector("#inputSelect input")?.value.trim();
-  const outputVal = document.querySelector("#outputSelect input")?.value.trim();
+  calcBtn.addEventListener('click', () => {
+    const inputVal = document.querySelector('#inputSelect input')?.value.trim();
+    const outputVal = document.querySelector('#outputSelect input')?.value.trim();
 
-  // ➤ Caso 1: Nada seleccionado
-  if(!inputVal && !outputVal){
-      resultEl.innerHTML = "<pre>⚠ Enter at least OUTPUT.</pre>";
+    // ➤ Caso 1: Nada seleccionado
+    if (!inputVal && !outputVal) {
+      resultEl.innerHTML = '<pre>⚠ Enter at least OUTPUT.</pre>';
       audioManager.playError();
       return;
-  }
+    }
 
-  // ➤ Caso 2: Solo OUTPUT → mostrar combinaciones directas disponibles
-  if(!inputVal && outputVal){
+    // ➤ Caso 2: Solo OUTPUT → mostrar combinaciones directas disponibles
+    if (!inputVal && outputVal) {
       const results = findDirectInputsFor(outputVal);
 
-      if(!results){
-          resultEl.innerHTML = `<pre>❌ No direct transformation leads to "${outputVal}".</pre>`;
-          audioManager.playError();
-          return;
+      if (!results) {
+        resultEl.innerHTML = `<pre>❌ No direct transformation leads to "${outputVal}".</pre>`;
+        audioManager.playError();
+        return;
       }
 
       let out = `<pre>====== DIRECT INPUTS FOR: ${outputVal} ======    \n\n`;
-      results.forEach((r,i)=>{
-          out+= `${i+1}. ${highlightItem(r.from)}  ──►  ${styleSetting(r.setting)}  ──►  ${highlightItem(r.to)}\n`;
+      results.forEach((r, i) => {
+        out += `${i + 1}. ${highlightItem(r.from)}  ──►  ${styleSetting(r.setting)}  ──►  ${highlightItem(r.to)}\n`;
       });
-      out+= `\n==========================================\n✔ Showing all 1-step conversion options\n</pre>`;
+      out += `\n==========================================\n✔ Showing all 1-step conversion options\n</pre>`;
 
       resultEl.innerHTML = out;
       audioManager.playSuccess();
       return;
-  }
+    }
 
-  // ➤ Caso normal INPUT + OUTPUT → ruta inteligente
-  const route = findSmartRoute(inputVal, outputVal);
-  resultEl.innerHTML = formatSmartRoute(inputVal, outputVal, route);
+    // ➤ Caso normal INPUT + OUTPUT → ruta inteligente
+    const route = findSmartRoute(inputVal, outputVal);
+    resultEl.innerHTML = formatSmartRoute(inputVal, outputVal, route);
 
-  if(!route) {
+    if (!route) {
       audioManager.playError();
-  } else {
+    } else {
       audioManager.playSuccess();
-  }
-});
+    }
+  });
 }

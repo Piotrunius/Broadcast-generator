@@ -5,7 +5,7 @@
  * - 03:33 (witching hour)
  */
 
-(function() {
+(function () {
   'use strict';
 
   let hasTriggered = false;
@@ -41,7 +41,7 @@
       const warning = document.createElement('div');
       const now = new Date();
       const time = now.toLocaleTimeString('en-US', { hour12: false });
-      
+
       warning.style.cssText = `
         position: fixed;
         top: 50%;
@@ -56,7 +56,7 @@
         box-shadow: 0 0 60px #ff00ff;
         animation: timePopup 0.5s ease-out forwards;
       `;
-      
+
       warning.innerHTML = `
         <div style="font-size: 32px; color: #ff00ff; font-weight: bold; margin-bottom: 20px; text-shadow: 0 0 10px #ff00ff;">
           ⏰ TIME ANOMALY DETECTED ⏰
@@ -85,12 +85,12 @@
       // Screen distortion
       const body = document.body;
       let glitchCount = 0;
-      
+
       const interval = setInterval(() => {
         const distortion = Math.random() * 20 - 10;
         body.style.transform = `skewX(${distortion * 0.5}deg) scale(${1 + Math.random() * 0.05})`;
         body.style.filter = `hue-rotate(${Math.random() * 360}deg) brightness(${0.7 + Math.random() * 0.6})`;
-        
+
         glitchCount++;
         if (glitchCount > 40) {
           body.style.transform = '';
@@ -127,7 +127,7 @@
       `;
       document.body.appendChild(number);
       this.elements.push(number);
-      
+
       setTimeout(() => number.remove(), 4000);
     }
 
@@ -139,7 +139,7 @@
         '∞∞:∞∞:∞∞',
         '25:99:77',
         '03:33:33',
-        '--:--:--'
+        '--:--:--',
       ];
 
       const interval = setInterval(() => {
@@ -161,7 +161,7 @@
         `;
         document.body.appendChild(clock);
         this.elements.push(clock);
-        
+
         setTimeout(() => clock.remove(), 2000);
       }, 500);
       this.intervals.push(interval);
@@ -170,24 +170,24 @@
     playTimeSound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         // Deep mechanical clock ticks - more serious
         const tickInterval = setInterval(() => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
-          
+
           osc.type = 'square';
           osc.frequency.value = 200 + Math.random() * 100; // Lower, more mechanical
           gain.gain.value = 0.25;
-          
+
           osc.connect(gain);
           gain.connect(audioCtx.destination);
-          
+
           osc.start();
           gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
           setTimeout(() => osc.stop(), 80);
         }, 300);
-        
+
         setTimeout(() => clearInterval(tickInterval), 5000);
 
         // Deep temporal distortion instead of high reverse
@@ -195,43 +195,40 @@
           // Low drone with modulation
           const drone = audioCtx.createOscillator();
           const droneGain = audioCtx.createGain();
-          
+
           drone.type = 'sawtooth';
           drone.frequency.value = 60;
           droneGain.gain.value = 0.2;
-          
+
           drone.connect(droneGain);
           droneGain.connect(audioCtx.destination);
           drone.start();
-          
+
           // Modulate frequency for warping effect
           const modulateInterval = setInterval(() => {
             drone.frequency.value = 60 + Math.random() * 40;
           }, 100);
-          
+
           setTimeout(() => {
             clearInterval(modulateInterval);
             droneGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
             setTimeout(() => drone.stop(), 1000);
           }, 2000);
         }, 3000);
-
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     end() {
-
       // Clear intervals
-      this.intervals.forEach(interval => clearInterval(interval));
+      this.intervals.forEach((interval) => clearInterval(interval));
       this.intervals = [];
 
       // Clear timeouts
-      this.timeouts.forEach(timeout => clearTimeout(timeout));
+      this.timeouts.forEach((timeout) => clearTimeout(timeout));
       this.timeouts = [];
 
       // Remove elements
-      this.elements.forEach(el => {
+      this.elements.forEach((el) => {
         if (el && el.parentNode) {
           el.parentNode.removeChild(el);
         }
@@ -305,6 +302,4 @@
     const effect = new ClockAnomalyEffect();
     effect.start();
   });
-
-
 })();

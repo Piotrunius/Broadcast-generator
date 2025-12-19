@@ -3,7 +3,7 @@
  * Press Shift + Ctrl + P to activate
  */
 
-(function() {
+(function () {
   'use strict';
 
   let isActive = false;
@@ -45,13 +45,12 @@
         if (window.AudioContext || window.webkitAudioContext) {
           // Create a script that intercepts audio
         }
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     applyGrayscale() {
       const body = document.body;
-      
+
       // Gradual transition to grayscale
       let saturation = 100;
       const interval = setInterval(() => {
@@ -80,7 +79,7 @@
       `;
       document.body.appendChild(vignette);
       this.elements.push(vignette);
-      
+
       setTimeout(() => {
         vignette.style.opacity = '1';
       }, 100);
@@ -103,7 +102,7 @@
         opacity: 0;
         animation: silenceFadeIn 1s forwards;
       `;
-      
+
       notification.innerHTML = `
         <div style="font-size: 28px; color: #888; font-weight: bold; margin-bottom: 20px; letter-spacing: 3px;">
           🔇 THE SILENCE 🔇
@@ -125,16 +124,18 @@
       this.elements.push(notification);
 
       // Fade out after 5 seconds
-      this.timeouts.push(setTimeout(() => {
-        notification.style.animation = 'silenceFadeOut 1s forwards';
-        setTimeout(() => notification.remove(), 1000);
-      }, 5000));
+      this.timeouts.push(
+        setTimeout(() => {
+          notification.style.animation = 'silenceFadeOut 1s forwards';
+          setTimeout(() => notification.remove(), 1000);
+        }, 5000)
+      );
     }
 
     createSilenceSymbols() {
       // Floating mute symbols
       const symbols = ['🔇', '⬛', '◼', '●', '▪'];
-      
+
       const interval = setInterval(() => {
         const symbol = document.createElement('div');
         symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -151,7 +152,7 @@
         `;
         document.body.appendChild(symbol);
         this.elements.push(symbol);
-        
+
         setTimeout(() => symbol.remove(), 4000);
       }, 400);
       this.intervals.push(interval);
@@ -161,11 +162,11 @@
       // Deep, unsettling drone
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         // Create multiple layers for richer sound
         const oscillators = [];
         const gains = [];
-        
+
         // Layer 1: Deep bass
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
@@ -176,7 +177,7 @@
         gain1.connect(audioCtx.destination);
         oscillators.push(osc1);
         gains.push(gain1);
-        
+
         // Layer 2: Mid drone
         const osc2 = audioCtx.createOscillator();
         const gain2 = audioCtx.createGain();
@@ -187,7 +188,7 @@
         gain2.connect(audioCtx.destination);
         oscillators.push(osc2);
         gains.push(gain2);
-        
+
         // Layer 3: Harmonic
         const osc3 = audioCtx.createOscillator();
         const gain3 = audioCtx.createGain();
@@ -198,42 +199,41 @@
         gain3.connect(audioCtx.destination);
         oscillators.push(osc3);
         gains.push(gain3);
-        
+
         // Start all
-        oscillators.forEach(osc => osc.start());
-        
+        oscillators.forEach((osc) => osc.start());
+
         // Smooth fade out over 3 seconds
         setTimeout(() => {
-          gains.forEach(gain => {
+          gains.forEach((gain) => {
             gain.gain.setValueAtTime(gain.gain.value, audioCtx.currentTime);
             gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 3);
           });
           setTimeout(() => {
-            oscillators.forEach(osc => {
+            oscillators.forEach((osc) => {
               try {
                 osc.stop();
                 osc.disconnect();
-              } catch(e) {}
+              } catch (e) {}
             });
           }, 3000);
         }, DURATION - 3000);
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     end() {
       isActive = false;
 
       // Clear intervals
-      this.intervals.forEach(interval => clearInterval(interval));
+      this.intervals.forEach((interval) => clearInterval(interval));
       this.intervals = [];
 
       // Clear timeouts
-      this.timeouts.forEach(timeout => clearTimeout(timeout));
+      this.timeouts.forEach((timeout) => clearTimeout(timeout));
       this.timeouts = [];
 
       // Remove elements
-      this.elements.forEach(el => {
+      this.elements.forEach((el) => {
         if (el && el.parentNode) {
           el.parentNode.removeChild(el);
         }
@@ -296,7 +296,7 @@
     if (e.shiftKey || e.ctrlKey) {
       if (e.key.length === 1) {
         keySequence += e.key.toLowerCase();
-        
+
         clearTimeout(keyTimeout);
         keyTimeout = setTimeout(() => {
           keySequence = '';
@@ -313,6 +313,4 @@
       keySequence = '';
     }
   });
-
-
 })();

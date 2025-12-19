@@ -3,7 +3,7 @@
  * Copy the same text 5 times without changing it
  */
 
-(function() {
+(function () {
   'use strict';
 
   let copyCount = 0;
@@ -52,7 +52,7 @@
         box-shadow: 0 0 50px #ff0000;
         animation: warningPopup 0.3s ease-out forwards;
       `;
-      
+
       warning.innerHTML = `
         <div style="font-size: 24px; color: #ff0000; font-weight: bold; margin-bottom: 15px;">
           ⚠ CLIPBOARD COMPROMISED ⚠
@@ -126,34 +126,33 @@
       `;
       document.body.appendChild(symbol);
       this.elements.push(symbol);
-      
+
       setTimeout(() => symbol.remove(), 1500);
     }
 
     playAnomalySound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         // Alert sequence
         [800, 600, 800, 600, 1000, 800, 1000].forEach((freq, i) => {
           setTimeout(() => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            
+
             osc.type = 'square';
             osc.frequency.value = freq;
             gain.gain.value = 0.2;
-            
+
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
+
             osc.start();
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
             setTimeout(() => osc.stop(), 150);
           }, i * 100);
         });
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     modifyClipboard() {
@@ -174,27 +173,27 @@ You will not remember reading this.
       // Try to write to clipboard (requires user interaction in modern browsers)
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(anomalousText).then(() => {
-          }).catch(err => {
-          });
+          navigator.clipboard
+            .writeText(anomalousText)
+            .then(() => {})
+            .catch((err) => {});
         }
-      } catch(e) {
-      }
+      } catch (e) {}
     }
 
     end() {
       isActive = false;
 
       // Clear intervals
-      this.intervals.forEach(interval => clearInterval(interval));
+      this.intervals.forEach((interval) => clearInterval(interval));
       this.intervals = [];
 
       // Clear timeouts
-      this.timeouts.forEach(timeout => clearTimeout(timeout));
+      this.timeouts.forEach((timeout) => clearTimeout(timeout));
       this.timeouts = [];
 
       // Remove elements
-      this.elements.forEach(el => {
+      this.elements.forEach((el) => {
         if (el && el.parentNode) {
           el.parentNode.removeChild(el);
         }
@@ -231,14 +230,14 @@ You will not remember reading this.
   document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copyBtn');
     const outputEl = document.getElementById('output');
-    
+
     if (!copyBtn || !outputEl) return;
 
     copyBtn.addEventListener('click', () => {
       if (isActive) return;
 
       const currentText = outputEl.value;
-      
+
       if (currentText === lastCopiedText && currentText.length > 0) {
         copyCount++;
 
@@ -260,6 +259,4 @@ You will not remember reading this.
       }
     });
   });
-
-
 })();

@@ -14,12 +14,12 @@
     minSpeed: 0.2,
     maxSpeed: 0.8,
     colors: [
-      'rgba(255, 30, 30, 0.6)',   // Red
-      'rgba(255, 30, 30, 0.4)',   // Red lighter
+      'rgba(255, 30, 30, 0.6)', // Red
+      'rgba(255, 30, 30, 0.4)', // Red lighter
       'rgba(255, 100, 100, 0.3)', // Pink
-      'rgba(100, 100, 100, 0.3)'  // Gray
+      'rgba(100, 100, 100, 0.3)', // Gray
     ],
-    glowIntensity: 15
+    glowIntensity: 15,
   };
 
   class Particle {
@@ -60,8 +60,12 @@
     draw(ctx) {
       // Create gradient for glow effect
       const gradient = ctx.createRadialGradient(
-        this.x, this.y, 0,
-        this.x, this.y, this.currentSize * config.glowIntensity
+        this.x,
+        this.y,
+        0,
+        this.x,
+        this.y,
+        this.currentSize * config.glowIntensity
       );
 
       gradient.addColorStop(0, this.color);
@@ -136,7 +140,7 @@
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       // Update and draw particles
-      this.particles.forEach(particle => {
+      this.particles.forEach((particle) => {
         particle.update();
         particle.draw(this.ctx);
       });
@@ -219,6 +223,20 @@
       window.scpParticleSystem.start();
     }
   };
+
+  // Pause/resume on tab visibility changes (saves CPU in background)
+  document.addEventListener('visibilitychange', () => {
+    const perfEnabled = !!(
+      window.performanceMode &&
+      typeof window.performanceMode.isEnabled === 'function' &&
+      window.performanceMode.isEnabled()
+    );
+    if (document.hidden || perfEnabled) {
+      window.stopParticles();
+    } else {
+      window.startParticles();
+    }
+  });
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
