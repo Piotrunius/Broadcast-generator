@@ -54,6 +54,36 @@ body {
   margin-bottom: 18px;
 }
 
+.header {
+  position: relative;
+}
+
+.header-logo {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.4));
+  animation: logoGlow 3s ease-in-out infinite;
+}
+
+.header-content {
+  padding-right: 60px;
+}
+
+@keyframes logoGlow {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 0, 0, 0.7));
+  }
+}
+
 .header h1 {
   margin: 0;
   font-size: 22px;
