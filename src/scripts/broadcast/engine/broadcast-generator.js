@@ -13,8 +13,7 @@ export class BroadcastGenerator {
             testing = "N/A",
             events = [],
             breachedSCPs = [],
-            requirements = {},
-            customText = ""
+            requirements = {}
         } = options;
 
         const normalizedStatus = status.toUpperCase();
@@ -27,7 +26,7 @@ export class BroadcastGenerator {
         const suppressStatusForEvents = ["076 EVENT", "610 EVENT", "323 BREACH"];
         const hasSuppressingEvent = events.some(e => suppressStatusForEvents.includes(e.toUpperCase()));
 
-        let initialStatusLevel = 'MINIMAL'; // Start at minimal
+        let initialStatusLevel = 'LONG'; // Start at LONG
         if (normalizedStatus === "SCP BREACH" && hasSuppressingEvent) {
             initialStatusLevel = 'NONE';
         }
@@ -47,8 +46,8 @@ export class BroadcastGenerator {
             messageParts.push({
                 type: 'event',
                 key: normalizedEventKey,
-                currentLevel: 'MINIMAL', // Start at minimal
-                priority: 8,
+                currentLevel: 'LONG', // Start at LONG
+                priority: 11, // Higher priority than status (was 8)
                 get_text: (lvl) => EVENT_MESSAGES[lvl]?.[normalizedEventKey] || "",
                 levels: ['LONG', 'SHORT', 'MINIMAL']
             });
@@ -59,13 +58,15 @@ export class BroadcastGenerator {
             messageParts.push({
                 type: 'breached_scp',
                 key: 'BREACHED_SCPS_LIST',
-                currentLevel: 'MINIMAL', // Start at minimal
+                currentLevel: 'LONG', // Start at LONG
                 priority: 7,
                 get_text: (lvl) => {
                     const count = breachedSCPs.length;
                     if (lvl === 'LONG') return `Breached: ${breachedSCPs.join(", ")}`;
                     if (lvl === 'SHORT') {
-                        const sliced = breachedSCPs.slice(0, Math.min(count, 3));
+                        // Shorten by stripping the 'SCP-' prefix for compact display
+                        const abbreviate = (names) => names.map(n => n.replace(/^SCP-?/i, '').trim());
+                        const sliced = abbreviate(breachedSCPs.slice(0, Math.min(count, 3)));
                         return `Breached: ${sliced.join(", ")}${count > 3 ? ` (+${count - 3})` : ''}`;
                     }
                     if (lvl === 'MINIMAL') return `${count} breaches`;
@@ -80,7 +81,7 @@ export class BroadcastGenerator {
             messageParts.push({
                 type: 'requirement',
                 key: 'ID_CHECK',
-                currentLevel: 'MINIMAL', // Start at minimal
+                currentLevel: 'LONG', // Start at LONG
                 priority: 9,
                 get_text: (lvl) => REQUIREMENT_MESSAGES.ID_CHECK[lvl] || "",
                 levels: ['LONG', 'SHORT', 'MINIMAL']
@@ -98,22 +99,10 @@ export class BroadcastGenerator {
             messageParts.push({
                 type: 'requirement',
                 key: 'SID_PLUS_AUTH',
-                currentLevel: 'MINIMAL', // Start at minimal
+                currentLevel: 'LONG', // Start at LONG
                 priority: 9,
                 get_text: (lvl) => REQUIREMENT_MESSAGES.SID_PLUS_AUTH[lvl](sidPlusAuthItems) || "",
                 levels: ['LONG', 'SHORT', 'MINIMAL']
-            });
-        }
-
-        // 5. Custom Text
-        if (customText && customText.trim()) {
-            messageParts.push({
-                type: 'custom',
-                key: 'CUSTOM_TEXT',
-                currentLevel: 'MINIMAL', // Start at minimal (effectively just 'LONG' or 'NONE')
-                priority: 5,
-                get_text: (lvl) => lvl === 'LONG' ? customText.trim() : "",
-                levels: ['LONG', 'NONE']
             });
         }
 
@@ -126,7 +115,7 @@ export class BroadcastGenerator {
             return prefix + finalOutputParts.filter(Boolean).join(" | ");
         };
 
-        // --- Phase 1: Shrink if initial MINIMAL is too long (should rarely happen) ---
+        // --- Phase 1: Shrink if initial  is too long (should rarely happen) ---
         // This is a safeguard if even the most minimal version of *everything* doesn't fit.
         let currentMessage = getCurrentFullMessage(messageParts);
         let overflow = false;
@@ -138,6 +127,7 @@ export class BroadcastGenerator {
             let shortenedThisIteration = false;
             let bestCandidateIndex = -1;
             let lowestPriorityFound = Infinity;
+            let bestCandidateTargetLevel = null;
 
             for (let i = 0; i < messageParts.length; i++) {
                 const part = messageParts[i];
@@ -147,22 +137,35 @@ export class BroadcastGenerator {
                     continue;
                 }
 
-                const nextLowerLevel = part.levels[currentLevelIndex + 1];
-                const potentialNewText = part.get_text(nextLowerLevel);
+                // Find the next lower level that actually reduces length (or produces different text at MINIMAL)
                 const currentText = part.get_text(part.currentLevel);
+                let targetLevel = null;
+                for (let j = currentLevelIndex + 1; j < part.levels.length; j++) {
+                    const lowerLevel = part.levels[j];
+                    const lowerText = part.get_text(lowerLevel);
+                    if (lowerText.length < currentText.length || (lowerText !== currentText && lowerLevel === 'MINIMAL')) {
+                        targetLevel = lowerLevel;
+                        break;
+                    }
+                }
 
-                if (potentialNewText.length < currentText.length || (potentialNewText !== currentText && nextLowerLevel === 'MINIMAL')) {
+                if (targetLevel) {
                     if (part.priority < lowestPriorityFound) {
                         lowestPriorityFound = part.priority;
                         bestCandidateIndex = i;
+                        bestCandidateTargetLevel = targetLevel;
                     }
                 }
             }
 
             if (bestCandidateIndex !== -1) {
                 const partToShorten = messageParts[bestCandidateIndex];
-                const currentLevelIndex = partToShorten.levels.indexOf(partToShorten.currentLevel);
-                partToShorten.currentLevel = partToShorten.levels[currentLevelIndex + 1];
+                if (bestCandidateTargetLevel) {
+                    partToShorten.currentLevel = bestCandidateTargetLevel;
+                } else {
+                    const currentLevelIndex = partToShorten.levels.indexOf(partToShorten.currentLevel);
+                    partToShorten.currentLevel = partToShorten.levels[currentLevelIndex + 1];
+                }
                 shortenedThisIteration = true;
             }
 
@@ -183,10 +186,13 @@ export class BroadcastGenerator {
         // Only expand if we didn't overflow and there's space
         let expandIterations = 0;
         if (!overflow) {
-            while (currentMessage.length <= this.maxChars && expandIterations < this.maxIterations) {
+            currentMessage = getCurrentFullMessage(messageParts); // Ensure we have the current message
+
+            while (expandIterations < this.maxIterations) {
                 expandIterations++;
                 let bestCandidateIndex = -1;
                 let highestPriorityFound = -Infinity;
+                let bestTestMessage = null;
 
                 for (let i = 0; i < messageParts.length; i++) {
                     const part = messageParts[i];
@@ -208,6 +214,7 @@ export class BroadcastGenerator {
                         if (part.priority > highestPriorityFound) {
                             highestPriorityFound = part.priority;
                             bestCandidateIndex = i;
+                            bestTestMessage = testMessage;
                         }
                     }
                 }
@@ -216,7 +223,7 @@ export class BroadcastGenerator {
                     const partToExpand = messageParts[bestCandidateIndex];
                     const currentLevelIndex = partToExpand.levels.indexOf(partToExpand.currentLevel);
                     partToExpand.currentLevel = partToExpand.levels[currentLevelIndex - 1]; // Move up
-                    currentMessage = getCurrentFullMessage(messageParts); // Update current message
+                    currentMessage = bestTestMessage; // Use the pre-calculated message
                 } else {
                     break; // No more expansions possible
                 }

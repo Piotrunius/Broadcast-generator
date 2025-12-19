@@ -18,6 +18,24 @@
 
   <head>
     <meta charset="utf-8" />
+    <style>
+      /* Prevent flash of unstyled content (FOUC) */
+      html.pre-init body {
+        visibility: hidden;
+      }
+
+      html.pre-init * {
+        animation: none !important;
+        transition: none !important;
+      }
+    </style>
+    <script>
+      // Apply pre-init and performance mode as early as possible
+      document.documentElement.classList.add('pre-init');
+      if (localStorage.getItem('broadcast-generator-performance-mode') === 'true') {
+        document.documentElement.classList.add('performance-mode');
+      }
+    </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Broadcast Generator</title>
     <link rel="icon" type="image/png" href="../../../assets/icons/46cdc8fcba432e472244667b09459743.png" />
@@ -175,11 +193,25 @@
     <script src="../../../src/scripts/core/animation-controller.js"></script>
     <script src="../../../src/scripts/core/particles.js"></script>
     <script src="../../../src/scripts/core/button-effects.js"></script>
+    <script type="module" src="../../../src/scripts/core/performance-mode.js"></script>
+    <script type="module">
+      import { initPerformanceToggle } from '../../../src/scripts/core/performance-toggle.js';
+      initPerformanceToggle();
+    </script>
     <script type="module" src="../../../src/scripts/broadcast/advanced/main-advanced.js"></script>
     <script src="../../../src/scripts/easter-eggs/konami-easter-egg.js"></script>
     <script src="../../../src/scripts/easter-eggs/easter-egg-flickering.js"></script>
     <script src="../../../src/scripts/easter-eggs/easter-egg-clipboard.js"></script>
     <script src="../../../src/scripts/easter-eggs/easter-egg-silence.js"></script>
+    <script>
+      // Reveal once DOM is ready
+      const reveal = () => document.documentElement.classList.remove('pre-init');
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        reveal();
+      } else {
+        window.addEventListener('DOMContentLoaded', reveal, { once: true });
+      }
+    </script>
     <script src="../../../src/scripts/easter-eggs/easter-egg-clock.js"></script>
     <script src="../../../src/scripts/easter-eggs/easter-egg-pattern.js"></script>
   </body>

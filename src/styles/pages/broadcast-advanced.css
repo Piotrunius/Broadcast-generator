@@ -1763,3 +1763,22 @@ textarea#output.color-error {
     animation: pulse-error 1s ease-in-out infinite;
   }
 }
+
+/* Mobile overflow: allow scrolling when content exceeds viewport */
+@media (max-width: 768px) {
+  html {
+    overflow-y: auto !important;
+  }
+
+  body {
+    overflow-y: auto !important;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+}

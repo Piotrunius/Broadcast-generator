@@ -95,6 +95,7 @@ Simply open any HTML file directly in your browser (drag & drop or File → Open
 - **Character Counter**: Roblox 200-char limit tracking
 - **Copy Validation**: Prevents oversize messages
 - **Dynamic Feedback**: Color-coded status (green/yellow/red)
+- **Performance Mode**: Toggle to disable animations for low-end devices ⚡
 - **Keyboard Shortcuts**: Power user efficiency
 - **Easter Eggs**: Hidden features for exploration
 - **SCP-914 Recipes**: Complete recipe database
@@ -105,6 +106,13 @@ Simply open any HTML file directly in your browser (drag & drop or File → Open
 - `Ctrl+Alt+X` / `Cmd+Option+X` — Clear all
 - `Shift+?` — Show keyboard shortcuts
 
-## 🎮 Easter Eggs
+## ⚡ Performance Mode
 
-Try the Konami code and explore hidden features throughout the application!
+Click the **Performance Mode** toggle (bottom-left corner) to:
+- Disable all animations (typewriter, page transitions, etc.)
+- Stop particle background effects
+- Improve performance on low-end devices
+- Settings persist across pages and browser sessions
+
+Perfect for older computers or when you need maximum responsiveness!
+

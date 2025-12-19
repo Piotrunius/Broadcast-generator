@@ -52,6 +52,15 @@ function sleep(ms) {
 export async function typeText(element, targetText, updateCounterFn, updateColorFn, callback) {
     if (!element) return false;
 
+    // Check performance mode - if enabled, skip animation
+    if (window.performanceMode && window.performanceMode.isEnabled()) {
+        element.value = (targetText ?? '').toString();
+        updateCounterFn?.();
+        updateColorFn?.();
+        callback?.();
+        return true;
+    }
+
     const target = (targetText ?? '').toString();
     const animationId = Date.now() + Math.random();  // Unique ID
 
@@ -95,9 +104,9 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
         return true;
     }
 
-    const BACKSPACE_DELAY = 30;
-    const TYPING_DELAY = 35;
-    const PAUSE_DELAY = 80;
+    const BACKSPACE_DELAY = 12;  // Faster backspace (was 30)
+    const TYPING_DELAY = 15;     // Faster typing (was 35)
+    const PAUSE_DELAY = 30;      // Shorter pause (was 80)
 
     try {
         // PHASE 1: DELETE
@@ -114,7 +123,10 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
             updateColorFn?.();
 
             try {
-                audioManager?.playType?.();
+                // Play sound less frequently to reduce lag
+                if (i % 3 === 0) {
+                    audioManager?.playType?.();
+                }
             } catch (e) {
                 // Silently continue if audio fails
             }
@@ -141,12 +153,15 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
             updateColorFn?.();
 
             try {
-                audioManager?.playType?.();
+                // Play sound less frequently to reduce lag
+                if (i % 2 === 0) {
+                    audioManager?.playType?.();
+                }
             } catch (e) {
                 // Silently continue if audio fails
             }
 
-            const delay = TYPING_DELAY + (Math.random() < 0.15 ? 15 : 0);
+            const delay = TYPING_DELAY + (Math.random() < 0.2 ? 8 : 0);
             await sleep(delay);
         }
 

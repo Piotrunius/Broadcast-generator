@@ -3,12 +3,12 @@
  * Creates animated background particles with glow effects
  */
 
-(function() {
+(function () {
   'use strict';
 
   // Configuration
   const config = {
-    particleCount: 30,
+    particleCount: 60,
     minSize: 2,
     maxSize: 4,
     minSpeed: 0.2,
@@ -63,7 +63,7 @@
         this.x, this.y, 0,
         this.x, this.y, this.currentSize * config.glowIntensity
       );
-      
+
       gradient.addColorStop(0, this.color);
       gradient.addColorStop(0.3, this.color.replace(/[\d.]+\)$/g, '0.2)'));
       gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -88,6 +88,7 @@
       this.ctx = this.canvas.getContext('2d');
       this.particles = [];
       this.animationId = null;
+      this.isRunning = true;
 
       this.setupCanvas();
       this.createParticles();
@@ -104,7 +105,7 @@
       this.canvas.style.pointerEvents = 'none';
       this.canvas.style.zIndex = '0';
       this.canvas.style.opacity = '0.6';
-      
+
       this.resize();
       document.body.prepend(this.canvas);
     }
@@ -130,6 +131,8 @@
     }
 
     animate() {
+      if (!this.isRunning) return;
+
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       // Update and draw particles
@@ -144,18 +147,34 @@
       this.animationId = requestAnimationFrame(() => this.animate());
     }
 
+    stop() {
+      this.isRunning = false;
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+      }
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    start() {
+      if (!this.isRunning) {
+        this.isRunning = true;
+        this.animate();
+      }
+    }
+
     drawConnections() {
       const maxDistance = 150;
-      
+
       for (let i = 0; i < this.particles.length; i++) {
         for (let j = i + 1; j < this.particles.length; j++) {
           const p1 = this.particles[i];
           const p2 = this.particles[j];
-          
+
           const dx = p1.x - p2.x;
           const dy = p1.y - p2.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < maxDistance) {
             const opacity = (1 - distance / maxDistance) * 0.2;
             this.ctx.strokeStyle = `rgba(255, 30, 30, ${opacity})`;
@@ -187,6 +206,19 @@
   } else {
     window.scpParticleSystem = new ParticleSystem();
   }
+
+  // Expose global control functions
+  window.stopParticles = function () {
+    if (window.scpParticleSystem) {
+      window.scpParticleSystem.stop();
+    }
+  };
+
+  window.startParticles = function () {
+    if (window.scpParticleSystem) {
+      window.scpParticleSystem.start();
+    }
+  };
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {

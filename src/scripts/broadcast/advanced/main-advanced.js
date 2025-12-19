@@ -23,15 +23,15 @@ const debouncedUpdateLiveOutput = () => {
   // If currently typing, stop and update immediately
   if (isTyping()) {
     stopAnimation();
-    // Give old animation 15ms to clean up
+    // Give old animation 5ms to clean up (reduced from 15ms)
     updateLiveOutputTimeout = setTimeout(async () => {
       await updateLiveOutput();
-    }, 15);
+    }, 5);
   } else {
-    // Otherwise debounce to prevent storms
+    // Otherwise debounce to prevent storms (reduced from 50ms to 20ms)
     updateLiveOutputTimeout = setTimeout(async () => {
       await updateLiveOutput();
-    }, 50);
+    }, 20);
   }
 };
 
