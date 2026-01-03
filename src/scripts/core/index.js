@@ -19,6 +19,10 @@ function maybeAutoEnablePerformanceMode() {
 }
 
 function init() {
+  console.log('🚀 Core bootstrap init called');
+  console.log('📊 performanceMode object:', performanceMode);
+  console.log('📊 performanceMode.isEnabled():', performanceMode.isEnabled());
+
   maybeAutoEnablePerformanceMode();
   initPerformanceToggle();
 
@@ -34,8 +38,18 @@ function init() {
   performanceMode.addObserver(() => syncParticles());
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+console.log('📦 Core index.js loaded, readyState:', document.readyState);
+
+// Use Promise.then() to ensure init runs as soon as possible
+// This avoids the race condition with DOMContentLoaded
+Promise.resolve().then(() => {
+  console.log('📦 Promise resolved, calling init');
+
+  if (document.readyState === 'loading') {
+    console.log('⏳ Still loading, waiting for DOMContentLoaded...');
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    console.log('✓ DOM is ready or complete, calling init now');
+    init();
+  }
+});
