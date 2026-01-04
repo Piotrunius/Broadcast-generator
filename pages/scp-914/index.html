@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      /* Keep page hidden until ready to avoid HTML flash; do NOT block animations */
+      html.pre-init body {
+        visibility: hidden;
+      }
+
+      html.pre-init * {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      /* Scrollable output console */
+      #result {
+        height: 40vh;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #ff1e1e transparent;
+      }
+
+      #result::-webkit-scrollbar { width: 8px; }
+      #result::-webkit-scrollbar-track { background: transparent; }
+      #result::-webkit-scrollbar-thumb { 
+        background: rgba(255, 30, 30, 0.4); 
+        border-radius: 4px;
+      }
+    </style>
+    <script>
+      // Apply pre-init hide + performance mode early
+      document.documentElement.classList.add('pre-init');
+      if (localStorage.getItem('broadcast-generator-performance-mode') === 'true') {
+        document.documentElement.classList.add('performance-mode');
+      }
+    </script>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SCP-914 Recipes Lab</title>
+    <link rel="icon" type="image/png" href="../../assets/icons/scp-logo.png" />
+    <link rel="stylesheet" href="../../src/styles/pages/scp-914.css" />
+    <link rel="stylesheet" href="../../src/styles/base/animations.css" />
+  </head>
+
+  <body>
+    <div class="home-layout">
+      <aside class="guideline-panel">
+        <h2>GUIDELINE</h2>
+        <ul>
+          <li>TAB will autocomplete with the first element u are searching</li>
+          <li>ENTER will have the same function as hitting "Calculate Recipes"</li>
+          <li>Choosing only the OUTPUT will give u all the 1 step outputs for that element</li>
+          <li>Highlighted settings show refinement type</li>
+          <li>CLEAR resets all fields</li>
+          <li>Best route is always optimized</li>
+          <li>
+            All these recipes are taken from the website:
+            <a href="https://visceraleds-scp-site-roleplay.fandom.com/wiki/SCP-914" target="_blank"
+              rel="noopener noreferrer">
+              SCP-914 Wiki Source
+            </a>
+          </li>
+        </ul>
+      </aside>
+      <main class="wrap">
+        <header class="header">
+          <h1>- SCP-914 Recipes Analyzer -</h1>
+          <img src="../../assets/icons/scp-logo.png" alt="SCP Logo" class="header-logo" />
+        </header>
+
+        <section class="controls-914">
+          <div class="menus-914">
+
+            <!-- MENU INPUT -->
+            <div class="menu-row">
+
+              <div class="search-block">
+                <span class="led-input led-off"></span>
+                <label class="dropdown-label">INPUT</label>
+
+                <div class="search-select" id="inputSelect">
+                  <input type="text" placeholder="Search Input..." autocomplete="off">
+                  <ul class="options"></ul>
+                </div>
+              </div>
+
+              <div class="search-block">
+                <span class="led-output led-off"></span>
+                <label class="dropdown-label">OUTPUT</label>
+
+                <div class="search-select" id="outputSelect">
+                  <input type="text" placeholder="Search Output..." autocomplete="off">
+                  <ul class="options"></ul>
+                </div>
+              </div>
+
+              <button id="clearFields" class="btn-clear">CLEAR</button>
+
+            </div>
+
+
+          </div>
+
+          <div class="actions-914">
+            <button id="calcBtn" class="primary">CALCULATE RECIPES</button>
+            <button class="primary back-btn" onclick="window.location.href='../home/index.html'">BACK</button>
+          </div>
+        </section>
+
+        <section class="output-area">
+          <h2>Calculated recipes:</h2>
+          <div id="result" class="console-914"></div>
+        </section>
+
+        <footer class="footer">
+          <small>victorbot365 • SCP-914 Recipes Interface</small>
+        </footer>
+      </main>
+    </div>
+    <div class="home-copyright">© 2025 victorbot365 — All rights reserved.</div>
+    <script src="../../src/scripts/core/animation-controller.js"></script>
+    <script src="../../src/scripts/core/particles.js"></script>
+    <script src="../../src/scripts/core/button-effects.js"></script>
+    <script type="module" src="../../src/scripts/core/performance-mode.js"></script>
+    <script type="module">
+      import { initPerformanceToggle } from '../../src/scripts/core/performance-toggle.js';
+      initPerformanceToggle();
+    </script>
+    <script type="module" src="../../src/scripts/scp-914/main-scp-914.js"></script>
+    <script>
+      // Reveal as soon as DOM is ready (animations stay enabled)
+      const reveal = () => {
+        document.documentElement.classList.remove('pre-init');
+        // Force reflow to ensure animations trigger immediately
+        void document.body.offsetHeight;
+      };
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        reveal();
+      } else {
+        document.addEventListener('DOMContentLoaded', reveal, { once: true });
+      }
+    </script>
+  </body>
+
+</html>
