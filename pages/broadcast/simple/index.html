@@ -94,12 +94,12 @@
               <span class="caret">▾</span>
             </button>
             <ul class="menu-list" id="status" data-menu="status" aria-hidden="true">
-              <li><button data-option="SCP BREACH">SCP BREACH</button></li>
-              <li><button data-option="SITE LOCKDOWN">SITE LOCKDOWN</button></li>
-              <li><button data-option="CLASS-D ESCAPE">CLASS-D ESCAPE</button></li>
-              <li><button data-option="CHAOS INSURGENCY">CHAOS INSURGENCY</button></li>
-              <li><button data-option="NUCLEAR PROTOCOL">NUCLEAR PROTOCOL</button></li>
-              <li><button data-option="CLEAR">CLEAR</button></li>
+              <li><button data-option="SCP BREACH"><span class="led"></span> SCP BREACH</button></li>
+              <li><button data-option="SITE LOCKDOWN"><span class="led"></span> SITE LOCKDOWN</button></li>
+              <li><button data-option="CLASS-D ESCAPE"><span class="led"></span> CLASS-D ESCAPE</button></li>
+              <li><button data-option="CHAOS INSURGENCY"><span class="led"></span> CHAOS INSURGENCY</button></li>
+              <li><button data-option="NUCLEAR PROTOCOL"><span class="led"></span> NUCLEAR PROTOCOL</button></li>
+              <li><button data-option="CLEAR"><span class="led"></span> CLEAR</button></li>
             </ul>
           </div>
 
@@ -130,6 +130,7 @@
               <li><button data-option="PROHIBITED">PROHIBITED</button></li>
             </ul>
           </div>
+          <div class="bottom-options">
           <div class="containment-block">
             <label class="checkbox-btn">
               <input type="checkbox" id="containmentCheck">
@@ -144,6 +145,7 @@
               <span class="check-led"></span>
               ID
             </label>
+          </div>
           </div>
 
 
@@ -164,7 +166,7 @@
           ⚠ NO PARAMETERS SELECTED
         </div>
         <h2>Broadcast generated:</h2>
-        <textarea id="output" readonly rows="8" aria-label="Broadcast generado"></textarea>
+        <textarea id="output" rows="8" aria-label="Broadcast generado"></textarea>
 
         <div id="lengthWarning" class="no-params-warning"
           style="display: none; border-color: #ffaa00; color: #ffaa00; background: rgba(255, 170, 0, 0.1);">
@@ -177,7 +179,10 @@
             <div id="modeSwitch" class="switch"></div>
             <span class="label">ADVANCED</span>
           </div>
-          <button class="primary back-btn" onclick="window.location.href='../../home/index.html'">BACK</button>
+          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+            <span id="charCounter" style="font-size: 11px; color: #a8a8a8; margin-bottom: 4px; font-family: var(--mono);">0/200</span>
+            <button class="primary back-btn" onclick="window.location.href='../../home/index.html'">BACK</button>
+          </div>
         </div>
       </section>
       <footer class="footer">

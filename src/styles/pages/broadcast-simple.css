@@ -29,6 +29,19 @@ body {
   justify-content: center;
 }
 
+/* Mystical Fog Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow: inset 0 0 100px 20px var(--fog-color, transparent);
+  transition: box-shadow 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0.1;
+  mix-blend-mode: screen;
+}
+
 .wrap {
   width: min(1200px, 96vw);
   backdrop-filter: blur(8px);
@@ -160,12 +173,34 @@ body {
   cursor: pointer;
   transition:
     transform 160ms ease,
-    box-shadow 160ms ease;
+    box-shadow 160ms ease,
+    border-color 0.2s;
   box-shadow:
     0 6px 14px rgba(0, 0, 0, 0.6),
     inset 0 -6px 12px rgba(255, 0, 0, 0.02);
   position: relative;
   overflow: hidden;
+}
+
+.menu-btn > * {
+  position: relative;
+  z-index: 2;
+}
+
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--anim-color, transparent);
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.menu-btn.border-active::before {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .menu-btn:active {
@@ -517,21 +552,8 @@ textarea#output {
   animation-delay: 0.7s;
 }
 
-@media (max-width: 1100px) {
-  .menus {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px 0;
-  }
-
-  .menu {
-    width: calc(25% - 14px);
-    margin-right: 14px;
-  }
-
-  .containment-block {
-    margin-right: 20px;
-  }
+.bottom-options {
+  display: contents;
 }
 
 /* Responsive Design */
@@ -549,21 +571,43 @@ textarea#output {
     font-size: 12px;
   }
 
+  .SCPS-block {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
   .menus {
+    justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
   }
 
   .menu {
-    width: calc(50% - 5px);
+    width: auto;
+    min-width: 160px;
+    flex: 1 1 auto;
   }
 
-  .SCPS-block {
-    flex-wrap: wrap;
+  .bottom-options {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 20px;
   }
 
   .checkbox-btn {
     min-width: auto;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 

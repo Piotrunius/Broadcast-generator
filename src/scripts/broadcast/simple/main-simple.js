@@ -44,6 +44,29 @@ menuButtons.forEach(btn => {
   originalButtonHTML[menuId] = btn.innerHTML;
 });
 
+function updateCharCounter() {
+  const counter = document.getElementById('charCounter');
+  if (!counter) return;
+  const len = outputEl.value.length;
+  counter.textContent = `${len}/200`;
+  counter.style.color = len > 200 ? '#ffaa00' : '#a8a8a8';
+}
+
+outputEl.addEventListener('input', () => {
+  const lengthWarningEl = document.getElementById('lengthWarning');
+  if (outputEl.value.length > 200) {
+    if (lengthWarningEl) {
+      lengthWarningEl.style.display = "block";
+      lengthWarningEl.textContent = `⚠ WARNING: EXCEEDS 200 CHARACTERS (${outputEl.value.length}/200)`;
+    }
+    outputEl.style.borderColor = "#ffaa00";
+  } else {
+    if (lengthWarningEl) lengthWarningEl.style.display = "none";
+    outputEl.style.borderColor = "";
+  }
+  updateCharCounter();
+});
+
 // Toggle menu
 menuButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -92,6 +115,7 @@ let blinkInterval = setInterval(() => {
   document.querySelectorAll('.led.blink').forEach(led => {
     led.style.opacity = blinkVisible ? 1 : 0;
   });
+
   blinkVisible = !blinkVisible;
 }, 200);
 
@@ -114,7 +138,7 @@ document.querySelectorAll('.menu-list button').forEach(optBtn => {
 
     if (parentMenu.id === "alarm") updateLED(optBtn.dataset.option);
     if (parentMenu.id === "testing") updateTestingLED(optBtn.dataset.option);
-    if (parentMenu.id === "status") updateStatusIcon(optBtn.dataset.option);
+    if (parentMenu.id === "status") updateStatusLED(optBtn.dataset.option);
     if (parentMenu.id === "events") updateEventLED(optBtn.dataset.option);
 
 
@@ -129,79 +153,137 @@ document.querySelectorAll('.menu-list button').forEach(optBtn => {
 
 // ALARM LED
 function updateLED(level) {
-  const led = document.querySelector('.menu-btn[data-menu="alarm"] .led');
+  const btn = document.querySelector('.menu-btn[data-menu="alarm"]');
+  const led = btn.querySelector('.led');
   led.className = 'led';
   led.style.opacity = 1;
   led.classList.remove('blink');
+  btn.style.boxShadow = "none";
 
-  if (level === "HIGH") led.classList.add('high', 'blink');
-  else if (level === "MEDIUM") led.classList.add('medium');
-  else if (level === "LOW") led.classList.add('low');
+  let color = "rgba(255, 0, 0, 0.16)";
+
+  if (level === "HIGH") {
+    led.classList.add('high', 'blink');
+    color = "#ff0000ff";
+  } else if (level === "MEDIUM") {
+    led.classList.add('medium');
+    color = "yellow";
+  } else if (level === "LOW") {
+    led.classList.add('low');
+    color = "#00ff66";
+  }
+
+  btn.style.setProperty('--anim-color', color);
+  btn.classList.remove('border-active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      btn.classList.add('border-active');
+    });
+  });
 }
 
 // TESTING LED
 function updateTestingLED(level) {
-  const led = document.querySelector('.menu-btn[data-menu="testing"] .led');
+  const btn = document.querySelector('.menu-btn[data-menu="testing"]');
+  const led = btn.querySelector('.led');
   led.className = 'led';
   led.style.opacity = 1;
   led.classList.remove('blink');
+  btn.style.boxShadow = "none";
 
-  if (level.startsWith("ALLOWED")) led.classList.add('allowed');
-  else if (level === "PROHIBITED") led.classList.add('prohibited', 'blink');
+  let color = "rgba(255, 0, 0, 0.16)";
+
+  if (level.startsWith("ALLOWED")) {
+    led.classList.add('allowed');
+    color = "#00ff66";
+  } else if (level === "PROHIBITED") {
+    led.classList.add('prohibited', 'blink');
+    color = "#ff0000ff";
+  }
+  btn.style.setProperty('--anim-color', color);
+  btn.classList.remove('border-active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      btn.classList.add('border-active');
+    });
+  });
 }
 function updateEventLED(value) {
-  const led = document.querySelector('.menu-btn[data-menu="events"] .led');
+  const btn = document.querySelector('.menu-btn[data-menu="events"]');
+  const led = btn.querySelector('.led');
 
   // Reset LED
   led.className = "led";
   led.style.opacity = 1;
+  led.style.backgroundColor = "";
 
-  // Siempre rojo + parpadeo
-  led.classList.add("prohibited", "blink");
-}
+  let color = "#ff1e1e";
 
-// STATUS iconos
-function updateStatusIcon(status) {
-  const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
-  const iconHTML = getStatusIconHTML(status);
-  const caret = menuBtn.querySelector('.caret')?.outerHTML || "";
-
-  menuBtn.innerHTML = `<span class="icon">${iconHTML}</span>${status}${caret}`;
-}
-
-function getStatusIconHTML(status) {
-  switch (status) {
-
-    case "SCP BREACH":
-      return `<img src="../../../../assets/icons/breach.png">`;
-
-    case "SITE LOCKDOWN":
-      return `<img src="../../../../assets/icons/lockdown.png">`;
-
-    case "CLASS-D ESCAPE":
-      return `<img src="../../../../assets/icons/class-descape.png">`;
-
-    case "CLASS-D RIOT":
-      return `<img src="../../../../assets/icons/riot.png">`;
-
-    case "CHAOS INSURGENCY":
-      return `<img src="../../../../assets/icons/chaosinsurgency.png">`;
-
-    case "610 EVENT":
-      return `<img src="../../../../assets/icons/610.png">`;
-
-    case "076 EVENT":
-      return `<img src="../../../../assets/icons/abel.png">`;
-
-    case "NUCLEAR PROTOCOL":
-      return `<img src="../../../../assets/icons/nuke.png">`;
-
-    case "CLEAR":
-      return `<img src="../../../../assets/icons/clear.png">`;
-
-    default:
-      return "";
+  if (value === "CLASS-D RIOT") {
+    color = "#ff6600";
+    led.classList.add("blink");
+    led.style.backgroundColor = color;
+  } else {
+    led.classList.add("prohibited", "blink");
   }
+
+  btn.style.setProperty('--anim-color', color);
+  btn.classList.remove('border-active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      btn.classList.add('border-active');
+    });
+  });
+}
+
+// STATUS LED
+function updateStatusLED(status) {
+  const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
+  const caret = menuBtn.querySelector('.caret')?.outerHTML || "";
+  
+  let color = "#555";
+  let shadow = "none";
+  let blinkClass = "";
+
+  // Reset
+  menuBtn.style.boxShadow = "none";
+
+  switch (status) {
+    case "SCP BREACH":
+      color = "#ff0000ff";
+      blinkClass = " blink";
+      break;
+    case "SITE LOCKDOWN":
+      color = "#9900ffff";
+      blinkClass = " blink";
+      break;
+    case "CLASS-D ESCAPE":
+      color = "#ff6600";
+      blinkClass = " blink";
+      break;
+    case "CHAOS INSURGENCY":
+      color = "#00b7ffff";
+      blinkClass = " blink";
+      break;
+    case "NUCLEAR PROTOCOL":
+      color = "#ff0000ff";
+      blinkClass = " blink";
+      break;
+    case "CLEAR":
+      color = "#00ff00";
+      break;
+  }
+
+  menuBtn.innerHTML = `<span class="led${blinkClass}" style="background-color: ${color}; box-shadow: ${shadow}; opacity: 1;"></span>${status}${caret}`;
+
+  menuBtn.style.setProperty('--anim-color', color);
+  document.body.style.setProperty('--fog-color', color);
+  menuBtn.classList.remove('border-active');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      menuBtn.classList.add('border-active');
+    });
+  });
 }
 
 function getMenuText(menuId) {
@@ -343,6 +425,7 @@ document.getElementById('generateBtn')?.addEventListener('click', () => {
   // 🚨 SI NO HAY PARÁMETROS
   if (parts.length === 0) {
     outputEl.value = "";
+    updateCharCounter();
     warningEl.style.display = "block";
     try { beep(220, 0.15, 0.08); } catch (e) { }
     return;
@@ -357,6 +440,7 @@ document.getElementById('generateBtn')?.addEventListener('click', () => {
   // SI NO HAY NADA → NO GENERAR
   if (parts.length === 0) {
     outputEl.value = "";
+    updateCharCounter();
     return;
   }
 
@@ -371,6 +455,7 @@ document.getElementById('generateBtn')?.addEventListener('click', () => {
     }
     outputEl.style.borderColor = "#ffaa00";
   }
+  updateCharCounter();
 
   // Trigger Flash Animation
   outputEl.classList.remove('flash');
@@ -402,6 +487,7 @@ document.getElementById('copyBtn')?.addEventListener('click', () => {
 // CLEAR ALL
 document.getElementById('clearBtn')?.addEventListener('click', () => {
   outputEl.value = '';
+  updateCharCounter();
 
   // Hide warning if visible
   document.getElementById('noParamsWarning').style.display = 'none';
@@ -418,6 +504,13 @@ document.getElementById('clearBtn')?.addEventListener('click', () => {
     led.style.opacity = 1;
     led.classList.remove('blink');
   });
+
+  document.querySelectorAll('.menu-btn').forEach(btn => {
+    btn.style.removeProperty('--anim-color');
+    btn.classList.remove('border-active');
+    btn.style.boxShadow = "";
+  });
+  document.body.style.removeProperty('--fog-color');
 
   // Reset checkboxes
   document.getElementById("idCheck").checked = false;
