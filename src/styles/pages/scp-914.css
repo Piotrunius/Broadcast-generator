@@ -258,13 +258,91 @@ body {
 }
 
 /* Responsive */
-@media (max-width: 760px) {
+@media (max-width: 1100px) {
+  .wrap {
+    width: min(95vw, 900px);
+    padding: 20px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .menus-914 {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .menu {
+    width: calc(50% - 6px);
+  }
+
+  .search-select {
+    width: calc(50% - 6px);
+  }
+}
+
+@media (max-width: 900px) {
+  .wrap {
+    width: min(95vw, 800px);
+    padding: 16px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
   .menus-914 {
     flex-direction: column;
     width: 100%;
   }
 
   .menu {
+    width: 100%;
+  }
+
+  .search-select {
+    width: 100%;
+  }
+
+  .guideline-panel {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .wrap {
+    width: calc(100vw - 32px);
+    padding: 16px;
+  }
+
+  .header h1 {
+    font-size: 16px;
+  }
+
+  .header-logo {
+    width: 32px;
+    height: 32px;
+    top: 10px;
+    right: 16px;
+  }
+
+  .menus-914 {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .menu {
+    width: 100%;
+  }
+
+  .search-select {
+    width: 100%;
+  }
+
+  .guideline-panel {
     width: 100%;
   }
 }
@@ -600,6 +678,7 @@ html.pre-init .home-layout {
   .wrap {
     width: 100%;
     box-sizing: border-box;
+    max-height: none;
   }
 
   .search-select {
@@ -612,6 +691,48 @@ html.pre-init .home-layout {
 
   .menu {
     width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .wrap {
+    width: calc(100vw - 20px);
+    padding: 12px;
+  }
+
+  .home-layout {
+    padding: 5px;
+  }
+
+  .guideline-panel {
+    width: calc(100vw - 20px);
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-size: 14px;
+  }
+
+  .header-logo {
+    width: 28px;
+    height: 28px;
+    top: 5px;
+    right: 12px;
+  }
+
+  .menu-btn {
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+
+  .search-select input {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  #result {
+    height: 30vh;
   }
 }
 
@@ -896,9 +1017,17 @@ html.pre-init .home-layout {
 }
 
 @keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(255, 30, 30, 0.4), inset 0 -6px 12px rgba(255, 0, 0, 0.06); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 30, 30, 0.4), inset 0 -6px 12px rgba(255, 0, 0, 0.06);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06);
+  }
 }
 
 /* Footer animations */

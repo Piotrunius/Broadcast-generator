@@ -1,0 +1,62 @@
+/* ================================
+   UNIVERSAL RESPONSIVE UTILITIES
+   ================================ */
+
+/* Mobile-first approach helpers */
+
+/* Touch-friendly sizes for mobile */
+@media (max-width: 768px) {
+
+    /* Increase touch targets */
+    button,
+    input[type="button"],
+    input[type="submit"],
+    .menu-btn,
+    .checkbox-btn,
+    .primary,
+    .btn-secondary,
+    .back-btn {
+        min-height: 44px;
+        /* Apple's recommended touch target */
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+
+    /* Prevent zoom on input focus (iOS) */
+    input,
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
+}
+
+/* Flexible images and embeds */
+img,
+video,
+iframe,
+embed {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Better table responsiveness */
+table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -175,6 +175,9 @@
     }
 
     playStaticSound() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const bufferSize = 2 * audioCtx.sampleRate;

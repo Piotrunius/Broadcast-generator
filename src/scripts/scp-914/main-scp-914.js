@@ -1,7 +1,17 @@
+import { AudioManager } from '../../utils/audio-manager.js';
 import { RAW_RECIPES } from './data/scp-recipes.js';
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function beep(freq = 880, duration = 0.08, vol = 0.06){
+
+// Use global AudioManager if available (created by core/index.js), otherwise create new instance
+const audioManager = window.audioManager || new AudioManager();
+// Ensure global reference
+window.audioManager = audioManager;
+
+function beep(freq = 880, duration = 0.08, vol = 0.06) {
+  // Check if audio is muted
+  if (audioManager.isMuted) return;
+
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
   o.type = 'sine';
@@ -11,7 +21,7 @@ function beep(freq = 880, duration = 0.08, vol = 0.06){
   g.connect(audioCtx.destination);
   o.start();
   g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-  setTimeout(()=> o.stop(), duration * 1000 + 20);
+  setTimeout(() => o.stop(), duration * 1000 + 20);
 }
 
 function playHoverSound() {

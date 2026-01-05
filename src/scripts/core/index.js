@@ -3,6 +3,8 @@
 // - Initializes Performance Mode toggle
 // - Ensures particles obey preferences
 
+import { AudioManager } from '../utils/audio-manager.js';
+import { initAudioToggle } from './audio-toggle.js';
 import performanceMode from './performance-mode.js';
 import { initPerformanceToggle } from './performance-toggle.js';
 
@@ -23,8 +25,15 @@ function init() {
   console.log('📊 performanceMode object:', performanceMode);
   console.log('📊 performanceMode.isEnabled():', performanceMode.isEnabled());
 
+  // Initialize global AudioManager if not already present (from broadcast pages)
+  if (!window.audioManager) {
+    window.audioManager = new AudioManager();
+    console.log('🔊 Global AudioManager created');
+  }
+
   maybeAutoEnablePerformanceMode();
   initPerformanceToggle();
+  initAudioToggle();
 
   // Ensure particles reflect current mode
   const syncParticles = () => {

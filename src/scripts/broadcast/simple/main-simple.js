@@ -1,5 +1,16 @@
+import { AudioManager } from '../../utils/audio-manager.js';
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function beep(freq = 880, duration = 0.08, vol = 0.06){
+
+// Use global AudioManager if available (created by core/index.js), otherwise create new instance
+const audioManager = window.audioManager || new AudioManager();
+// Ensure global reference
+window.audioManager = audioManager;
+
+function beep(freq = 880, duration = 0.08, vol = 0.06) {
+  // Check if audio is muted
+  if (audioManager.isMuted) return;
+
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
   o.type = 'sine';
@@ -9,13 +20,16 @@ function beep(freq = 880, duration = 0.08, vol = 0.06){
   g.connect(audioCtx.destination);
   o.start();
   g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-  setTimeout(()=> o.stop(), duration * 1000 + 20);
+  setTimeout(() => o.stop(), duration * 1000 + 20);
 }
 
-function playAlert(level){
-  if(level === "HIGH") beep(440, 0.3, 0.08);
-  else if(level === "MEDIUM") beep(660, 0.15, 0.06);
-  else if(level === "LOW") beep(880, 0.08, 0.04);
+function playAlert(level) {
+  // Check if audio is muted
+  if (audioManager.isMuted) return;
+
+  if (level === "HIGH") beep(440, 0.3, 0.08);
+  else if (level === "MEDIUM") beep(660, 0.15, 0.06);
+  else if (level === "LOW") beep(880, 0.08, 0.04);
   else beep(880, 0.08, 0.04);
 }
 
@@ -31,43 +45,43 @@ menuButtons.forEach(btn => {
 });
 
 // Toggle menu
-menuButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+menuButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
     const menuId = btn.getAttribute('data-menu');
     const list = document.querySelector(`.menu-list#${menuId}`);
-    allLists.forEach(l=>{
-      if(l !== list){
+    allLists.forEach(l => {
+      if (l !== list) {
         l.classList.remove('show');
         const b = document.querySelector(`.menu-btn[data-menu="${l.dataset.menu}"]`);
-        if(b) b.setAttribute('aria-expanded','false');
-        l.setAttribute('aria-hidden','true');
-        if(l.id === 'alarm') wrapEl.classList.remove('threat-open');
+        if (b) b.setAttribute('aria-expanded', 'false');
+        l.setAttribute('aria-hidden', 'true');
+        if (l.id === 'alarm') wrapEl.classList.remove('threat-open');
       }
     });
     const isShown = list.classList.contains('show');
-    if(isShown){
+    if (isShown) {
       list.classList.remove('show');
-      btn.setAttribute('aria-expanded','false');
-      list.setAttribute('aria-hidden','true');
-      if(menuId === 'alarm') wrapEl.classList.remove('threat-open');
+      btn.setAttribute('aria-expanded', 'false');
+      list.setAttribute('aria-hidden', 'true');
+      if (menuId === 'alarm') wrapEl.classList.remove('threat-open');
     } else {
       list.classList.add('show');
-      btn.setAttribute('aria-expanded','true');
-      list.setAttribute('aria-hidden','false');
-      if(menuId === 'alarm') wrapEl.classList.add('threat-open');
+      btn.setAttribute('aria-expanded', 'true');
+      list.setAttribute('aria-hidden', 'false');
+      if (menuId === 'alarm') wrapEl.classList.add('threat-open');
     }
   });
 });
 
 // Click outside
-document.addEventListener('click', (e)=>{
-  if(!e.target.closest('.menu')){
-    allLists.forEach(l=>{
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.menu')) {
+    allLists.forEach(l => {
       l.classList.remove('show');
-      l.setAttribute('aria-hidden','true');
+      l.setAttribute('aria-hidden', 'true');
       const b = document.querySelector(`.menu-btn[data-menu="${l.dataset.menu}"]`);
-      if(b) b.setAttribute('aria-expanded','false');
-      if(l.id === 'alarm') wrapEl.classList.remove('threat-open');
+      if (b) b.setAttribute('aria-expanded', 'false');
+      if (l.id === 'alarm') wrapEl.classList.remove('threat-open');
     });
   }
 });
@@ -75,7 +89,7 @@ document.addEventListener('click', (e)=>{
 // Estado de parpadeo sincronizado
 let blinkVisible = true;
 let blinkInterval = setInterval(() => {
-  document.querySelectorAll('.led.blink').forEach(led=>{
+  document.querySelectorAll('.led.blink').forEach(led => {
     led.style.opacity = blinkVisible ? 1 : 0;
   });
   blinkVisible = !blinkVisible;
@@ -91,110 +105,110 @@ document.querySelectorAll('.menu-list button').forEach(optBtn => {
     const caret = menuBtn.querySelector('.caret')?.outerHTML || '';
 
     // Convertir en dos líneas si contiene paréntesis
-    if(text.includes("(")) {
+    if (text.includes("(")) {
       let parts = text.split("(");
       text = `${parts[0].trim()}<br>(${parts[1]}`;
     }
 
     menuBtn.innerHTML = `${ledOrIcon}${text}${caret}`;
 
-    if(parentMenu.id === "alarm") updateLED(optBtn.dataset.option);
-    if(parentMenu.id === "testing") updateTestingLED(optBtn.dataset.option);
-    if(parentMenu.id === "status") updateStatusIcon(optBtn.dataset.option);
-    if(parentMenu.id === "events") updateEventLED(optBtn.dataset.option);
+    if (parentMenu.id === "alarm") updateLED(optBtn.dataset.option);
+    if (parentMenu.id === "testing") updateTestingLED(optBtn.dataset.option);
+    if (parentMenu.id === "status") updateStatusIcon(optBtn.dataset.option);
+    if (parentMenu.id === "events") updateEventLED(optBtn.dataset.option);
 
 
-    try { beep(880, 0.06, 0.04); } catch(e){}
+    try { beep(880, 0.06, 0.04); } catch (e) { }
 
     parentMenu.classList.remove('show');
-    parentMenu.setAttribute('aria-hidden','true');
-    menuBtn.setAttribute('aria-expanded','false');
-    if(parentMenu.id === 'alarm') wrapEl.classList.remove('threat-open');
+    parentMenu.setAttribute('aria-hidden', 'true');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    if (parentMenu.id === 'alarm') wrapEl.classList.remove('threat-open');
   });
 });
 
 // ALARM LED
-function updateLED(level){
+function updateLED(level) {
   const led = document.querySelector('.menu-btn[data-menu="alarm"] .led');
   led.className = 'led';
   led.style.opacity = 1;
   led.classList.remove('blink');
 
-  if(level === "HIGH") led.classList.add('high', 'blink');
-  else if(level === "MEDIUM") led.classList.add('medium');
-  else if(level === "LOW") led.classList.add('low');
+  if (level === "HIGH") led.classList.add('high', 'blink');
+  else if (level === "MEDIUM") led.classList.add('medium');
+  else if (level === "LOW") led.classList.add('low');
 }
 
 // TESTING LED
-function updateTestingLED(level){
+function updateTestingLED(level) {
   const led = document.querySelector('.menu-btn[data-menu="testing"] .led');
   led.className = 'led';
   led.style.opacity = 1;
   led.classList.remove('blink');
 
-  if(level.startsWith("ALLOWED")) led.classList.add('allowed');
-  else if(level === "PROHIBITED") led.classList.add('prohibited', 'blink');
+  if (level.startsWith("ALLOWED")) led.classList.add('allowed');
+  else if (level === "PROHIBITED") led.classList.add('prohibited', 'blink');
 }
-function updateEventLED(value){
-    const led = document.querySelector('.menu-btn[data-menu="events"] .led');
+function updateEventLED(value) {
+  const led = document.querySelector('.menu-btn[data-menu="events"] .led');
 
-    // Reset LED
-    led.className = "led";
-    led.style.opacity = 1;
+  // Reset LED
+  led.className = "led";
+  led.style.opacity = 1;
 
-    // Siempre rojo + parpadeo
-    led.classList.add("prohibited", "blink");
+  // Siempre rojo + parpadeo
+  led.classList.add("prohibited", "blink");
 }
 
 // STATUS iconos
-function updateStatusIcon(status){
-    const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
-    const iconHTML = getStatusIconHTML(status);
-    const caret = menuBtn.querySelector('.caret')?.outerHTML || "";
+function updateStatusIcon(status) {
+  const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
+  const iconHTML = getStatusIconHTML(status);
+  const caret = menuBtn.querySelector('.caret')?.outerHTML || "";
 
-    menuBtn.innerHTML = `<span class="icon">${iconHTML}</span>${status}${caret}`;
+  menuBtn.innerHTML = `<span class="icon">${iconHTML}</span>${status}${caret}`;
 }
 
-function getStatusIconHTML(status){
-    switch(status){
+function getStatusIconHTML(status) {
+  switch (status) {
 
-        case "SCP BREACH":
-            return `<img src="../../../../assets/icons/breach.png">`;
+    case "SCP BREACH":
+      return `<img src="../../../../assets/icons/breach.png">`;
 
-        case "SITE LOCKDOWN":
-            return `<img src="../../../../assets/icons/lockdown.png">`;
+    case "SITE LOCKDOWN":
+      return `<img src="../../../../assets/icons/lockdown.png">`;
 
-        case "CLASS-D ESCAPE":
-            return `<img src="../../../../assets/icons/class-descape.png">`;
+    case "CLASS-D ESCAPE":
+      return `<img src="../../../../assets/icons/class-descape.png">`;
 
-        case "CLASS-D RIOT":
-            return `<img src="../../../../assets/icons/riot.png">`;
+    case "CLASS-D RIOT":
+      return `<img src="../../../../assets/icons/riot.png">`;
 
-        case "CHAOS INSURGENCY":
-            return `<img src="../../../../assets/icons/chaosinsurgency.png">`;
+    case "CHAOS INSURGENCY":
+      return `<img src="../../../../assets/icons/chaosinsurgency.png">`;
 
-        case "610 EVENT":
-            return `<img src="../../../../assets/icons/610.png">`;
+    case "610 EVENT":
+      return `<img src="../../../../assets/icons/610.png">`;
 
-        case "076 EVENT":
-            return `<img src="../../../../assets/icons/abel.png">`;
+    case "076 EVENT":
+      return `<img src="../../../../assets/icons/abel.png">`;
 
-        case "NUCLEAR PROTOCOL":
-            return `<img src="../../../../assets/icons/nuke.png">`;
+    case "NUCLEAR PROTOCOL":
+      return `<img src="../../../../assets/icons/nuke.png">`;
 
-        case "CLEAR":
-            return `<img src="../../../../assets/icons/clear.png">`;
+    case "CLEAR":
+      return `<img src="../../../../assets/icons/clear.png">`;
 
-        default:
-            return "";
-    }
+    default:
+      return "";
+  }
 }
 
-function getMenuText(menuId){
+function getMenuText(menuId) {
   const menuBtn = document.querySelector(`.menu-btn[data-menu="${menuId}"]`);
-  if(!menuBtn) return "N/A";
-  for(let node of menuBtn.childNodes){
-    if(node.nodeType === Node.TEXT_NODE){
+  if (!menuBtn) return "N/A";
+  for (let node of menuBtn.childNodes) {
+    if (node.nodeType === Node.TEXT_NODE) {
       return node.textContent.trim();
     }
   }
@@ -202,7 +216,7 @@ function getMenuText(menuId){
 }
 
 // GENERATE BROADCAST
-document.getElementById('generateBtn')?.addEventListener('click', ()=>{
+document.getElementById('generateBtn')?.addEventListener('click', () => {
   const warningEl = document.getElementById('noParamsWarning');
   const lengthWarningEl = document.getElementById('lengthWarning');
 
@@ -220,8 +234,8 @@ document.getElementById('generateBtn')?.addEventListener('click', ()=>{
 
   // Normalización del TESTING para broadcast
   let testing = "";
-  if(testingRaw.toUpperCase() === "ALLOWED") testing = "ALLOWED";
-  else if(testingRaw.toUpperCase() === "PROHIBITED") testing = "PROHIBITED";
+  if (testingRaw.toUpperCase() === "ALLOWED") testing = "ALLOWED";
+  else if (testingRaw.toUpperCase() === "PROHIBITED") testing = "PROHIBITED";
 
   const statusMessages = {
     "SCP BREACH": "All personnel must initiate containment protocols immediately. Follow all emergency procedures",
@@ -232,10 +246,10 @@ document.getElementById('generateBtn')?.addEventListener('click', ()=>{
     "CLEAR": "All personnel resume normal duties",
   };
   const eventMessages = {
-      "610 EVENT": "SCP-610 anomaly active. Avoid exposure. Containment and quarantine teams deploy immediately",
-      "076 EVENT": "SCP-076 containment breach. Armed response teams engage immediately with heavy gunfire",
-      "CLASS-D RIOT": "Class-D personnel are rioting. Security teams must contain the situation immediately",
-      "323 BREACH": "SCP-323 containment All personnel evacuate immediately. Response teams engage with full-force authorization."
+    "610 EVENT": "SCP-610 anomaly active. Avoid exposure. Containment and quarantine teams deploy immediately",
+    "076 EVENT": "SCP-076 containment breach. Armed response teams engage immediately with heavy gunfire",
+    "CLASS-D RIOT": "Class-D personnel are rioting. Security teams must contain the situation immediately",
+    "323 BREACH": "SCP-323 containment All personnel evacuate immediately. Response teams engage with full-force authorization."
 
   };
 
@@ -246,29 +260,29 @@ document.getElementById('generateBtn')?.addEventListener('click', ()=>{
 
   // 🔥 PRIORIDAD DE EVENTOS SOBRE STATUS
   if (
-      // Regla 1: SCP BREACH + 076 o 610 → solo evento
-      (status === "SCP BREACH" &&
-      (eventSelected === "076 EVENT" || eventSelected === "610 EVENT" || eventSelected === "323 BREACH" )) ||
+    // Regla 1: SCP BREACH + 076 o 610 → solo evento
+    (status === "SCP BREACH" &&
+      (eventSelected === "076 EVENT" || eventSelected === "610 EVENT" || eventSelected === "323 BREACH")) ||
 
-      // Regla 2: CLASS-D ESCAPE + CLASS-D RIOT → solo evento
-      (status === "CLASS-D ESCAPE" &&
+    // Regla 2: CLASS-D ESCAPE + CLASS-D RIOT → solo evento
+    (status === "CLASS-D ESCAPE" &&
       (eventSelected === "CLASS-D RIOT")) ||
-      
-      //Regla 3:Site lockdown + 076 o 610 --> custom mssg
-      (status === "SITE LOCKDOWN" &&
+
+    //Regla 3:Site lockdown + 076 o 610 --> custom mssg
+    (status === "SITE LOCKDOWN" &&
       (eventSelected === "076 EVENT" || eventSelected === "610 EVENT"))
 
-    ){
-      customMessage = eventMessages[eventSelected] || "";
-  } 
+  ) {
+    customMessage = eventMessages[eventSelected] || "";
+  }
   else {
-      // Normal: mensaje del status primero
-      customMessage = statusMessages[status] || "";
+    // Normal: mensaje del status primero
+    customMessage = statusMessages[status] || "";
 
-      // Añadir mensaje del evento si existe
-      if (eventMessages[eventSelected]) {
-          customMessage += " | " + eventMessages[eventSelected];
-      }
+    // Añadir mensaje del evento si existe
+    if (eventMessages[eventSelected]) {
+      customMessage += " | " + eventMessages[eventSelected];
+    }
   }
 
 
@@ -278,36 +292,36 @@ document.getElementById('generateBtn')?.addEventListener('click', ()=>{
   // recopilar SCPs activados
   let activeSCPs = [];
 
-  if(document.getElementById("scp035").checked){
-      activeSCPs.push("mask");
+  if (document.getElementById("scp035").checked) {
+    activeSCPs.push("mask");
   }
-  if(document.getElementById("scp008").checked){
-      activeSCPs.push("008");
+  if (document.getElementById("scp008").checked) {
+    activeSCPs.push("008");
   }
-  if(document.getElementById("scp409").checked){
-      activeSCPs.push("crystal");
+  if (document.getElementById("scp409").checked) {
+    activeSCPs.push("crystal");
   }
-  if(document.getElementById("scp701").checked){
-      activeSCPs.push("701");
+  if (document.getElementById("scp701").checked) {
+    activeSCPs.push("701");
   }
 
   let containmentOn = document.getElementById("containmentCheck").checked;
 
   // *** Construcción correcta del mensaje ***
-  if(containmentOn){
-      if(activeSCPs.length > 0){
-          customMessage += ` | CON-X+, ${activeSCPs.join(", ")} testing requires SID+ authorization`;
-      } else {
-          customMessage += ` | CON-X+ testing requires SID+ authorization`;
-      }
+  if (containmentOn) {
+    if (activeSCPs.length > 0) {
+      customMessage += ` | CON-X+, ${activeSCPs.join(", ")} testing requires SID+ authorization`;
+    } else {
+      customMessage += ` | CON-X+ testing requires SID+ authorization`;
+    }
   } else {
-      if(activeSCPs.length > 0){
-          customMessage += ` | ${activeSCPs.join(", ")} testing requires SID+ authorization`;
-      }
+    if (activeSCPs.length > 0) {
+      customMessage += ` | ${activeSCPs.join(", ")} testing requires SID+ authorization`;
+    }
   }
 
   // ID REQUIREMENT
-  if(idOption) customMessage += " | Present identification at CP";
+  if (idOption) customMessage += " | Present identification at CP";
 
   let parts = [];
 
@@ -330,7 +344,7 @@ document.getElementById('generateBtn')?.addEventListener('click', ()=>{
   if (parts.length === 0) {
     outputEl.value = "";
     warningEl.style.display = "block";
-    try { beep(220, 0.15, 0.08); } catch(e){}
+    try { beep(220, 0.15, 0.08); } catch (e) { }
     return;
   }
 
@@ -368,25 +382,25 @@ document.getElementById('generateBtn')?.addEventListener('click', ()=>{
 
 
 // COPY
-document.getElementById('copyBtn')?.addEventListener('click', ()=>{
-  if(!outputEl.value.trim()) { alert('No hay texto para copiar.'); return; }
+document.getElementById('copyBtn')?.addEventListener('click', () => {
+  if (!outputEl.value.trim()) { alert('No hay texto para copiar.'); return; }
   outputEl.select();
   navigator.clipboard?.writeText(outputEl.value)
-    .then(()=> {
+    .then(() => {
       const copyBtn = document.getElementById('copyBtn');
       copyBtn.textContent = 'COPIED!';
-      setTimeout(()=> copyBtn.textContent = 'COPY',1000);
+      setTimeout(() => copyBtn.textContent = 'COPY', 1000);
     })
-    .catch(()=> {
+    .catch(() => {
       document.execCommand('copy');
       const copyBtn = document.getElementById('copyBtn');
       copyBtn.textContent = 'COPIED!';
-      setTimeout(()=> copyBtn.textContent = 'COPY',1000);
+      setTimeout(() => copyBtn.textContent = 'COPY', 1000);
     });
 });
 
 // CLEAR ALL
-document.getElementById('clearBtn')?.addEventListener('click', ()=>{
+document.getElementById('clearBtn')?.addEventListener('click', () => {
   outputEl.value = '';
 
   // Hide warning if visible
@@ -395,12 +409,12 @@ document.getElementById('clearBtn')?.addEventListener('click', ()=>{
   if (lengthWarningEl) lengthWarningEl.style.display = 'none';
   outputEl.style.borderColor = "";
 
-  menuButtons.forEach(btn=>{
+  menuButtons.forEach(btn => {
     const menuId = btn.getAttribute('data-menu');
     btn.innerHTML = originalButtonHTML[menuId];
   });
 
-  document.querySelectorAll('.led').forEach(led=>{
+  document.querySelectorAll('.led').forEach(led => {
     led.style.opacity = 1;
     led.classList.remove('blink');
   });

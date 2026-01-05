@@ -131,6 +131,9 @@
     }
 
     playAnomalySound() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -152,7 +155,7 @@
             setTimeout(() => osc.stop(), 150);
           }, i * 100);
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     modifyClipboard() {
@@ -175,10 +178,10 @@ You will not remember reading this.
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
             .writeText(anomalousText)
-            .then(() => {})
-            .catch((err) => {});
+            .then(() => { })
+            .catch((err) => { });
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     end() {

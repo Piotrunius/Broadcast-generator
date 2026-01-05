@@ -94,6 +94,9 @@
     }
 
     playUnlockSound() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -134,10 +137,13 @@
             setTimeout(() => osc.stop(), 500);
           });
         }, 600);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     playOmegaSound() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -174,7 +180,7 @@
             setTimeout(() => osc2.stop(), 200);
           }, i * 250);
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     spawnPatternSymbols() {

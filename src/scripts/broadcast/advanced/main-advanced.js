@@ -8,7 +8,10 @@ import {
 import { BroadcastGenerator } from '../engine/broadcast-generator.js';
 
 const generator = new BroadcastGenerator();
-const audioManager = new AudioManager();
+// Use global AudioManager if available (created by core/index.js), otherwise create new instance
+const audioManager = window.audioManager || new AudioManager();
+// Ensure global reference
+window.audioManager = audioManager;
 
 // Initialize typewriter animation with audio
 setTypewriterAudio(audioManager);

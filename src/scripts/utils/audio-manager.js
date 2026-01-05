@@ -53,11 +53,38 @@ function playTone(freq, duration, vol, type = 'sine', ramp = true) {
  * Updated with louder volumes and more variety.
  */
 export class AudioManager {
+  constructor() {
+    // Check if audio is muted in localStorage
+    this.isMuted = localStorage.getItem('broadcast-generator-audio-muted') === 'true';
+    this.updateMuteState();
+  }
+
+  /**
+   * Check mute state and apply class to document
+   */
+  updateMuteState() {
+    if (this.isMuted) {
+      document.documentElement.classList.add('audio-muted');
+    } else {
+      document.documentElement.classList.remove('audio-muted');
+    }
+  }
+
+  /**
+   * Toggle mute state
+   */
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    localStorage.setItem('broadcast-generator-audio-muted', this.isMuted.toString());
+    this.updateMuteState();
+  }
+
   /**
    * Standard UI Click (Buttons, Selects)
    * Louder and punchier.
    */
   playClick() {
+    if (this.isMuted) return;
     playTone(1200, 0.08, 0.15, 'sine'); // Vol 0.05 -> 0.15
   }
 
@@ -65,6 +92,7 @@ export class AudioManager {
    * Menu Toggle / Switch
    */
   playToggle() {
+    if (this.isMuted) return;
     playTone(880, 0.06, 0.15, 'triangle'); // Vol 0.05 -> 0.15
   }
 
@@ -73,6 +101,7 @@ export class AudioManager {
    * Louder but still short.
    */
   playHover() {
+    if (this.isMuted) return;
     playTone(2000, 0.02, 0.04, 'sine'); // Vol 0.01 -> 0.04
   }
 
@@ -81,6 +110,7 @@ export class AudioManager {
    * Added pitch variation for realism.
    */
   playType() {
+    if (this.isMuted) return;
     // Randomize pitch slightly (between 550Hz and 650Hz)
     const randomFreq = 550 + Math.random() * 100;
     playTone(randomFreq, 0.04, 0.1, 'square'); // Vol 0.03 -> 0.1
@@ -91,6 +121,7 @@ export class AudioManager {
    * A rising "whoosh" effect simulation
    */
   playOpen() {
+    if (this.isMuted) return;
     playTone(300, 0.15, 0.1, 'sine');
     setTimeout(() => playTone(600, 0.1, 0.08, 'sine'), 50);
   }
@@ -99,6 +130,7 @@ export class AudioManager {
    * Success / Operation Complete
    */
   playSuccess() {
+    if (this.isMuted) return;
     const ctx = ensureAudioContext();
     const volume = 0.15; // Vol 0.05 -> 0.15
 
@@ -114,6 +146,7 @@ export class AudioManager {
    * Error / Access Denied
    */
   playError() {
+    if (this.isMuted) return;
     playTone(150, 0.4, 0.25, 'sawtooth'); // Vol 0.1 -> 0.25
     setTimeout(() => playTone(140, 0.4, 0.25, 'sawtooth'), 150); // Double buzz
   }
@@ -122,6 +155,7 @@ export class AudioManager {
    * Alert Levels
    */
   playAlert(level) {
+    if (this.isMuted) return;
     const upperLevel = level?.toUpperCase();
     if (upperLevel === 'HIGH') {
       playTone(880, 0.25, 0.25, 'square');

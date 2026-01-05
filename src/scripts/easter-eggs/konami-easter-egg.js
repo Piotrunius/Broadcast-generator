@@ -598,6 +598,9 @@
     }
 
     playBreachSequence() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       try {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         // Głęboki, groźny alarm containment breach
@@ -607,7 +610,7 @@
             this.playTone(freq * 0.5, 0.3, 0.25, 'sawtooth');
           }, i * 200);
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     playGlitchSound() {
@@ -653,6 +656,9 @@
     }
 
     createAmbientChaos() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       try {
         if (!this.audioContext) {
           this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -691,10 +697,12 @@
           setTimeout(() => this.playTone(65, 0.05, 0.24, 'square'), 100);
         }, 700);
         this.intervals.push(beatInterval);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     playTone(freq, duration, vol, type = 'sine') {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
       if (!this.audioContext) return;
       if (this.audioContext.state === 'suspended') this.audioContext.resume();
 
@@ -717,13 +725,13 @@
             try {
               osc.stop();
               osc.disconnect();
-            } catch (e) {}
+            } catch (e) { }
           },
           duration * 1000 + 50
         );
 
         this.activeSounds.push({ osc, gain });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     stopAudio() {
@@ -734,7 +742,7 @@
             osc.stop();
             osc.disconnect();
             gain.disconnect();
-          } catch (e) {}
+          } catch (e) { }
         });
         this.activeSounds = [];
 
@@ -743,19 +751,19 @@
           try {
             osc.stop();
             osc.disconnect();
-          } catch (e) {}
+          } catch (e) { }
         });
         this.gainNodes.forEach((gain) => {
           try {
             gain.disconnect();
-          } catch (e) {}
+          } catch (e) { }
         });
         // DON'T close AudioContext - it might be shared with AudioManager!
         // Just stop and disconnect everything
         this.oscillators = [];
         this.gainNodes = [];
         this.audioContext = null;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     end() {
@@ -878,11 +886,11 @@
     }
 
     @keyframes pixelExplode {
-      0% { 
+      0% {
         transform: translate(0, 0) scale(1);
         opacity: 1;
       }
-      100% { 
+      100% {
         transform: translate(var(--endX), var(--endY)) scale(0) rotate(720deg);
         opacity: 0;
       }
@@ -901,7 +909,7 @@
     }
 
     @keyframes consciousnessWarn {
-      0% { 
+      0% {
         transform: translateX(-50%) scale(0) rotate(-10deg);
         opacity: 0;
       }
@@ -913,7 +921,7 @@
         transform: translateX(-50%) scale(1) rotate(-2deg);
         opacity: 1;
       }
-      100% { 
+      100% {
         transform: translateX(-50%) scale(0.5) rotate(10deg);
         opacity: 0;
       }

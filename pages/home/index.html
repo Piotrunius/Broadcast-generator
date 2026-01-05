@@ -36,6 +36,7 @@
     <!-- Home page styling -->
     <link rel="stylesheet" href="../../src/styles/pages/home.css" />
     <link rel="stylesheet" href="../../src/styles/base/animations.css" />
+    <link rel="stylesheet" href="../../src/styles/base/responsive.css" />
   </head>
 
   <body>
@@ -152,7 +153,9 @@
     <script type="module" src="../../src/scripts/core/performance-mode.js"></script>
     <script type="module">
       import { initPerformanceToggle } from '../../src/scripts/core/performance-toggle.js';
+      import { initAudioToggle } from '../../src/scripts/core/audio-toggle.js';
       initPerformanceToggle();
+      initAudioToggle();
     </script>
     <script>
       // Reveal after load to avoid flicker and let animations play

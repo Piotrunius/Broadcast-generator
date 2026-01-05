@@ -45,7 +45,7 @@
         if (window.AudioContext || window.webkitAudioContext) {
           // Create a script that intercepts audio
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     applyGrayscale() {
@@ -159,6 +159,9 @@
     }
 
     playEerieSilence() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       // Deep, unsettling drone
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -214,11 +217,11 @@
               try {
                 osc.stop();
                 osc.disconnect();
-              } catch (e) {}
+              } catch (e) { }
             });
           }, 3000);
         }, DURATION - 3000);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     end() {
@@ -270,16 +273,16 @@
     }
 
     @keyframes silenceFloat {
-      0% { 
-        opacity: 0.6; 
-        transform: translateY(0) rotate(0deg); 
+      0% {
+        opacity: 0.6;
+        transform: translateY(0) rotate(0deg);
       }
-      50% { 
-        opacity: 0.3; 
+      50% {
+        opacity: 0.3;
       }
-      100% { 
-        opacity: 0; 
-        transform: translateY(-200px) rotate(180deg); 
+      100% {
+        opacity: 0;
+        transform: translateY(-200px) rotate(180deg);
       }
     }
   `;

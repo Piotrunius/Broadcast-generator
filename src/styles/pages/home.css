@@ -544,8 +544,182 @@ body::before {
   font-size: 12px;
 }
 
-@media (max-width: 1100px) {
+/* Tablet and smaller */
+@media (max-width: 1200px) {
+  .home-layout {
+    gap: 20px;
+  }
+
+  .menu-wrap {
+    width: min(700px, 90vw);
+  }
+}
+
+@media (max-width: 900px) {
+  .home-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+  }
+
+  .menu-wrap {
+    width: min(700px, 85vw);
+    padding: 24px;
+  }
+
   .options-row {
-    gap: 0px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .menu-box {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .updates-panel,
+  .credits-panel {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .main-btn {
+    width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    align-items: flex-start;
+    padding: 5px;
+  }
+
+  .home-layout {
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    gap: 10px;
+  }
+
+  .menu-wrap {
+    width: calc(100vw - 20px);
+    padding: 14px;
+  }
+
+  .menu-wrap h1 {
+    font-size: 18px;
+  }
+
+  .options-row {
+    gap: 10px;
+  }
+
+  .menu-box {
+    width: 100%;
+    min-height: 160px;
+    padding: 12px;
+  }
+
+  .menu-box h2 {
+    font-size: 15px;
+  }
+
+  .menu-box p {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .updates-panel,
+  .credits-panel {
+    width: calc(100vw - 20px);
+    max-height: 200px;
+  }
+
+  .main-btn {
+    padding: 10px 12px;
+    font-size: 12px;
+    width: auto;
+  }
+
+  .header-logo {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  body {
+    padding: 2px;
+  }
+
+  .home-layout {
+    padding: 2px;
+  }
+
+  .menu-wrap {
+    width: calc(100vw - 4px);
+    padding: 10px;
+  }
+
+  .menu-wrap h1 {
+    font-size: 14px;
+  }
+
+  .options-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .menu-box {
+    width: 100%;
+    min-height: 140px;
+    padding: 10px;
+  }
+
+  .menu-box h2 {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .menu-box p {
+    font-size: 11px;
+  }
+
+  .updates-panel,
+  .credits-panel {
+    width: calc(100vw - 4px);
+    max-height: 180px;
+    padding: 10px 6px;
+  }
+
+  .updates-panel h2,
+  .credits-panel h2 {
+    font-size: 13px;
+  }
+
+  .main-btn {
+    padding: 8px 10px;
+    font-size: 10px;
+    width: auto;
+    margin: 6px 0;
+  }
+
+  .header-logo {
+    width: 24px;
+    height: 24px;
+    top: 6px;
+    right: 8px;
+  }
+
+  .header-content {
+    padding-right: 32px;
   }
 }

@@ -168,6 +168,9 @@
     }
 
     playTimeSound() {
+      // Check if audio is muted
+      if (window.audioManager && window.audioManager.isMuted) return;
+
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -215,7 +218,7 @@
             setTimeout(() => drone.stop(), 1000);
           }, 2000);
         }, 3000);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     end() {

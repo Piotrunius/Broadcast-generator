@@ -91,6 +91,7 @@ body {
 }
 
 @keyframes logoGlow {
+
   0%,
   100% {
     filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.4));
@@ -236,9 +237,12 @@ body {
 }
 
 /* Clase para parpadeo sincronizado */
-.led.blink { transition: opacity 0.2s; }
+.led.blink {
+  transition: opacity 0.2s;
+}
 
 @keyframes ledBlink-fast {
+
   0%,
   100% {
     opacity: 1;
@@ -287,29 +291,32 @@ body {
 
 /* dropdown list */
 .menu-list {
-  list-style:none;
-  margin:10px 0 0;
-  padding:8px;
-  border-radius:8px;
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 8px;
+  border-radius: 8px;
   background: tra;
-  border:1px solid rgba(255, 0, 0, 0.253);
+  border: 1px solid rgba(255, 0, 0, 0.253);
   backdrop-filter: blur(4px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   box-sizing: border-box;
   transform-origin: top center;
-  opacity:0;
+  opacity: 0;
   transform: translateY(-8px) scaleY(0.98);
-  transition: opacity 220ms ease, transform 220ms cubic-bezier(.2,.9,.3,1);
-  display:none;
-  min-width: 100%; /* ancho mínimo para items */
+  transition: opacity 220ms ease, transform 220ms cubic-bezier(.2, .9, .3, 1);
+  display: none;
+  min-width: 100%;
+  /* ancho mínimo para items */
   width: 100%;
   white-space: nowrap;
   position: absolute;
-  top: calc(100% + 6px);   /* Aparece justo debajo del botón */
+  top: calc(100% + 6px);
+  /* Aparece justo debajo del botón */
   left: 0;
   width: 100%;
   z-index: 1000;
-  display: none;           /* Oculto por defecto */
+  display: none;
+  /* Oculto por defecto */
   opacity: 0;
   transform: translateY(-8px);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -379,7 +386,7 @@ body {
   border-color: rgba(255, 0, 0, 0.12);
   background: rgba(255, 255, 255, 0.08);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 /* Active state for action buttons */
@@ -527,12 +534,78 @@ textarea#output {
   }
 }
 
-/* Responsive */
+/* Responsive Design */
+@media (max-width: 1100px) {
+  .wrap {
+    width: min(95vw, 900px);
+    padding: 20px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .menus {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .menu {
+    width: calc(50% - 5px);
+  }
+
+  .SCPS-block {
+    flex-wrap: wrap;
+  }
+
+  .checkbox-btn {
+    min-width: auto;
+  }
+}
+
 @media (max-width: 760px) {
+  .wrap {
+    width: calc(100vw - 20px);
+    padding: 16px;
+  }
+
+  .header {
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-size: 16px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+  }
+
+  .header-logo {
+    width: 36px;
+    height: 36px;
+    top: 0;
+  }
+
+  .header-content {
+    padding-right: 45px;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+
   .menus {
     display: flex;
     flex-direction: column;
     width: 100%;
+    gap: 8px;
   }
 
   .menu {
@@ -540,12 +613,42 @@ textarea#output {
     margin-right: 0;
   }
 
-  .controls {
-    gap: 10px;
+  .menu-btn {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .SCPS-block {
+    flex-direction: column;
+  }
+
+  .SCPS-title {
+    width: 100%;
+    text-align: left;
+  }
+
+  .checkbox-btn {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .containment-block {
+    margin-right: 0;
+    margin-bottom: 12px;
   }
 
   .bottom-controls {
-    justify-content: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .primary,
+  .btn-secondary {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 12px;
+    font-size: 12px;
   }
 }
 
@@ -607,7 +710,7 @@ textarea#output {
 }
 
 /* LED encendido (ON) */
-.checkbox-btn input:checked + .check-led {
+.checkbox-btn input:checked+.check-led {
   background: var(--green-console);
   box-shadow:
     0 0 8px rgba(0, 255, 90, 0.8),
@@ -700,24 +803,53 @@ textarea#output {
 /* --- ANIMATIONS --- */
 
 @keyframes entryFade {
-  from { opacity: 0; transform: translateY(30px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(255, 30, 30, 0.4), inset 0 -6px 12px rgba(255, 0, 0, 0.06); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 30, 30, 0.4), inset 0 -6px 12px rgba(255, 0, 0, 0.06);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 30, 30, 0), inset 0 -6px 12px rgba(255, 0, 0, 0.06);
+  }
 }
 
 @keyframes scanlines {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 100%; }
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 0 100%;
+  }
 }
 
 @keyframes flashGreen {
-  0% { background-color: rgba(0, 255, 100, 0.15); box-shadow: 0 0 20px rgba(0, 255, 100, 0.2); color: #fff; }
-  100% { background-color: #050805; box-shadow: inset 0 8px 10px rgba(0, 255, 80, 0.02); color: var(--green-console); }
+  0% {
+    background-color: rgba(0, 255, 100, 0.15);
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.2);
+    color: #fff;
+  }
+
+  100% {
+    background-color: #050805;
+    box-shadow: inset 0 8px 10px rgba(0, 255, 80, 0.02);
+    color: var(--green-console);
+  }
 }
 
 /* Applied via JS on generate */
@@ -728,19 +860,39 @@ textarea#output.flash {
 /* --- STAGGERED ENTRY ANIMATIONS --- */
 
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .menus .menu {
   animation: slideInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
-.menus .menu:nth-child(1) { animation-delay: 0.1s; }
-.menus .menu:nth-child(2) { animation-delay: 0.2s; }
-.menus .menu:nth-child(3) { animation-delay: 0.3s; }
-.menus .menu:nth-child(4) { animation-delay: 0.4s; }
 
-.checkbox-block, .SCPS-block {
+.menus .menu:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.menus .menu:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.menus .menu:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.menus .menu:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.checkbox-block,
+.SCPS-block {
   animation: slideInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   animation-delay: 0.5s;
 }
@@ -752,22 +904,56 @@ textarea#output.flash {
 
 /* Dropdown Items Animation */
 @keyframes menuItemSlide {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .menu-list.show li {
   animation: menuItemSlide 0.3s ease-out backwards;
 }
-.menu-list.show li:nth-child(1) { animation-delay: 0.05s; }
-.menu-list.show li:nth-child(2) { animation-delay: 0.1s; }
-.menu-list.show li:nth-child(3) { animation-delay: 0.15s; }
-.menu-list.show li:nth-child(4) { animation-delay: 0.2s; }
-.menu-list.show li:nth-child(5) { animation-delay: 0.25s; }
-.menu-list.show li:nth-child(6) { animation-delay: 0.3s; }
-.menu-list.show li:nth-child(7) { animation-delay: 0.35s; }
-.menu-list.show li:nth-child(8) { animation-delay: 0.4s; }
-.menu-list.show li:nth-child(9) { animation-delay: 0.45s; }
+
+.menu-list.show li:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.menu-list.show li:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.menu-list.show li:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.menu-list.show li:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.menu-list.show li:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.menu-list.show li:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.menu-list.show li:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.menu-list.show li:nth-child(8) {
+  animation-delay: 0.4s;
+}
+
+.menu-list.show li:nth-child(9) {
+  animation-delay: 0.45s;
+}
 
 .mode-toggle .label {
   color: var(--muted);
@@ -786,12 +972,12 @@ textarea#output.flash {
   text-shadow: none;
 }
 
-.switch.active ~ .label:first-child {
+.switch.active~.label:first-child {
   color: var(--muted);
   text-shadow: none;
 }
 
-.switch.active ~ .label:last-child {
+.switch.active~.label:last-child {
   color: var(--red);
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
@@ -877,6 +1063,7 @@ textarea#output.flash {
 
 /* Mobile overflow: allow scrolling when content exceeds viewport */
 @media (max-width: 768px) {
+
   html,
   body {
     overflow-y: auto !important;
@@ -884,7 +1071,7 @@ textarea#output.flash {
 
   body {
     align-items: flex-start;
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .wrap {
@@ -892,7 +1079,52 @@ textarea#output.flash {
   }
 }
 
-.no-params-warning{
+@media (max-width: 600px) {
+  .wrap {
+    width: calc(100vw - 10px);
+    padding: 12px;
+  }
+
+  .header h1 {
+    font-size: 14px;
+  }
+
+  .subtitle {
+    font-size: 10px;
+  }
+
+  .header-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .header-content {
+    padding-right: 35px;
+  }
+
+  .menu-btn {
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+
+  .checkbox-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .primary,
+  .btn-secondary {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+
+  #copyBtn,
+  .back-btn {
+    min-width: auto;
+  }
+}
+
+.no-params-warning {
   display: none;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -904,8 +1136,8 @@ textarea#output.flash {
   letter-spacing: 1px;
   text-transform: uppercase;
 
-  border: 1px solid rgba(255,0,0,0.4);
-  background: rgba(255,0,0,0.08);
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  background: rgba(255, 0, 0, 0.08);
   border-radius: 6px;
 
   text-align: center;
@@ -913,11 +1145,20 @@ textarea#output.flash {
   animation: warningBlink 1s infinite;
 }
 
-@keyframes warningBlink{
-  0%   { opacity: 1; }
-  50%  { opacity: 0.6; }
-  100% { opacity: 1; }
+@keyframes warningBlink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
+
 .mode-toggle-bottom {
   display: flex;
   align-items: center;
@@ -944,9 +1185,12 @@ textarea#output.flash {
 /* Estas reglas eliminan efectos pesados cuando la clase .performance-mode está activa en el body */
 
 body.performance-mode .wrap {
-  backdrop-filter: none !important; /* El mayor culpable del lag */
-  box-shadow: 0 0 0 1px #333 !important; /* Borde simple en lugar de sombra pesada */
-  background: #0a0a0a !important; /* Fondo sólido en lugar de semitransparente */
+  backdrop-filter: none !important;
+  /* El mayor culpable del lag */
+  box-shadow: 0 0 0 1px #333 !important;
+  /* Borde simple en lugar de sombra pesada */
+  background: #0a0a0a !important;
+  /* Fondo sólido en lugar de semitransparente */
   animation: none !important;
 }
 
