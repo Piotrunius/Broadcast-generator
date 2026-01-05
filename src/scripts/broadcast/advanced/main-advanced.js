@@ -103,31 +103,6 @@ function initializeApp() {
       });
     }
 
-    if (contentPanel.classList.contains('multi-select')) {
-      // This is for Events
-      contentPanel.querySelectorAll('button').forEach((optionBtn) => {
-        // Add hover sound
-        optionBtn.addEventListener('mouseenter', () => audioManager.playHover());
-
-        optionBtn.addEventListener('click', () => {
-          optionBtn.classList.toggle('selected');
-          const selectedCount = contentPanel.querySelectorAll('.selected').length;
-
-          // Get all currently selected events keys
-          const selectedEventKeys = Array.from(contentPanel.querySelectorAll('.selected')).map(
-            (btn) => btn.dataset.option
-          );
-
-          updateEventsLEDColor(mainBtn.querySelector('.led'), selectedEventKeys); // Update LED based on selection
-
-          textSpan.textContent =
-            selectedCount > 0 ? `Events (${selectedCount})` : mainBtn.dataset.originalText;
-          debouncedUpdateLiveOutput();
-          audioManager.playClick();
-        });
-      });
-    }
-
     if (contentPanel.classList.contains('collapsible-content')) {
       contentPanel.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
         const checkboxBtn = checkbox.closest('.checkbox-btn');
@@ -161,6 +136,15 @@ function initializeApp() {
             if (textSpan)
               textSpan.textContent =
                 checkedCount > 0 ? `Requirements (${checkedCount})` : mainBtn.dataset.originalText;
+          } else if (panelId === 'eventsContent') {
+            // Get all currently selected events keys from label text
+            const selectedEventKeys = Array.from(contentPanel.querySelectorAll('input:checked')).map(
+              (cb) => cb.closest('label').textContent.trim()
+            );
+            updateEventsLEDColor(led, selectedEventKeys); // Update LED based on selection
+            if (textSpan)
+              textSpan.textContent =
+                checkedCount > 0 ? `Events (${checkedCount})` : mainBtn.dataset.originalText;
           }
           debouncedUpdateLiveOutput();
           audioManager.playClick();
@@ -205,8 +189,15 @@ function initializeApp() {
 
       // Check for overflow
       if (generatedOutput.overflow) {
-        // Add red background + shake animation
-        outputEl.classList.add('copy-error');
+        // Easter egg: sprawdź czy wszystkie opcje są zaznaczone
+        const allSelected = areAllOptionsSelected();
+
+        // Easter egg: zmień tło na niebieskie, normalnie czerwone
+        if (allSelected) {
+          outputEl.classList.add('copy-easter-egg');
+        } else {
+          outputEl.classList.add('copy-error');
+        }
         outputEl.style.animation = 'none';
         outputEl.offsetHeight; // Trigger reflow to restart animation
         outputEl.style.animation = 'shake 0.5s';
@@ -217,7 +208,6 @@ function initializeApp() {
         if (!errorEl) {
           errorEl = document.createElement('div');
           errorEl.id = 'char-limit-error';
-          errorEl.textContent = 'MESSAGE TOO LONG! Exceeds 200 character limit.';
           errorEl.style.color = 'var(--red)';
           errorEl.style.textAlign = 'center';
           errorEl.style.fontSize = '12px';
@@ -229,14 +219,25 @@ function initializeApp() {
           errorEl.style.width = '100%';
           errorEl.style.maxWidth = '500px';
           container.appendChild(errorEl);
+        }
+
+        // Easter egg message gdy wszystkie opcje są zaznaczone
+        if (allSelected) {
+          errorEl.textContent = 'You absolute madman... Just press ESC + L + ENTER at this point.';
+          errorEl.style.color = '#4da6ff';
+          errorEl.style.background = 'rgba(77, 166, 255, 0.15)';
+          errorEl.style.border = '1px solid rgba(77, 166, 255, 0.5)';
         } else {
           errorEl.textContent = 'MESSAGE TOO LONG! Exceeds 200 character limit.';
-          errorEl.style.display = 'block';
+          errorEl.style.color = 'var(--red)';
+          errorEl.style.background = 'rgba(255, 0, 0, 0.15)';
+          errorEl.style.border = '1px solid rgba(255, 0, 0, 0.4)';
         }
+        errorEl.style.display = 'block';
 
         setTimeout(() => {
           errorEl.style.display = 'none';
-          outputEl.classList.remove('copy-error');
+          outputEl.classList.remove('copy-error', 'copy-easter-egg');
         }, 3000);
 
         audioManager.playError();
@@ -252,7 +253,6 @@ function initializeApp() {
           audioManager.playSuccess();
         })
         .catch((err) => {
-          console.error('Copy failed:', err);
           audioManager.playError();
         });
     });
@@ -430,8 +430,9 @@ function getBroadcastOptions() {
   const status = getSelected('statusContent');
   const testing = getSelected('testingContent');
 
-  const events = Array.from(document.querySelectorAll('#eventsContent button.selected')).map(
-    (btn) => btn.dataset.option
+  // Events now use checkboxes instead of buttons
+  const events = Array.from(document.querySelectorAll('#eventsContent input:checked')).map(
+    (cb) => cb.closest('label').textContent.trim()
   );
   const breachedSCPs = Array.from(
     document.querySelectorAll('#breachedScpsContent input:checked')
@@ -454,6 +455,30 @@ function getBroadcastOptions() {
     breachedSCPs,
     requirements,
   };
+}
+
+// Easter egg checker - sprawdza czy wszystkie opcje są zaznaczone
+function areAllOptionsSelected() {
+  // Sprawdź czy wszystkie 11 checkboxów Breached SCPs jest zaznaczonych
+  const allBreachedScps = document.querySelectorAll('#breachedScpsContent input[type="checkbox"]');
+  const checkedBreachedScps = document.querySelectorAll('#breachedScpsContent input:checked');
+
+  // Sprawdź czy wszystkie 6 checkboxów Requirements jest zaznaczonych
+  const allRequirements = document.querySelectorAll('#requirementsContent input[type="checkbox"]');
+  const checkedRequirements = document.querySelectorAll('#requirementsContent input:checked');
+
+  // Sprawdź czy wszystkie 4 eventy są wybrane (teraz też checkboxy)
+  const allEvents = document.querySelectorAll('#eventsContent input[type="checkbox"]');
+  const selectedEvents = document.querySelectorAll('#eventsContent input:checked');
+
+  return (
+    allBreachedScps.length > 0 &&
+    checkedBreachedScps.length === allBreachedScps.length &&
+    allRequirements.length > 0 &&
+    checkedRequirements.length === allRequirements.length &&
+    allEvents.length > 0 &&
+    selectedEvents.length === allEvents.length
+  );
 }
 
 // Character counter - shows current length and provides visual feedback
@@ -568,7 +593,7 @@ async function updateLiveOutput() {
           try {
             audioManager.playError();
           } catch (e) {
-            console.debug('Audio error:', e);
+            // Silent
           }
         } else {
           outputElement.classList.remove('overflow-warning');
@@ -583,7 +608,6 @@ async function updateLiveOutput() {
       updateOutputColor();
     }
   } catch (err) {
-    console.error('Live output update failed:', err);
     const outputElement = document.getElementById('output');
     if (outputElement) {
       outputElement.value = 'Error generating broadcast. Please retry.';
@@ -608,7 +632,7 @@ function clearAll() {
   try {
     audioManager.playSuccess();
   } catch (e) {
-    console.log('Audio error:', e);
+    // Silent
   }
 
   // Reset custom text input
@@ -672,8 +696,6 @@ function clearAll() {
 
   // Force UI refresh
   document.body.offsetHeight; // Trigger reflow
-
-  console.log('✓ All cleared - state reset to zero');
 }
 
 const style = document.createElement('style');

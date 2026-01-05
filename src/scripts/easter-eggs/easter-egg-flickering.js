@@ -200,7 +200,7 @@
           gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
           setTimeout(() => whiteNoise.stop(), 500);
         }, 3000);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     end() {

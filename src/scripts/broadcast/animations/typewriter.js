@@ -176,7 +176,6 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
       return true;
     }
   } catch (error) {
-    console.error('Typewriter error:', error);
     // EMERGENCY: Always set final text
     element.value = target;
     updateCounterFn?.();

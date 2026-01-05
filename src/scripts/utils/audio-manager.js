@@ -44,7 +44,7 @@ function playTone(freq, duration, vol, type = 'sine', ramp = true) {
     }
     setTimeout(() => o.stop(), duration * 1000 + 50);
   } catch (e) {
-    console.error('Audio context error: ', e);
+    // Silent
   }
 }
 

@@ -10,8 +10,8 @@ export const STATUS_MESSAGES = {
     'NUCLEAR PROTOCOL':
       'All personnel must evacuate to shelters immediately. Failure to comply will result in fatality',
     CLEAR: 'All personnel resume normal duties',
-    MAINTENANCE: 'Maintenance personnel report to generator room immediately',
-    'O5 MEETING': 'O5 meeting scheduled',
+    MAINTENANCE: 'Facility personnel report to generator room immediately',
+    'O5 MEETING': 'SID+ meeting scheduled',
   },
   SHORT: {
     'SCP BREACH': 'Containment protocols required',
@@ -20,8 +20,8 @@ export const STATUS_MESSAGES = {
     'CHAOS INSURGENCY': 'Chaos Insurgency activity detected',
     'NUCLEAR PROTOCOL': 'Evacuate to shelters immediately',
     CLEAR: 'Normal duties resumed',
-    MAINTENANCE: 'Maintenance to generator room',
-    'O5 MEETING': 'O5 meeting scheduled',
+    MAINTENANCE: 'Facility personnel to generator room',
+    'O5 MEETING': 'SID+ meeting scheduled',
   },
   MINIMAL: {
     'SCP BREACH': '',
@@ -49,7 +49,7 @@ export const EVENT_MESSAGES = {
   SHORT: {
     '610 EVENT': 'SCP-610 anomaly active. Avoid exposure.',
     '076 EVENT': 'SCP-076 containment breach. Armed response needed.',
-    'CLASS-D RIOT': 'Class-D personnel rioting. Security response.',
+    'CLASS-D RIOT': 'Class-D personnel rioting. Security response needed.',
     '323 BREACH': 'SCP-323 containment breach. ',
   },
   MINIMAL: {

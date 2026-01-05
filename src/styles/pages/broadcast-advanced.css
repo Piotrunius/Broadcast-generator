@@ -951,6 +951,26 @@ textarea#output.copy-error {
     0 0 40px rgba(255, 0, 0, 0.3) !important;
 }
 
+textarea#output.copy-easter-egg {
+  background: linear-gradient(180deg,
+      rgba(77, 166, 255, 0.25) 0%,
+      rgba(77, 166, 255, 0.15) 100%) !important;
+  border-color: rgba(77, 166, 255, 0.9) !important;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 25px rgba(77, 166, 255, 0.5),
+    0 0 40px rgba(77, 166, 255, 0.3) !important;
+}
+
+/* Ensure easter egg border overrides error color */
+textarea#output.copy-easter-egg.color-error {
+  border-color: rgba(77, 166, 255, 0.9) !important;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 25px rgba(77, 166, 255, 0.5),
+    0 0 40px rgba(77, 166, 255, 0.3) !important;
+}
+
 /* bottom controls & footer */
 .bottom-controls {
   margin-top: auto;
