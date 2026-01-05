@@ -13,8 +13,9 @@ const audioManager = new AudioManager();
 // Initialize typewriter animation with audio
 setTypewriterAudio(audioManager);
 
-window.broadcastGenerator = generator; // Expose for debugging
-window.audioManager = audioManager; // Expose audio manager for debugging
+// Debug mode: uncomment below to expose objects for debugging
+// window.broadcastGenerator = generator;
+// window.audioManager = audioManager;
 
 // Debounced updateLiveOutput - PRODUCTION GRADE
 // Guarantees animation always shows correctly
@@ -40,35 +41,8 @@ const debouncedUpdateLiveOutput = () => {
   }
 };
 
-// Utility function for debouncing
-function debounce(func, delay) {
-  let timeout;
-  return function (...args) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
-}
-
-// --- Easter Egg Random Hint (5% chance) ---
-if (Math.random() < 0.05) {
-  setTimeout(() => {
-    console.log('%c⚠ ANOMALY DETECTED', 'color: #ff6600; font-weight: bold;');
-    console.log(
-      '%cClassic input sequence recognition system: %cACTIVE',
-      'color: #888;',
-      'color: #00ff00;'
-    );
-    console.log(
-      '%cTip: Gamers from the 80s know this pattern by heart...',
-      'color: #666; font-style: italic;'
-    );
-  }, 2000);
-}
-
 // --- Main Setup ---
 function initializeApp() {
-  console.log('🚀 Initializing Broadcast Generator...');
   const allMenuBtns = document.querySelectorAll('.menu-btn');
   const allContent = document.querySelectorAll('.menu-list, .collapsible-content');
 
@@ -203,16 +177,13 @@ function initializeApp() {
 
   // --- Button Actions ---
   const clearBtn = document.getElementById('clearBtn');
-  console.log('Clear button element:', clearBtn);
   if (clearBtn) {
     clearBtn.addEventListener('click', clearAll);
     clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
-    console.log('✓ Clear button initialized');
   }
 
   // Copy Button
   const copyBtn = document.getElementById('copyBtn');
-  console.log('Copy button element:', copyBtn);
   if (copyBtn) {
     copyBtn.addEventListener('click', () => {
       const outputEl = document.getElementById('output');
@@ -293,21 +264,13 @@ function initializeApp() {
 
   // Initialize keyboard shortcuts
   setupKeyboardShortcuts();
-
-  console.log('✓ Broadcast Generator fully initialized!');
 }
 
 // Initialize when DOM is ready
-console.log('📋 DOM readyState:', document.readyState);
 if (document.readyState === 'loading') {
-  console.log('⏳ Waiting for DOMContentLoaded...');
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('✓ DOMContentLoaded fired!');
-    initializeApp();
-  });
+  document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
   // DOM is already loaded (when module is loaded late)
-  console.log('✓ DOM already loaded, initializing now...');
   initializeApp();
 }
 
@@ -736,13 +699,13 @@ document.head.appendChild(style);
 
 // MODE SWITCH - ADVANCED PAGE
 const switchBtn = document.getElementById('modeSwitch');
-switchBtn.classList.add('active');
-switchBtn.addEventListener('click', () => {
-  window.location.href = '../simple/index.html';
-});
-// Note: Recovery button removed from HTML. Error modal now handles recovery with auto-repair option.
-// Users trigger recovery through error modal interface instead of dedicated button.
-if (switchBtn) switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
+if (switchBtn) {
+  switchBtn.classList.add('active');
+  switchBtn.addEventListener('click', () => {
+    window.location.href = '../simple/index.html';
+  });
+  switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
+}
 
 /*
 ================================================================================
