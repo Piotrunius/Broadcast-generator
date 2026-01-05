@@ -1,4 +1,4 @@
-import { AudioManager } from '../../utils/audio-manager.js';
+import { AudioManager } from '../utils/audio-manager.js';
 import { RAW_RECIPES } from './data/scp-recipes.js';
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
