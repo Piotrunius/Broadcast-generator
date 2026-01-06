@@ -4,6 +4,33 @@ export class BroadcastGenerator {
   constructor() {
     this.maxChars = 200;
     this.maxIterations = 50; // Safety limit
+    
+    // Event name mappings without numbers (for tagging prevention)
+    this.eventNameMap = {
+      '610 EVENT': {
+        LONG: 'Flesh anomaly active. Avoid exposure. Containment and quarantine teams deploy immediately',
+        SHORT: 'Flesh anomaly active. Avoid exposure.',
+        MINIMAL: 'Flesh anomaly.',
+      },
+      '076 EVENT': {
+        LONG: 'Abel breach. Armed response teams engage immediately with heavy gunfire',
+        SHORT: 'Abel breach. Armed response needed.',
+        MINIMAL: 'Abel breach.',
+      },
+      '323 BREACH': {
+        LONG: 'Skull breach. All personnel evacuate immediately. Response teams engage with full-force authorization',
+        SHORT: 'Skull breach.',
+        MINIMAL: 'Skull breach.',
+      },
+    };
+    
+    // Requirement name mappings without numbers (for tagging prevention)
+    this.requirementNameMap = {
+      '008': 'Zombie pathogen',
+      '409': 'Crystal virus',
+      '701': 'Hanged King',
+      '035': 'Possessive mask',
+    };
   }
 
   /**
@@ -97,36 +124,17 @@ export class BroadcastGenerator {
     // 2. Event Messages
     events.forEach((eventKey) => {
       const normalizedEventKey = eventKey.toUpperCase();
+      const generator = this; // Reference for get_text
+      
       messageParts.push({
         type: 'event',
         key: normalizedEventKey,
         currentLevel: 'LONG', // Start at LONG
         priority: 11, // Higher priority than status (was 8)
         get_text: (lvl) => {
-          // If using number-free format, replace SCP numbers with names
-          if (useNumberFree) {
-            // Map of event keys to number-free descriptions
-            const eventNameMap = {
-              '610 EVENT': {
-                LONG: 'Flesh anomaly active. Avoid exposure. Containment and quarantine teams deploy immediately',
-                SHORT: 'Flesh anomaly active. Avoid exposure.',
-                MINIMAL: 'Flesh anomaly.',
-              },
-              '076 EVENT': {
-                LONG: 'Abel breach. Armed response teams engage immediately with heavy gunfire',
-                SHORT: 'Abel breach. Armed response needed.',
-                MINIMAL: 'Abel breach.',
-              },
-              '323 BREACH': {
-                LONG: 'Skull breach. All personnel evacuate immediately. Response teams engage with full-force authorization',
-                SHORT: 'Skull breach.',
-                MINIMAL: 'Skull breach.',
-              },
-            };
-            
-            if (eventNameMap[normalizedEventKey]) {
-              return eventNameMap[normalizedEventKey][lvl] || '';
-            }
+          // If using number-free format, use pre-defined name-based descriptions
+          if (useNumberFree && generator.eventNameMap[normalizedEventKey]) {
+            return generator.eventNameMap[normalizedEventKey][lvl] || '';
           }
           
           // Use original format with numbers
@@ -188,24 +196,18 @@ export class BroadcastGenerator {
     if (requirements.scp035) sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_035);
 
     if (sidPlusAuthItems.length > 0) {
+      const generator = this; // Reference for get_text
+      
       messageParts.push({
         type: 'requirement',
         key: 'SID_PLUS_AUTH',
         currentLevel: 'LONG', // Start at LONG
         priority: 9,
         get_text: (lvl) => {
-          // TAGGING PREVENTION: Replace numbers with names if needed
+          // TAGGING PREVENTION: Use name-based descriptions if needed
           if (useNumberFree) {
-            // Map numbers to name-based descriptions
-            const requirementNameMap = {
-              '008': 'Zombie pathogen',
-              '409': 'Crystal virus',
-              '701': 'Hanged King',
-              '035': 'Possessive mask',
-            };
-            
             const nameBased = sidPlusAuthItems.map(item => {
-              return requirementNameMap[item] || item; // Keep non-numeric items as-is (like CON-X)
+              return generator.requirementNameMap[item] || item; // Keep non-numeric items as-is (like CON-X)
             });
             
             if (lvl === 'LONG') return `SID+ Auth required for ${nameBased.join(', ')} tests`;
