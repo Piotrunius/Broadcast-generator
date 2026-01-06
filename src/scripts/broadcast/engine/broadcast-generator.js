@@ -15,6 +15,45 @@ export class BroadcastGenerator {
     const numberMatches = text.match(/\d{2,}/g);
     return numberMatches ? numberMatches.length : 0;
   }
+  
+  /**
+   * Pre-calculate if we should use number-free format to prevent tagging
+   * Returns true if the message would contain 3+ numbers with default formatting
+   */
+  shouldUseNumberFreeFormat(options, prefix) {
+    const { events = [], breachedSCPs = [], requirements = {} } = options;
+    
+    // Build a test message with all default (numbered) formats
+    const testParts = [];
+    
+    // Count numbers from events
+    events.forEach(eventKey => {
+      const normalizedKey = eventKey.toUpperCase();
+      const eventText = EVENT_MESSAGES.LONG?.[normalizedKey] || '';
+      testParts.push(eventText);
+    });
+    
+    // Count numbers from breached SCPs
+    if (breachedSCPs.length > 0) {
+      testParts.push(breachedSCPs.join(', '));
+    }
+    
+    // Count numbers from requirements
+    const reqItems = [];
+    if (requirements.scp008) reqItems.push('008');
+    if (requirements.scp409) reqItems.push('409');
+    if (requirements.scp701) reqItems.push('701');
+    if (requirements.scp035) reqItems.push('035');
+    if (reqItems.length > 0) {
+      testParts.push(reqItems.join(', '));
+    }
+    
+    const testMessage = prefix + testParts.join(' | ');
+    const numberCount = this.countNumbers(testMessage);
+    
+    // Use number-free format if 3+ numbers detected
+    return numberCount >= 3;
+  }
 
   generate(options) {
     const {
@@ -28,6 +67,9 @@ export class BroadcastGenerator {
 
     const normalizedStatus = status.toUpperCase();
     const prefix = `/broadcast Site Status: ${status} | Threat: ${alarm} | Testing: ${testing} | `;
+
+    // PRE-CALCULATE: Check if we need to use number-free format to prevent tagging
+    const useNumberFree = this.shouldUseNumberFreeFormat(options, prefix);
 
     // --- Prepare dynamic parts with levels and priority ---
     const messageParts = [];
@@ -60,16 +102,42 @@ export class BroadcastGenerator {
         key: normalizedEventKey,
         currentLevel: 'LONG', // Start at LONG
         priority: 11, // Higher priority than status (was 8)
-        get_text: (lvl) => EVENT_MESSAGES[lvl]?.[normalizedEventKey] || '',
+        get_text: (lvl) => {
+          // If using number-free format, replace SCP numbers with names
+          if (useNumberFree) {
+            // Map of event keys to number-free descriptions
+            const eventNameMap = {
+              '610 EVENT': {
+                LONG: 'Flesh anomaly active. Avoid exposure. Containment and quarantine teams deploy immediately',
+                SHORT: 'Flesh anomaly active. Avoid exposure.',
+                MINIMAL: 'Flesh anomaly.',
+              },
+              '076 EVENT': {
+                LONG: 'Abel breach. Armed response teams engage immediately with heavy gunfire',
+                SHORT: 'Abel breach. Armed response needed.',
+                MINIMAL: 'Abel breach.',
+              },
+              '323 BREACH': {
+                LONG: 'Skull breach. All personnel evacuate immediately. Response teams engage with full-force authorization',
+                SHORT: 'Skull breach.',
+                MINIMAL: 'Skull breach.',
+              },
+            };
+            
+            if (eventNameMap[normalizedEventKey]) {
+              return eventNameMap[normalizedEventKey][lvl] || '';
+            }
+          }
+          
+          // Use original format with numbers
+          return EVENT_MESSAGES[lvl]?.[normalizedEventKey] || '';
+        },
         levels: ['LONG', 'SHORT', 'MINIMAL'],
       });
     });
 
     // 3. Breached SCPs
     if (breachedSCPs.length > 0) {
-      // Store reference to generator for use in get_text
-      const generator = this;
-      
       messageParts.push({
         type: 'breached_scp',
         key: 'BREACHED_SCPS_LIST',
@@ -78,36 +146,14 @@ export class BroadcastGenerator {
         get_text: (lvl) => {
           const count = breachedSCPs.length;
           
-          // Build the message WITHOUT breached SCPs to check how many numbers are already present
-          // Note: This is recalculated each time during optimization phases, ensuring accurate counts
-          const otherParts = messageParts.filter(p => p.type !== 'breached_scp');
-          let messageWithoutBreachedSCPs = prefix;
-          otherParts.forEach((part) => {
-            const text = part.get_text(part.currentLevel);
-            if (text) messageWithoutBreachedSCPs += text + ' | ';
-          });
-          
-          // Count numbers in the rest of the message (excludes breached SCPs)
-          const existingNumberCount = generator.countNumbers(messageWithoutBreachedSCPs);
-          
-          // Count how many numbers would be added if we list all breached SCPs
-          const breachedScpNumberCount = generator.countNumbers(breachedSCPs.join(', '));
-          
-          // Calculate total numbers that would be in the final message
-          const totalNumberCount = existingNumberCount + breachedScpNumberCount;
-          
-          // TAGGING PREVENTION: If we would have 3+ total numbers, use count format
-          // This prevents Roblox from flagging the message as potential personal info
-          // Also check existingNumberCount >= 2 to avoid adding even a single SCP number
-          // when 2 numbers already exist elsewhere (e.g., from events or status)
-          if (totalNumberCount >= 3 || existingNumberCount >= 2) {
-            // Use count format - shows "X SCPs" instead of listing numbers
+          // TAGGING PREVENTION: Use count format if number-free mode is enabled
+          if (useNumberFree) {
             if (lvl === 'LONG') return `Breached: ${count} SCP${count > 1 ? 's' : ''}`;
             if (lvl === 'SHORT') return `${count} breaches`;
             if (lvl === 'MINIMAL') return `${count} breaches`;
           }
           
-          // Safe to show numbers: 1-2 total numbers won't trigger tagging
+          // Safe to show numbers: Use original format
           if (lvl === 'LONG') return `Breached: ${breachedSCPs.join(', ')}`;
           if (lvl === 'SHORT') {
             // Shorten by stripping the 'SCP-' prefix for compact display
@@ -147,7 +193,29 @@ export class BroadcastGenerator {
         key: 'SID_PLUS_AUTH',
         currentLevel: 'LONG', // Start at LONG
         priority: 9,
-        get_text: (lvl) => REQUIREMENT_MESSAGES.SID_PLUS_AUTH[lvl](sidPlusAuthItems) || '',
+        get_text: (lvl) => {
+          // TAGGING PREVENTION: Replace numbers with names if needed
+          if (useNumberFree) {
+            // Map numbers to name-based descriptions
+            const requirementNameMap = {
+              '008': 'Zombie pathogen',
+              '409': 'Crystal virus',
+              '701': 'Hanged King',
+              '035': 'Possessive mask',
+            };
+            
+            const nameBased = sidPlusAuthItems.map(item => {
+              return requirementNameMap[item] || item; // Keep non-numeric items as-is (like CON-X)
+            });
+            
+            if (lvl === 'LONG') return `SID+ Auth required for ${nameBased.join(', ')} tests`;
+            if (lvl === 'SHORT') return `SID+ Auth req: ${nameBased.join(', ')}`;
+            if (lvl === 'MINIMAL') return `Auth req: ${nameBased.join(', ')}`;
+          }
+          
+          // Use original format with numbers
+          return REQUIREMENT_MESSAGES.SID_PLUS_AUTH[lvl](sidPlusAuthItems) || '';
+        },
         levels: ['LONG', 'SHORT', 'MINIMAL'],
       });
     }
