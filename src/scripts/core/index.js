@@ -5,8 +5,11 @@
 
 import { AudioManager } from '../utils/audio-manager.js';
 import { initAudioToggle } from './audio-toggle.js';
+import { Logger } from './logger.js';
 import performanceMode from './performance-mode.js';
 import { initPerformanceToggle } from './performance-toggle.js';
+
+const log = Logger.create('CORE');
 
 function maybeAutoEnablePerformanceMode() {
   const key = 'broadcast-generator-performance-mode';
@@ -21,14 +24,14 @@ function maybeAutoEnablePerformanceMode() {
 }
 
 function init() {
-  console.log('🚀 Core bootstrap init called');
-  console.log('📊 performanceMode object:', performanceMode);
-  console.log('📊 performanceMode.isEnabled():', performanceMode.isEnabled());
+  log.log('Core bootstrap init called');
+  log.log('performanceMode object:', performanceMode);
+  log.log('performanceMode.isEnabled():', performanceMode.isEnabled());
 
   // Initialize global AudioManager if not already present (from broadcast pages)
   if (!window.audioManager) {
     window.audioManager = new AudioManager();
-    console.log('🔊 Global AudioManager created');
+    log.log('Global AudioManager created');
   }
 
   maybeAutoEnablePerformanceMode();
@@ -47,18 +50,18 @@ function init() {
   performanceMode.addObserver(() => syncParticles());
 }
 
-console.log('📦 Core index.js loaded, readyState:', document.readyState);
+log.log('Core index.js loaded, readyState:', document.readyState);
 
 // Use Promise.then() to ensure init runs as soon as possible
 // This avoids the race condition with DOMContentLoaded
 Promise.resolve().then(() => {
-  console.log('📦 Promise resolved, calling init');
+  log.log('Promise resolved, calling init');
 
   if (document.readyState === 'loading') {
-    console.log('⏳ Still loading, waiting for DOMContentLoaded...');
+    log.log('Still loading, waiting for DOMContentLoaded...');
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    console.log('✓ DOM is ready or complete, calling init now');
+    log.log('DOM is ready or complete, calling init now');
     init();
   }
 });

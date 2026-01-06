@@ -3,20 +3,25 @@
  * Adds a toggle button to pages for performance mode
  */
 
+import { Logger } from './logger.js';
 import performanceMode from './performance-mode.js';
 
+const log = Logger.create('PERFORMANCE');
+
 export function createPerformanceToggle() {
-  console.log('🎛️ Creating performance toggle...');
+  log.log('Creating performance toggle...');
   const toggle = document.createElement('div');
   toggle.className = 'performance-toggle';
-  console.log('🎛️ Toggle div created');
+  log.log('Toggle div created');
 
   const isEnabled = performanceMode.isEnabled();
-  console.log('🎛️ Performance mode is enabled:', isEnabled);
+  log.log('Performance mode is enabled:', isEnabled);
+
+  const perfIconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
 
   toggle.innerHTML = `
         <button class="performance-toggle-btn" title="Toggle Performance Mode (Disables animations)">
-            <span class="perf-icon">⚡</span>
+            <span class="perf-icon">${perfIconSvg}</span>
             <span class="perf-label">Performance Mode</span>
             <span class="perf-status">${isEnabled ? 'ON' : 'OFF'}</span>
         </button>
@@ -25,8 +30,8 @@ export function createPerformanceToggle() {
   const button = toggle.querySelector('.performance-toggle-btn');
   const statusSpan = toggle.querySelector('.perf-status');
 
-  console.log('🎛️ Button found:', !!button);
-  console.log('🎛️ Status span found:', !!statusSpan);
+  log.log('Button found:', !!button);
+  log.log('Status span found:', !!statusSpan);
 
   // Update UI based on mode
   const updateUI = (enabled) => {
@@ -36,13 +41,13 @@ export function createPerformanceToggle() {
 
   // Toggle on click
   button.addEventListener('click', (e) => {
-    console.log('🔘 Performance toggle clicked');
+    log.log('Performance toggle clicked');
     e.preventDefault();
     e.stopPropagation();
     const wasEnabled = performanceMode.isEnabled();
     const newState = performanceMode.toggle();
     const nowEnabled = performanceMode.isEnabled();
-    console.log(`⚡ Performance mode: ${wasEnabled} -> ${nowEnabled}, toggle returned: ${newState}`);
+    log.log(`Performance mode: ${wasEnabled} -> ${nowEnabled}, toggle returned: ${newState}`);
     updateUI(nowEnabled);
   });
 
@@ -80,6 +85,7 @@ function injectToggleStyles() {
       border: 1px solid rgba(255, 0, 0, 0.12);
       border-radius: 8px;
       padding: 10px 16px;
+      min-height: 40px;
       color: #a8a8a8;
       font-family: 'Courier New', monospace;
       font-size: 12px;
@@ -109,8 +115,13 @@ function injectToggleStyles() {
     }
 
     .perf-icon {
-      font-size: 16px;
+      display: inline-flex;
+      width: 16px;
+      height: 16px;
+      align-items: center;
+      justify-content: center;
     }
+    .perf-icon svg { display:block; width:16px; height:16px; }
 
     .perf-label {
       font-size: 11px;
@@ -152,9 +163,8 @@ function injectToggleStyles() {
         display: none;
       }
 
-      .perf-icon {
-        font-size: 14px;
-      }
+      .perf-icon { width: 14px; height: 14px; }
+      .perf-icon svg { width: 14px; height: 14px; }
     }
   `;
   document.head.appendChild(style);
@@ -162,25 +172,25 @@ function injectToggleStyles() {
 
 // Auto-add toggle to page on load
 export function initPerformanceToggle() {
-  console.log('🔧 Initializing Performance Toggle...');
+  log.log('Initializing Performance Toggle...');
 
   const addToggle = () => {
     if (!document.body) {
-      console.warn('⚠️ document.body not available, retrying...');
+      log.warn('document.body not available, retrying...');
       setTimeout(addToggle, 100);
       return;
     }
-    console.log('🔧 Creating and adding toggle to body');
+    log.log('Creating and adding toggle to body');
     const toggle = createPerformanceToggle();
     document.body.appendChild(toggle);
-    console.log('✓ Performance toggle added to body');
+    log.log('Performance toggle added to body');
   };
 
   if (document.readyState === 'loading') {
-    console.log('⏳ DOM loading, waiting for DOMContentLoaded');
+    log.log('DOM loading, waiting for DOMContentLoaded');
     document.addEventListener('DOMContentLoaded', addToggle);
   } else {
-    console.log('✓ DOM already loaded, adding toggle');
+    log.log('DOM already loaded, adding toggle');
     addToggle();
   }
 }

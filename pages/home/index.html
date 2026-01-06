@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="../../src/styles/pages/home.css" />
     <link rel="stylesheet" href="../../src/styles/base/animations.css" />
     <link rel="stylesheet" href="../../src/styles/base/responsive.css" />
+    <link rel="stylesheet" href="../../src/styles/feedback.css" />
   </head>
 
   <body>
@@ -55,62 +56,62 @@
           <li>Fixed the simple broadcast page UI on low resolutions</li>
         </ul>
         <ul>
-        <ul>
-          <center>
-            <p>---3/1/2026---</p>
-          </center>
-          <li>Broadcast Generator advanced mode added</li>
-          <li>New animations for the site</li>
-          <li>New credits page</li>
-          <li>Performance mode added</li>
-          <li>Easter eggs on advanced mode</li>
-        </ul>
-        <ul>
-          <center>
-            <p>---15/12/2025---</p>
-          </center>
-          <li>Fixed 076 event and 610 event custom message when selection them with SITE LOCKDOWN</li>
-        </ul>
-        <ul>
-          <center>
-            <p>---12/12/2025---</p>
-          </center>
-          <li>Fixed SCP-914 guideline panel</li>
-        </ul>
-        <ul>
-          <center>
-            <p>---12/12/2025---</p>
-          </center>
-          <li>Broadcast Generator updated</li>
-          <li>Added a new EVENTS menu</li>
-          <li>Added SCP-323 breach</li>
-          <li>Improved SCP event logic</li>
-          <li>UI adjustments</li>
-        </ul>
-        <ul>
-          <center>
-            <p>---12/12/2025---</p>
-          </center>
-          <li>Added SCP-914 Recipes</li>
-          <li>UI adjustments</li>
-        </ul>
-        <ul>
-          <center>
-            <p>---2/12/2025---</p>
-          </center>
-          <li>Broadcast Generator updated</li>
-          <li>Added SCP-035, SCP-008, SCP-409, SCP-701</li>
-          <li>"CON-X and ID" button added</li>
-          <li>"BACK" button added</li>
-          <li>UI adjustments and bug fixes</li>
-        </ul>
-        <ul>
-          <center>
-            <p>---28/11/2025---</p>
-          </center>
-          <li>Broadcast Generator added</li>
-          <li>Normal functions</li>
-        </ul>
+          <ul>
+            <center>
+              <p>---3/1/2026---</p>
+            </center>
+            <li>Broadcast Generator advanced mode added</li>
+            <li>New animations for the site</li>
+            <li>New credits page</li>
+            <li>Performance mode added</li>
+            <li>Easter eggs on advanced mode</li>
+          </ul>
+          <ul>
+            <center>
+              <p>---15/12/2025---</p>
+            </center>
+            <li>Fixed 076 event and 610 event custom message when selection them with SITE LOCKDOWN</li>
+          </ul>
+          <ul>
+            <center>
+              <p>---12/12/2025---</p>
+            </center>
+            <li>Fixed SCP-914 guideline panel</li>
+          </ul>
+          <ul>
+            <center>
+              <p>---12/12/2025---</p>
+            </center>
+            <li>Broadcast Generator updated</li>
+            <li>Added a new EVENTS menu</li>
+            <li>Added SCP-323 breach</li>
+            <li>Improved SCP event logic</li>
+            <li>UI adjustments</li>
+          </ul>
+          <ul>
+            <center>
+              <p>---12/12/2025---</p>
+            </center>
+            <li>Added SCP-914 Recipes</li>
+            <li>UI adjustments</li>
+          </ul>
+          <ul>
+            <center>
+              <p>---2/12/2025---</p>
+            </center>
+            <li>Broadcast Generator updated</li>
+            <li>Added SCP-035, SCP-008, SCP-409, SCP-701</li>
+            <li>"CON-X and ID" button added</li>
+            <li>"BACK" button added</li>
+            <li>UI adjustments and bug fixes</li>
+          </ul>
+          <ul>
+            <center>
+              <p>---28/11/2025---</p>
+            </center>
+            <li>Broadcast Generator added</li>
+            <li>Normal functions</li>
+          </ul>
       </div>
 
       <main class="menu-wrap">
@@ -142,6 +143,23 @@
           </section>
         </div>
         <footer class="footer">
+          <div class="resources-container">
+            <button class="resources-toggle" id="resourcesToggle" aria-label="Toggle resources" aria-expanded="false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+            <div class="external-links" id="externalLinks" aria-label="Resources">
+              <a class="link-btn"
+                href="https://visceraleds-scp-site-roleplay.fandom.com/wiki/Visceraled's_SCP:_Site_Roleplay_Wiki"
+                target="_blank" rel="noopener noreferrer">Fandom Wiki</a>
+              <a class="link-btn" href="https://scpsiteroleplay.miraheze.org/wiki/Visceraled's_SCP:_Site_Roleplay_Wiki"
+                target="_blank" rel="noopener noreferrer">Miraheze Wiki</a>
+              <a class="link-btn"
+                href="https://docs.google.com/document/d/1E9COV22lsYdjOyBqmb_e4M2eQc-cHMHJJdtScDIDUjo/edit?tab=t.0"
+                target="_blank" rel="noopener noreferrer">Rulebook</a>
+            </div>
+          </div>
           <small>victorbot365 • Control Panel</small>
         </footer>
       </main>
@@ -165,11 +183,36 @@
     <script src="../../src/scripts/core/particles.js"></script>
     <script src="../../src/scripts/core/button-effects.js"></script>
     <script type="module" src="../../src/scripts/core/performance-mode.js"></script>
+    <script src="../../src/scripts/core/feedback-system.js"></script>
     <script type="module">
       import { initPerformanceToggle } from '../../src/scripts/core/performance-toggle.js';
       import { initAudioToggle } from '../../src/scripts/core/audio-toggle.js';
+      import { AudioManager } from '../../src/scripts/utils/audio-manager.js';
       initPerformanceToggle();
       initAudioToggle();
+
+      // Initialize audio manager for home page
+      const audioManager = window.audioManager || new AudioManager();
+      window.audioManager = audioManager;
+
+      // Toggle resources panel
+      const toggle = document.getElementById('resourcesToggle');
+      const links = document.getElementById('externalLinks');
+
+      toggle?.addEventListener('click', () => {
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', !isExpanded);
+        toggle.classList.toggle('expanded');
+        links.classList.toggle('show');
+        audioManager.playClickSound();
+      });
+
+      // Add hover/click sounds to all buttons
+      const buttons = document.querySelectorAll('.main-btn, .link-btn, .resources-toggle');
+      buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => audioManager.playHoverSound());
+        btn.addEventListener('click', () => audioManager.playClickSound());
+      });
     </script>
     <script>
       // Reveal after load to avoid flicker and let animations play

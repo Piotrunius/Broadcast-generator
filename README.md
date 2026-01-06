@@ -18,7 +18,7 @@ A web-based control panel featuring a broadcast generator and SCP-914 recipe ana
 - Search and filter inputs/outputs
 - Autocomplete functionality (TAB key)
 - View refinement paths and optimal routes
-- All recipes sourced from [SCP-914 Wiki](https://visceraleds-scp-site-roleplay.fandom.com/wiki/SCP-914)
+- All recipes sourced from [SCP-914 Wiki](https://scpsiteroleplay.miraheze.org/wiki/SCP-914)
 
 ### Performance Features
 - **Performance Mode**: Toggle animations for better performance on lower-end devices
@@ -39,7 +39,7 @@ git clone https://github.com/aresysite/Broadcast-generator.git
 cd Broadcast-generator
 ```
 
-2. Open `index.html` in your browser or use a local server: 
+2. Open `index.html` in your browser or use a local server:
 ```bash
 # Using Python
 python -m http.server 8000
@@ -154,8 +154,8 @@ Found a bug or have a suggestion? Please [open an issue](https://github.com/ares
 
 ## ⚠️ Disclaimer
 
-This tool is fan-made and is not officially affiliated with the SCP Foundation or Roblox SCP Site Roleplay. All SCP-related content is based on works shared under Creative Commons. 
+This tool is fan-made and is not officially affiliated with the SCP Foundation or Roblox SCP Site Roleplay. All SCP-related content is based on works shared under Creative Commons.
 
 ---
 
-© 2026 victorbot365 & Piotrunius 
+© 2026 victorbot365 & Piotrunius

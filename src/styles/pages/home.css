@@ -539,9 +539,101 @@ body::before {
 
 .footer {
   margin-top: 16px;
-  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
   color: var(--muted);
   font-size: 12px;
+}
+
+/* Resources container with toggle */
+.resources-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Toggle button */
+.resources-toggle {
+  width: 32px;
+  padding: 8px 6px;
+  background: linear-gradient(180deg, rgba(255, 0, 0, 0.12), rgba(255, 0, 0, 0.06));
+  border: 1px solid rgba(255, 0, 0, 0.22);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.14), inset 0 -4px 8px rgba(255, 0, 0, 0.05);
+}
+
+.resources-toggle svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.resources-toggle.expanded svg {
+  transform: rotate(90deg);
+}
+
+.resources-toggle:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 0, 0, 0.18);
+  border-color: rgba(255, 0, 0, 0.35);
+  box-shadow: 0 8px 18px rgba(255, 0, 0, 0.28), 0 0 20px rgba(255, 0, 0, 0.12), inset 0 -4px 8px rgba(255, 0, 0, 0.08);
+}
+
+.resources-toggle:active {
+  transform: translateY(0);
+}
+
+/* External resource buttons (compact, unobtrusive) */
+.external-links {
+  margin-top: 0;
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateX(-10px);
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.external-links.show {
+  max-height: 100px;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.link-btn {
+  display: inline-block;
+  padding: 8px 10px;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  background: linear-gradient(180deg, rgba(255, 0, 0, 0.12), rgba(255, 0, 0, 0.06));
+  border: 1px solid rgba(255, 0, 0, 0.22);
+  border-radius: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.14), inset 0 -4px 8px rgba(255, 0, 0, 0.05);
+}
+
+.link-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 0, 0, 0.18);
+  border-color: rgba(255, 0, 0, 0.35);
+  box-shadow: 0 8px 18px rgba(255, 0, 0, 0.28), 0 0 20px rgba(255, 0, 0, 0.12), inset 0 -4px 8px rgba(255, 0, 0, 0.08);
+}
+
+.link-btn:active {
+  transform: translateY(0);
 }
 
 /* Tablet and smaller */

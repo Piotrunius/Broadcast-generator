@@ -1,0 +1,703 @@
+/* ================================
+   FEEDBACK SYSTEM STYLES
+   Match project aesthetic: transparency, colors, styling
+   ================================ */
+
+/* Feedback button (top right corner) */
+.feedback-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 0, 0, 0.12);
+    border-radius: 8px;
+    color: #a8a8a8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.feedback-btn:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
+
+.feedback-btn:active {
+    transform: translateY(0);
+}
+
+.feedback-btn svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+/* Modal overlay */
+.feedback-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feedback-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+/* Modal content */
+.feedback-modal-content {
+    background: rgba(15, 15, 16, 0.92);
+    border-radius: 16px;
+    padding: 32px;
+    width: min(900px, 96vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    /* Better cross-browser scrollbar */
+    scrollbar-width: thin;
+    /* Firefox */
+    scrollbar-color: rgba(255, 30, 30, 0.5) transparent;
+    /* Firefox */
+    scrollbar-gutter: stable;
+    /* Reserve space to avoid layout shift */
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color-scheme: dark;
+}
+
+/* Header actions container */
+.feedback-header-actions {
+    display: inline-flex;
+    gap: 8px;
+}
+
+/* Settings button (header icon) */
+.feedback-settings-btn {
+    background: none;
+    border: none;
+    color: #a8a8a8;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+/* Slide up animation for modal */
+@keyframes slideUp {
+    from {
+        transform: translateY(24px) scale(0.96);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Header */
+.feedback-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 30, 30, 0.15);
+}
+
+.feedback-modal-header h2 {
+    margin: 0;
+    color: #eee;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.feedback-close-btn {
+    background: none;
+    border: none;
+    color: #a8a8a8;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.feedback-close-btn:hover,
+.feedback-settings-btn:hover {
+    color: #ff1e1e;
+}
+
+/* Data info visibility */
+.data-info-hidden {
+    display: none;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.data-info-visible {
+    display: block;
+    max-height: 100px;
+    opacity: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+    padding: 10px 12px;
+    background: rgba(255, 30, 30, 0.08);
+    border: 1px solid rgba(255, 30, 30, 0.15);
+    border-radius: 6px;
+    color: #a8a8a8;
+    font-size: 12px;
+    line-height: 1.4;
+    grid-column: 1 / -1;
+    margin: 4px 0 8px 0;
+}
+
+/* Form body visibility - hidden by default until type is selected */
+.form-body-hidden {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.form-body-visible {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-height: 3000px;
+    opacity: 1;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+/* Conditional field visibility */
+.field-bug-only {
+    display: none;
+}
+
+.field-bug-feature {
+    display: none;
+}
+
+.field-bug-feature-other-imp {
+    display: none;
+}
+
+/* Form styles */
+.feedback-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group.quarter {
+    grid-column: span 1;
+}
+
+/* Mobile layout: 2-column grid */
+@media (max-width: 768px) {
+
+    .form-body-hidden,
+    .form-body-visible {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Wide layout: stays 4 columns */
+@media (min-width: 769px) {
+
+    .form-body-hidden,
+    .form-body-visible {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.form-group label {
+    color: #eee;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    min-height: 24px;
+}
+
+.form-group label::before {
+    content: '';
+    width: 1px;
+    height: 1px;
+}
+
+.form-label-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.form-label-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #eee;
+    font-family: inherit;
+    font-size: 13px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08), inset 0 0 8px rgba(255, 255, 255, 0.05);
+}
+
+.form-group select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #eee;
+    font-family: inherit;
+    font-size: 13px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    /* remove custom arrow to prevent flicker */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 14px;
+    /* no extra space for removed arrow */
+}
+
+.form-group select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.form-group select option {
+    background: #1a1a1a;
+    color: #eee;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group textarea::placeholder,
+.form-group input::placeholder {
+    color: #666;
+}
+
+/* Type buttons (pill style) */
+.feedback-type-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+@media (min-width: 1100px) {
+    .feedback-type-buttons {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+.type-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px 12px;
+    color: #a8a8a8;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.type-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.type-btn.active {
+    background: rgba(255, 30, 30, 0.2);
+    border-color: rgba(255, 30, 30, 0.5);
+    color: #ff1e1e;
+}
+
+.type-icon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    color: #eee;
+}
+
+.type-label {
+    font-weight: 600;
+}
+
+/* Page buttons */
+.page-buttons,
+.chip-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+.page-btn,
+.chip-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: #a8a8a8;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.page-btn:hover,
+.chip-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #eee;
+    transform: translateY(-2px);
+}
+
+.page-btn.active,
+.chip-btn.active {
+    background: rgba(255, 30, 30, 0.2);
+    border-color: rgba(255, 30, 30, 0.5);
+    color: #ff1e1e;
+}
+
+/* Options (checkboxes) */
+.form-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #ff1e1e;
+}
+
+.checkbox-label-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.checkbox-label-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+}
+
+.checkbox-group span:not(.checkbox-label-icon) {
+    color: #a8a8a8;
+    font-size: 13px;
+    cursor: pointer;
+    margin: 0;
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: normal;
+    user-select: none;
+}
+
+.checkbox-group:hover span:not(.checkbox-label-icon) {
+    color: #eee;
+}
+
+/* Screenshot preview */
+.screenshot-preview {
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    backdrop-filter: blur(4px);
+}
+
+.screenshot-label {
+    color: #a8a8a8;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.screenshot-preview img {
+    width: 100%;
+    border-radius: 8px;
+    max-height: 220px;
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.retake-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #a8a8a8;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.retake-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #eee;
+    transform: translateY(-2px);
+}
+
+/* Status messages removed: feedback uses button state only */
+
+/* Form actions */
+.form-actions {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+    grid-column: 1 / -1;
+}
+
+.feedback-cancel-btn,
+.feedback-submit-btn {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.feedback-cancel-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #a8a8a8;
+}
+
+.feedback-cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #eee;
+    transform: translateY(-2px);
+}
+
+.feedback-submit-btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 30, 30, 0.2), rgba(255, 30, 30, 0.12));
+    border-color: rgba(255, 30, 30, 0.4);
+    color: #ff3333;
+}
+
+/* Success and error visual states for the submit button */
+.feedback-submit-btn.success {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.25), rgba(76, 175, 80, 0.15));
+    border-color: rgba(76, 175, 80, 0.45);
+    color: #4caf50;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.25);
+}
+
+.feedback-submit-btn.error {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.25), rgba(255, 193, 7, 0.15));
+    border-color: rgba(255, 193, 7, 0.45);
+    color: #f4c337;
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.25);
+}
+
+.feedback-submit-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 30, 30, 0.3), rgba(255, 30, 30, 0.2));
+    border-color: rgba(255, 30, 30, 0.6);
+    color: #ff1e1e;
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px rgba(255, 30, 30, 0.3);
+}
+
+.feedback-submit-btn .hold-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: calc(var(--hold-progress, 0) * 100%);
+    background: rgba(255, 30, 30, 0.8);
+    transition: width 0.05s linear;
+}
+
+.feedback-submit-btn.holding {
+    filter: brightness(1.05);
+}
+
+.feedback-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Scrollbar styling */
+.feedback-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.feedback-modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.feedback-modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 30, 30, 0.3);
+    border-radius: 3px;
+}
+
+.feedback-modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 30, 30, 0.5);
+}
+
+/* Freeze animations when taking screenshot */
+html.capture-freeze *,
+html.capture-freeze *::before,
+html.capture-freeze *::after {
+    animation-play-state: paused !important;
+    transition: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .feedback-modal-content {
+        width: 95vw;
+        padding: 20px;
+        max-height: 88vh;
+    }
+
+    .feedback-modal-header {
+        margin-bottom: 16px;
+    }
+
+    .feedback-modal-header h2 {
+        font-size: 18px;
+    }
+
+    .feedback-type-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .page-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .feedback-cancel-btn,
+    .feedback-submit-btn {
+        width: 100%;
+    }
+
+    .feedback-btn {
+        width: 40px;
+        height: 40px;
+        top: 12px;
+        right: 12px;
+    }
+}

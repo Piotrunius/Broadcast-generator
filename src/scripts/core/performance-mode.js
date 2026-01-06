@@ -3,6 +3,10 @@
  * Site-wide persistent toggle for disabling animations and effects
  */
 
+import { Logger } from './logger.js';
+
+const log = Logger.create('PERFORMANCE');
+
 class PerformanceMode {
   constructor() {
     this.storageKey = 'broadcast-generator-performance-mode';
@@ -36,41 +40,41 @@ class PerformanceMode {
    * Enable performance mode
    */
   enable() {
-    console.log('✅ Enabling performance mode');
+    log.log('Enabling performance mode');
     this.enabled = true;
     this.saveState(true);
-    console.log('✅ Saved to localStorage, calling applyMode()');
+    log.log('Saved to localStorage, calling applyMode()');
     this.applyMode();
-    console.log('✅ applyMode() complete, notifying observers');
+    log.log('applyMode() complete, notifying observers');
     this.notifyObservers();
-    console.log('✅ Observers notified');
+    log.log('Observers notified');
   }
 
   /**
    * Disable performance mode
    */
   disable() {
-    console.log('❌ Disabling performance mode');
+    log.log('Disabling performance mode');
     this.enabled = false;
     this.saveState(false);
-    console.log('❌ Saved to localStorage, calling applyMode()');
+    log.log('Saved to localStorage, calling applyMode()');
     this.applyMode();
-    console.log('❌ applyMode() complete, notifying observers');
+    log.log('applyMode() complete, notifying observers');
     this.notifyObservers();
-    console.log('❌ Observers notified');
+    log.log('Observers notified');
   }
 
   /**
    * Toggle performance mode
    */
   toggle() {
-    console.log('🔄 Toggling performance mode from:', this.enabled);
+    log.log('Toggling performance mode from:', this.enabled);
     if (this.enabled) {
       this.disable();
     } else {
       this.enable();
     }
-    console.log('🔄 Toggled to:', this.enabled);
+    log.log('Toggled to:', this.enabled);
     return this.enabled;
   }
 
@@ -79,10 +83,10 @@ class PerformanceMode {
    */
   applyMode() {
     const body = document.body;
-    console.log('📋 Applying mode, enabled:', this.enabled);
+    log.log('Applying mode, enabled:', this.enabled);
 
     if (this.enabled) {
-      console.log('🛑 Enabling performance mode - stopping particles');
+      log.log('Enabling performance mode - stopping particles');
       // Add performance mode class
       body.classList.add('performance-mode');
 
@@ -92,13 +96,13 @@ class PerformanceMode {
 
       // Stop particles if present
       if (window.stopParticles) {
-        console.log('🛑 Calling window.stopParticles()');
+        log.log('Calling window.stopParticles()');
         window.stopParticles();
       } else {
-        console.warn('⚠️ window.stopParticles not found');
+        log.warn('window.stopParticles not found');
       }
     } else {
-      console.log('▶️ Disabling performance mode - starting particles');
+      log.log('Disabling performance mode - starting particles');
       // Remove performance mode class
       body.classList.remove('performance-mode');
 
@@ -108,10 +112,10 @@ class PerformanceMode {
 
       // Restart particles if present
       if (window.startParticles) {
-        console.log('▶️ Calling window.startParticles()');
+        log.log('Calling window.startParticles()');
         window.startParticles();
       } else {
-        console.warn('⚠️ window.startParticles not found');
+        log.warn('window.startParticles not found');
       }
     }
   }
@@ -131,7 +135,7 @@ class PerformanceMode {
       try {
         callback(this.enabled);
       } catch (e) {
-        console.error('Performance mode observer error:', e);
+        log.error('Performance mode observer error:', e);
       }
     });
   }
@@ -140,7 +144,7 @@ class PerformanceMode {
    * Initialize performance mode on page load
    */
   init() {
-    console.log('🔧 PerformanceMode.init() called');
+    log.log('PerformanceMode.init() called');
     // Expose to window for easy access FIRST
     window.performanceMode = this;
 
@@ -150,7 +154,7 @@ class PerformanceMode {
     // Apply initial state IMMEDIATELY (including particles)
     // Force synchronous application
     if (this.enabled) {
-      console.log('🛑 Performance mode enabled at init - stopping particles');
+      log.log('Performance mode enabled at init - stopping particles');
       document.body.classList.add('performance-mode');
       document.body.style.setProperty('--animation-duration', '0s');
       document.body.style.setProperty('--transition-duration', '0s');
@@ -158,10 +162,10 @@ class PerformanceMode {
       // Stop particles immediately if they exist
       const stopParticlesNow = () => {
         if (window.stopParticles) {
-          console.log('🛑 Calling window.stopParticles() from init');
+          log.log('Calling window.stopParticles() from init');
           window.stopParticles();
         } else if (window.scpParticleSystem) {
-          console.log('🛑 Calling window.scpParticleSystem.stop() from init');
+          log.log('Calling window.scpParticleSystem.stop() from init');
           window.scpParticleSystem.stop();
         }
       };
@@ -176,7 +180,7 @@ class PerformanceMode {
 
     this.applyMode();
 
-    console.log(`⚡ Performance Mode: ${this.enabled ? 'ENABLED' : 'DISABLED'}`);
+    log.log(`Performance Mode: ${this.enabled ? 'ENABLED' : 'DISABLED'}`);
   }
 
   /**
