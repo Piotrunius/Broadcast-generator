@@ -157,5 +157,4 @@ This tool is fan-made and is not officially affiliated with the SCP Foundation o
 
 ---
 
-© 2026 victorbot365 — All rights reserved. 
-© 2026 Piotrunius — All rights reserved. 
+© 2026 victorbot365 & Piotrunius 
