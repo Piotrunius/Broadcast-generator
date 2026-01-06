@@ -6,6 +6,16 @@ export class BroadcastGenerator {
     this.maxIterations = 50; // Safety limit
   }
 
+  /**
+   * Count numeric sequences in text (to detect potential tagging issues)
+   * Matches sequences of 2+ digits (e.g., "017", "939", "2006")
+   */
+  countNumbers(text) {
+    // Match sequences of 2 or more digits
+    const numberMatches = text.match(/\d{2,}/g);
+    return numberMatches ? numberMatches.length : 0;
+  }
+
   generate(options) {
     const {
       status = 'N/A',
@@ -57,6 +67,9 @@ export class BroadcastGenerator {
 
     // 3. Breached SCPs
     if (breachedSCPs.length > 0) {
+      // Store reference to generator for use in get_text
+      const generator = this;
+      
       messageParts.push({
         type: 'breached_scp',
         key: 'BREACHED_SCPS_LIST',
@@ -64,6 +77,32 @@ export class BroadcastGenerator {
         priority: 7,
         get_text: (lvl) => {
           const count = breachedSCPs.length;
+          
+          // Build the message WITHOUT breached SCPs to check how many numbers are already present
+          const otherParts = messageParts.filter(p => p.type !== 'breached_scp');
+          let messageWithoutBreachedSCPs = prefix;
+          otherParts.forEach((part) => {
+            const text = part.get_text(part.currentLevel);
+            if (text) messageWithoutBreachedSCPs += text + ' | ';
+          });
+          
+          // Count numbers in the rest of the message
+          const existingNumberCount = generator.countNumbers(messageWithoutBreachedSCPs);
+          
+          // Count how many numbers would be in the breached SCPs list
+          const breachedScpNumberCount = generator.countNumbers(breachedSCPs.join(', '));
+          
+          // If we would have 3+ total numbers, use count format to avoid tagging
+          const totalNumberCount = existingNumberCount + breachedScpNumberCount;
+          
+          if (totalNumberCount >= 3 || existingNumberCount >= 2) {
+            // Use count format when too many numbers would be present
+            if (lvl === 'LONG') return `Breached: ${count} SCP${count > 1 ? 's' : ''}`;
+            if (lvl === 'SHORT') return `${count} breaches`;
+            if (lvl === 'MINIMAL') return `${count} breaches`;
+          }
+          
+          // Original logic when safe to show numbers
           if (lvl === 'LONG') return `Breached: ${breachedSCPs.join(', ')}`;
           if (lvl === 'SHORT') {
             // Shorten by stripping the 'SCP-' prefix for compact display
