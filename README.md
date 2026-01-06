@@ -102,6 +102,7 @@ Broadcast-generator/
 - **CSS3**: Styling and animations
 - **JavaScript (ES6+)**: Interactive functionality
 - **Umami Analytics**: Privacy-focused analytics
+- **Copilot**: Built with the help of modern AI tools to ensure clean and efficient code.
 
 ## 📊 Language Composition
 
