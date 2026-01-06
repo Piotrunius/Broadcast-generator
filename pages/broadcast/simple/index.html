@@ -190,8 +190,12 @@
       </footer>
     </main>
     <div class="home-copyright">
-      © 2025 victorbot365 — All rights reserved.
+      © <span id="copyright-year"></span> victorbot365 — All rights reserved.
     </div>
+    <script>
+      // Auto-update copyright year
+      document.getElementById('copyright-year').textContent = new Date().getFullYear();
+    </script>
     <script src="../../../src/scripts/core/animation-controller.js"></script>
     <script src="../../../src/scripts/core/particles.js"></script>
     <script src="../../../src/scripts/core/button-effects.js"></script>
