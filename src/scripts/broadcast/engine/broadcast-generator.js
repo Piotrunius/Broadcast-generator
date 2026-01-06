@@ -18,9 +18,9 @@ export class BroadcastGenerator {
         MINIMAL: 'Abel breach.',
       },
       '323 BREACH': {
-        LONG: 'Skull breach. All personnel evacuate immediately. Response teams engage with full-force authorization',
-        SHORT: 'Skull breach.',
-        MINIMAL: 'Skull breach.',
+        LONG: 'Wendigo breach. All personnel evacuate immediately. Response teams engage with full-force authorization',
+        SHORT: 'Wendigo breach.',
+        MINIMAL: 'Wendigo breach.',
       },
     };
     
