@@ -248,6 +248,14 @@ You will not remember reading this.
           copyCount = 0;
           const effect = new ClipboardAnomalyEffect();
           effect.start();
+          
+          // Umami tracking: Track clipboard Easter egg activation
+          if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+            window.umami.track('Easter_Egg_Activated', { 
+              type: 'clipboard_anomaly',
+              page: window.location.pathname
+            });
+          }
         }
       } else {
         copyCount = 1;

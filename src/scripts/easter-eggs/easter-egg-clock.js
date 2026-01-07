@@ -290,6 +290,15 @@
     if ((hours === 0 && minutes === 0) || (hours === 3 && minutes === 33)) {
       const effect = new ClockAnomalyEffect();
       effect.start();
+      
+      // Umami tracking: Track clock anomaly Easter egg activation
+      if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+        window.umami.track('Easter_Egg_Activated', { 
+          type: 'clock_anomaly',
+          time: `${hours}:${minutes}`,
+          page: window.location.pathname
+        });
+      }
     }
   }
 
