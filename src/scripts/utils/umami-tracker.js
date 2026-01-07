@@ -8,6 +8,14 @@
  */
 
 /**
+ * Check if running in development mode
+ * @returns {boolean} True if localhost/127.0.0.1
+ */
+function isDevelopmentMode() {
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+}
+
+/**
  * Track an event with Umami
  * @param {string} eventName - Name of the event (e.g., 'Send_Button_Clicked')
  * @param {Object} [eventData] - Optional additional data to send with the event
@@ -18,13 +26,12 @@ export function trackEvent(eventName, eventData = {}) {
     if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
       window.umami.track(eventName, eventData);
       // Only log in development mode
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      if (isDevelopmentMode()) {
         console.log(`[Umami] Tracked event: ${eventName}`, eventData);
       }
     } else {
-      // Fallback: queue event or log warning if Umami is not yet loaded
-      // Only log warnings in development
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Fallback: log warning if Umami is not yet loaded (development only)
+      if (isDevelopmentMode()) {
         console.warn(`[Umami] Tracking not available yet for event: ${eventName}`);
       }
     }

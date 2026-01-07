@@ -1,5 +1,5 @@
 import { AudioManager } from '../../utils/audio-manager.js';
-import { trackEvent, trackNavigation } from '../../utils/umami-tracker.js'; // Umami tracking
+import { trackEvent, trackAndNavigate } from '../../utils/umami-tracker.js'; // Umami tracking
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -560,14 +560,9 @@ switchBtn.classList.remove("active");
 
 switchBtn.addEventListener("click", () => {
   // Umami tracking: Track mode switch
-  trackNavigation('broadcast_advanced', 'broadcast_simple');
   trackEvent('Mode_Switch_Clicked', { from: 'simple', to: 'advanced' });
-  
-  // Delay navigation to ensure tracking completes before page unload
-  // This is standard practice for analytics - allows tracking beacon to be sent
-  setTimeout(() => {
-    window.location.href = "../advanced/index.html";
-  }, 100);
+  // Use utility function to track and navigate with proper timing
+  trackAndNavigate('../advanced/index.html', 'broadcast_advanced', 'broadcast_simple');
 });
 
 let classifiedMode = false;
@@ -630,14 +625,8 @@ Object.entries(checkboxes).forEach(([id, name]) => {
 const backBtn = document.getElementById('backBtn');
 if (backBtn) {
   backBtn.addEventListener('click', () => {
-    trackNavigation('home', 'broadcast_simple');
     trackEvent('Back_Button_Clicked', { from: 'broadcast_simple' });
-    
-    // Delay navigation to ensure tracking completes before page unload
-    // This is standard practice for analytics - the browser needs time to send
-    // the tracking beacon before the page is destroyed
-    setTimeout(() => {
-      window.location.href = '../../home/index.html';
-    }, 100);
+    // Use utility function to track and navigate with proper timing
+    trackAndNavigate('../../home/index.html', 'home', 'broadcast_simple');
   });
 }

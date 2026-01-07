@@ -6,7 +6,7 @@ import {
   typeText as typeTextAnimation,
 } from '../animations/typewriter.js';
 import { BroadcastGenerator } from '../engine/broadcast-generator.js';
-import { trackEvent, trackNavigation } from '../../utils/umami-tracker.js'; // Umami tracking
+import { trackEvent, trackAndNavigate } from '../../utils/umami-tracker.js'; // Umami tracking
 
 const generator = new BroadcastGenerator();
 // Use global AudioManager if available (created by core/index.js), otherwise create new instance
@@ -754,14 +754,9 @@ if (switchBtn) {
   switchBtn.classList.add('active');
   switchBtn.addEventListener('click', () => {
     // Umami tracking: Track mode switch from advanced to simple
-    trackNavigation('broadcast_simple', 'broadcast_advanced');
     trackEvent('Mode_Switch_Clicked', { from: 'advanced', to: 'simple' });
-    
-    // Delay navigation to ensure tracking completes before page unload
-    // This is standard practice for analytics - allows tracking beacon to be sent
-    setTimeout(() => {
-      window.location.href = '../simple/index.html';
-    }, 100);
+    // Use utility function to track and navigate with proper timing
+    trackAndNavigate('../simple/index.html', 'broadcast_simple', 'broadcast_advanced');
   });
   switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
 }

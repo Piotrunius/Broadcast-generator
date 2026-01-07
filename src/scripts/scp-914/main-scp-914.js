@@ -1,6 +1,6 @@
 import { AudioManager } from '../utils/audio-manager.js';
 import { RAW_RECIPES } from './data/scp-recipes.js';
-import { trackEvent, trackNavigation } from '../utils/umami-tracker.js'; // Umami tracking
+import { trackEvent, trackAndNavigate } from '../utils/umami-tracker.js'; // Umami tracking
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -421,13 +421,8 @@ function playError() {
 const backBtn914 = document.getElementById('backBtn914');
 if (backBtn914) {
   backBtn914.addEventListener('click', () => {
-    trackNavigation('home', 'scp914');
     trackEvent('Back_Button_Clicked', { from: 'scp914' });
-    
-    // Delay navigation to ensure tracking completes before page unload
-    // This is standard practice for analytics - allows tracking beacon to be sent
-    setTimeout(() => {
-      window.location.href = '../home/index.html';
-    }, 100);
+    // Use utility function to track and navigate with proper timing
+    trackAndNavigate('../home/index.html', 'home', 'scp914');
   });
 }
