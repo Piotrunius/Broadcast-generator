@@ -17,6 +17,9 @@ Tracks page navigation between sections.
 ### `trackToggle(toggleName, newState)`
 Tracks toggle state changes (e.g., audio, performance mode).
 
+### `trackAndNavigate(targetUrl, targetPage, sourcePage)`
+Tracks navigation and navigates after ensuring tracking completes.
+
 ## Tracked Events by Page
 
 ### Home Page (`pages/home/index.html`)
@@ -126,7 +129,29 @@ The utility module includes error handling to prevent tracking failures from aff
 - **Navigation**: Page transitions, back navigation
 - **Content Generation**: Broadcast generation with metadata
 - **User Preferences**: Audio and performance mode toggles
+- **Easter Eggs**: Hidden feature discoveries (Konami code, clipboard anomaly, clock anomaly)
+- **Animations**: Typewriter animation completions
 - **Errors**: Failed operations (implicit through success tracking)
+
+### Easter Egg Events
+
+Special hidden features are tracked when discovered:
+
+| Event Name | Trigger | Data Tracked |
+|------------|---------|--------------|
+| `Easter_Egg_Activated` | Konami code entered (↑↑↓↓←→←→BA) | `type`: 'konami_code', `page` |
+| `Easter_Egg_Activated` | Copy same text 5 times | `type`: 'clipboard_anomaly', `page` |
+| `Easter_Egg_Activated` | Page loaded at 00:00 or 03:33 | `type`: 'clock_anomaly', `time`, `page` |
+
+### Animation Events
+
+Animation completions are tracked for performance insights:
+
+| Event Name | Trigger | Data Tracked |
+|------------|---------|--------------|
+| `Animation_Completed` | Typewriter animation finishes | `type`: 'typewriter', `textLength`, `page` |
+
+**Note**: Animations are skipped when Performance Mode is enabled, so tracking provides insights into user experience quality.
 
 ## Testing
 
@@ -137,12 +162,16 @@ To test tracking:
 4. Check console for `[Umami] Tracked event:` messages
 5. Verify events in Umami dashboard
 
+### Testing Easter Eggs
+- **Konami Code**: Press ↑↑↓↓←→←→BA on keyboard
+- **Clipboard Anomaly**: Copy broadcast 5 times without changing it
+- **Clock Anomaly**: Load page at exactly 00:00 or 03:33
+
 ## Future Enhancements
 
 Potential additional tracking:
-- Easter egg activations
 - Error messages shown to users
 - Form validation failures
 - Search interactions in SCP-914
-- Animation completions
 - Time spent on pages
+- User engagement metrics
