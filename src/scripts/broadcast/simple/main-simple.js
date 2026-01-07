@@ -563,7 +563,8 @@ switchBtn.addEventListener("click", () => {
   trackNavigation('broadcast_advanced', 'broadcast_simple');
   trackEvent('Mode_Switch_Clicked', { from: 'simple', to: 'advanced' });
   
-  // Small delay to ensure tracking completes before navigation
+  // Delay navigation to ensure tracking completes before page unload
+  // This is standard practice for analytics - allows tracking beacon to be sent
   setTimeout(() => {
     window.location.href = "../advanced/index.html";
   }, 100);
@@ -632,7 +633,9 @@ if (backBtn) {
     trackNavigation('home', 'broadcast_simple');
     trackEvent('Back_Button_Clicked', { from: 'broadcast_simple' });
     
-    // Small delay to ensure tracking completes before navigation
+    // Delay navigation to ensure tracking completes before page unload
+    // This is standard practice for analytics - the browser needs time to send
+    // the tracking beacon before the page is destroyed
     setTimeout(() => {
       window.location.href = '../../home/index.html';
     }, 100);
