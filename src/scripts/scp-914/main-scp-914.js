@@ -423,6 +423,10 @@ if (backBtn914) {
   backBtn914.addEventListener('click', () => {
     trackNavigation('home', 'scp914');
     trackEvent('Back_Button_Clicked', { from: 'scp914' });
-    window.location.href = '../home/index.html';
+    
+    // Small delay to ensure tracking completes before navigation
+    setTimeout(() => {
+      window.location.href = '../home/index.html';
+    }, 100);
   });
 }

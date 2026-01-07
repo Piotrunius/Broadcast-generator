@@ -757,7 +757,10 @@ if (switchBtn) {
     trackNavigation('broadcast_simple', 'broadcast_advanced');
     trackEvent('Mode_Switch_Clicked', { from: 'advanced', to: 'simple' });
     
-    window.location.href = '../simple/index.html';
+    // Small delay to ensure tracking completes before navigation
+    setTimeout(() => {
+      window.location.href = '../simple/index.html';
+    }, 100);
   });
   switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
 }
