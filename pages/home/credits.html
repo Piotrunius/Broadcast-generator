@@ -83,7 +83,8 @@
             trackNavigation('home', 'credits');
             trackEvent('Back_Button_Clicked', { from: 'credits' });
             
-            // Small delay to ensure tracking completes before navigation
+            // Delay navigation to ensure tracking completes before page unload
+            // This is standard practice for analytics - allows tracking beacon to be sent
             setTimeout(() => {
               window.location.href = 'index.html';
             }, 100);

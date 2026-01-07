@@ -424,7 +424,8 @@ if (backBtn914) {
     trackNavigation('home', 'scp914');
     trackEvent('Back_Button_Clicked', { from: 'scp914' });
     
-    // Small delay to ensure tracking completes before navigation
+    // Delay navigation to ensure tracking completes before page unload
+    // This is standard practice for analytics - allows tracking beacon to be sent
     setTimeout(() => {
       window.location.href = '../home/index.html';
     }, 100);

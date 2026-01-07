@@ -17,10 +17,16 @@ export function trackEvent(eventName, eventData = {}) {
     // Check if Umami tracking is available
     if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
       window.umami.track(eventName, eventData);
-      console.log(`[Umami] Tracked event: ${eventName}`, eventData);
+      // Only log in development mode
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log(`[Umami] Tracked event: ${eventName}`, eventData);
+      }
     } else {
       // Fallback: queue event or log warning if Umami is not yet loaded
-      console.warn(`[Umami] Tracking not available yet for event: ${eventName}`);
+      // Only log warnings in development
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.warn(`[Umami] Tracking not available yet for event: ${eventName}`);
+      }
     }
   } catch (error) {
     console.error(`[Umami] Error tracking event '${eventName}':`, error);
@@ -58,6 +64,27 @@ export function addTrackingToAll(selector, eventName, eventData = {}, eventType 
     const data = { ...eventData, index };
     addTracking(element, eventName, data, eventType);
   });
+}
+
+/**
+ * Track navigation events with proper timing
+ * Ensures tracking completes before navigation by using a small delay
+ * @param {string} targetUrl - The URL to navigate to
+ * @param {string} targetPage - The page name being navigated to
+ * @param {string} sourcePage - The current page name
+ * @param {number} delay - Delay in ms before navigation (default: 100)
+ */
+export function trackAndNavigate(targetUrl, targetPage, sourcePage = '', delay = 100) {
+  trackEvent('Page_Navigation', {
+    target: targetPage,
+    source: sourcePage || window.location.pathname
+  });
+  
+  // Use a small delay to ensure tracking completes
+  // This is a standard practice for analytics before page unload
+  setTimeout(() => {
+    window.location.href = targetUrl;
+  }, delay);
 }
 
 /**

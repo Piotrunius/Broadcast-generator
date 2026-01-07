@@ -757,7 +757,8 @@ if (switchBtn) {
     trackNavigation('broadcast_simple', 'broadcast_advanced');
     trackEvent('Mode_Switch_Clicked', { from: 'advanced', to: 'simple' });
     
-    // Small delay to ensure tracking completes before navigation
+    // Delay navigation to ensure tracking completes before page unload
+    // This is standard practice for analytics - allows tracking beacon to be sent
     setTimeout(() => {
       window.location.href = '../simple/index.html';
     }, 100);
