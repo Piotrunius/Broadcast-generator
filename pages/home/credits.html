@@ -82,7 +82,11 @@
           backBtnCredits.addEventListener('click', () => {
             trackNavigation('home', 'credits');
             trackEvent('Back_Button_Clicked', { from: 'credits' });
-            window.location.href = 'index.html';
+            
+            // Small delay to ensure tracking completes before navigation
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 100);
           });
         }
       </script>

@@ -563,7 +563,10 @@ switchBtn.addEventListener("click", () => {
   trackNavigation('broadcast_advanced', 'broadcast_simple');
   trackEvent('Mode_Switch_Clicked', { from: 'simple', to: 'advanced' });
   
-  window.location.href = "../advanced/index.html";
+  // Small delay to ensure tracking completes before navigation
+  setTimeout(() => {
+    window.location.href = "../advanced/index.html";
+  }, 100);
 });
 
 let classifiedMode = false;
@@ -628,6 +631,10 @@ if (backBtn) {
   backBtn.addEventListener('click', () => {
     trackNavigation('home', 'broadcast_simple');
     trackEvent('Back_Button_Clicked', { from: 'broadcast_simple' });
-    window.location.href = '../../home/index.html';
+    
+    // Small delay to ensure tracking completes before navigation
+    setTimeout(() => {
+      window.location.href = '../../home/index.html';
+    }, 100);
   });
 }
