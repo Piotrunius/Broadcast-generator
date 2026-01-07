@@ -129,8 +129,7 @@ The utility module includes error handling to prevent tracking failures from aff
 - **Navigation**: Page transitions, back navigation
 - **Content Generation**: Broadcast generation with metadata
 - **User Preferences**: Audio and performance mode toggles
-- **Easter Eggs**: Hidden feature discoveries (Konami code, clipboard anomaly, clock anomaly)
-- **Animations**: Typewriter animation completions
+- **Easter Eggs**: Hidden feature discoveries (6 total Easter eggs tracked)
 - **Errors**: Failed operations (implicit through success tracking)
 
 ### Easter Egg Events
@@ -142,16 +141,9 @@ Special hidden features are tracked when discovered:
 | `Easter_Egg_Activated` | Konami code entered (↑↑↓↓←→←→BA) | `type`: 'konami_code', `page` |
 | `Easter_Egg_Activated` | Copy same text 5 times | `type`: 'clipboard_anomaly', `page` |
 | `Easter_Egg_Activated` | Page loaded at 00:00 or 03:33 | `type`: 'clock_anomaly', `time`, `page` |
-
-### Animation Events
-
-Animation completions are tracked for performance insights:
-
-| Event Name | Trigger | Data Tracked |
-|------------|---------|--------------|
-| `Animation_Completed` | Typewriter animation finishes | `type`: 'typewriter', `textLength`, `page` |
-
-**Note**: Animations are skipped when Performance Mode is enabled, so tracking provides insights into user experience quality.
+| `Easter_Egg_Activated` | Click title 13 times | `type`: 'flickering', `clicks`, `page` |
+| `Easter_Egg_Activated` | Threat pattern: High→Low→Medium→High→Low | `type`: 'pattern', `sequence`, `page` |
+| `Easter_Egg_Activated` | Press Shift+Ctrl+P, then type "SCP" | `type`: 'silence', `trigger`, `page` |
 
 ## Testing
 
@@ -166,6 +158,9 @@ To test tracking:
 - **Konami Code**: Press ↑↑↓↓←→←→BA on keyboard
 - **Clipboard Anomaly**: Copy broadcast 5 times without changing it
 - **Clock Anomaly**: Load page at exactly 00:00 or 03:33
+- **Flickering**: Click "Broadcast Terminal" title 13 times
+- **Pattern**: Select threat levels in sequence: High→Low→Medium→High→Low
+- **Silence**: Press Shift+Ctrl+P, then type "SCP"
 
 ## Future Enhancements
 

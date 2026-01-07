@@ -295,6 +295,15 @@
             currentSequence = [];
             const effect = new PatternEffect();
             effect.start();
+            
+            // Umami tracking: Track pattern Easter egg activation
+            if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+              window.umami.track('Easter_Egg_Activated', { 
+                type: 'pattern',
+                sequence: PATTERN.join('→'),
+                page: window.location.pathname
+              });
+            }
           }
         }
       }
