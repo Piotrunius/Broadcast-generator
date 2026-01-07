@@ -71,7 +71,7 @@
       <script type="module">
         import { initPerformanceToggle } from '../../src/scripts/core/performance-toggle.js';
         import { initAudioToggle } from '../../src/scripts/core/audio-toggle.js';
-        import { trackNavigation, trackEvent } from '../../src/scripts/utils/umami-tracker.js'; // Umami tracking
+        import { trackEvent, trackAndNavigate } from '../../src/scripts/utils/umami-tracker.js'; // Umami tracking
         
         initPerformanceToggle();
         initAudioToggle();
@@ -80,14 +80,9 @@
         const backBtnCredits = document.getElementById('backBtnCredits');
         if (backBtnCredits) {
           backBtnCredits.addEventListener('click', () => {
-            trackNavigation('home', 'credits');
             trackEvent('Back_Button_Clicked', { from: 'credits' });
-            
-            // Delay navigation to ensure tracking completes before page unload
-            // This is standard practice for analytics - allows tracking beacon to be sent
-            setTimeout(() => {
-              window.location.href = 'index.html';
-            }, 100);
+            // Use utility function to track and navigate with proper timing
+            trackAndNavigate('index.html', 'home', 'credits');
           });
         }
       </script>
