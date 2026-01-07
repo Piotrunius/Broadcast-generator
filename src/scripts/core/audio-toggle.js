@@ -39,7 +39,7 @@ export function createAudioToggle() {
     <button class="audio-toggle-btn" title="Toggle Audio Mute (Mute/Unmute sounds)">
       <span class="audio-icon">${isMuted ? speakerMuteSvg() : speakerOnSvg()}</span>
       <span class="audio-label">Audio</span>
-      <span class="audio-status">${isMuted ? 'MUTE' : 'SOUND'}</span>
+      <span class="audio-status">${isMuted ? 'OFF' : 'ON'}</span>
     </button>
   `;
 
@@ -53,7 +53,7 @@ export function createAudioToggle() {
   // Update UI based on mute state
   const updateUI = (isMuted) => {
     iconSpan.innerHTML = isMuted ? speakerMuteSvg() : speakerOnSvg();
-    statusSpan.textContent = isMuted ? 'MUTE' : 'SOUND';
+    statusSpan.textContent = isMuted ? 'OFF' : 'ON';
     button.classList.toggle('active', isMuted);
   };
 
@@ -88,7 +88,7 @@ function injectToggleStyles() {
     .audio-toggle {
       position: fixed;
       bottom: 20px;
-      left: 250px;
+      left: 210px;
       z-index: 10000;
       pointer-events: auto;
     }

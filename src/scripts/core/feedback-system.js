@@ -43,28 +43,19 @@ function getLogBuffer() {
     return [];
 }
 
-// Get Umami session ID if available, otherwise generate own session ID
-function getSessionId() {
+function getPerformanceModeStatus() {
     try {
-        // Try localStorage first
-        const sessionId = localStorage.getItem('umami.sessionId');
-        if (sessionId) return sessionId;
-    } catch { }
-
-    try {
-        // Fallback: generate and store own session ID
-        let sessionId = localStorage.getItem('feedback-session-id');
-        if (!sessionId) {
-            // Generate UUID v4
-            sessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-            localStorage.setItem('feedback-session-id', sessionId);
-        }
-        return sessionId;
+        return localStorage.getItem('broadcast-generator-performance-mode') === 'true' ? 'On' : 'Off';
     } catch {
-        return null;
+        return 'Unknown';
+    }
+}
+
+function getAudioMutedStatus() {
+    try {
+        return localStorage.getItem('broadcast-generator-audio-muted') === 'true' ? 'Off' : 'On';
+    } catch {
+        return 'Unknown';
     }
 }
 
@@ -469,16 +460,16 @@ function updateDataInfo(type) {
 
     switch (type) {
         case 'bug':
-            infoText = 'This report will include: Console logs + System info';
+            infoText = 'This report will include: Console logs + System info + Performance status + Audio status';
             break;
         case 'feature':
-            infoText = '';
+            infoText = 'This report will include: Performance status + Audio status';
             break;
         case 'suggestion':
-            infoText = 'This report will include: System info';
+            infoText = 'This report will include: System info + Performance status + Audio status';
             break;
         case 'improvement':
-            infoText = 'This report will include: Console logs';
+            infoText = 'This report will include: Console logs + Performance status + Audio status';
             break;
         case 'other':
             infoText = '';
@@ -677,17 +668,24 @@ async function submitFeedback(form) {
         // Determine what data to include based on feedback type
         let includeLogs = false;
         let includeSystemInfo = false;
+        let includePerfAudio = false;
 
         if (feedbackType === 'bug') {
             includeLogs = true;
             includeSystemInfo = true;
+            includePerfAudio = true;
         } else if (feedbackType === 'suggestion') {
             includeSystemInfo = true;
+            includePerfAudio = true;
         } else if (feedbackType === 'improvement') {
             includeLogs = true;
+            includePerfAudio = true;
+        } else if (feedbackType === 'feature') {
+            includePerfAudio = true;
         } else if (feedbackType === 'other') {
             includeLogs = false;
             includeSystemInfo = false;
+            includePerfAudio = false;
         }
 
         let description = String(formData.get('message') || '');
@@ -705,7 +703,8 @@ async function submitFeedback(form) {
         const actual = String(formData.get('actual') || '').trim();
         const categories = String(formData.get('categories') || '').trim();
         const repro = String(formData.get('repro') || 'sometimes');
-        const sessionId = getSessionId();
+        const perfStatus = includePerfAudio ? getPerformanceModeStatus() : null;
+        const audioStatus = includePerfAudio ? getAudioMutedStatus() : null;
 
         // Build a clean description (just the user's message)
         let body = `${description}`;
@@ -724,7 +723,8 @@ async function submitFeedback(form) {
             timestamp: new Date().toISOString(),
             footer: { text: 'Broadcast Generator • Feedback' }
         };
-        if (sessionId) embed.fields.push({ name: 'Session ID', value: sessionId, inline: true });
+        if (includePerfAudio && perfStatus) embed.fields.push({ name: 'Performance Status', value: perfStatus, inline: true });
+        if (includePerfAudio && audioStatus) embed.fields.push({ name: 'Audio', value: audioStatus, inline: true });
         if (categories) embed.fields.push({ name: 'Categories', value: categories.split(',').join(', ').slice(0, 500), inline: true });
         embed.fields.push({ name: 'Reproducibility', value: repro, inline: true });
         if (steps) embed.fields.push({ name: 'Steps', value: steps.slice(0, 1024) });
