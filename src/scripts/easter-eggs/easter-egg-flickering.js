@@ -288,6 +288,15 @@
         clearTimeout(clickTimeout);
         const effect = new FlickeringEffect();
         effect.start();
+        
+        // Umami tracking: Track flickering Easter egg activation
+        if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+          window.umami.track('Easter_Egg_Activated', { 
+            type: 'flickering',
+            clicks: REQUIRED_CLICKS,
+            page: window.location.pathname
+          });
+        }
       }
     });
   });

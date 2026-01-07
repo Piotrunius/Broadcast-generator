@@ -172,16 +172,6 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
       updateCounterFn?.();
       updateColorFn?.();
       currentAnimationId = null;
-      
-      // Umami tracking: Track animation completion
-      if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-        window.umami.track('Animation_Completed', { 
-          type: 'typewriter',
-          textLength: target.length,
-          page: window.location.pathname
-        });
-      }
-      
       callback?.();
       return true;
     }

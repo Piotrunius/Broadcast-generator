@@ -309,6 +309,15 @@
           keySequence = '';
           const effect = new SilenceEffect();
           effect.start();
+          
+          // Umami tracking: Track silence Easter egg activation
+          if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+            window.umami.track('Easter_Egg_Activated', { 
+              type: 'silence',
+              trigger: 'Shift+Ctrl+P+S+C+P',
+              page: window.location.pathname
+            });
+          }
         }
       }
     } else {
