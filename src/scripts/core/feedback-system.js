@@ -43,6 +43,31 @@ function getLogBuffer() {
     return [];
 }
 
+// Get Umami session ID if available, otherwise generate own session ID
+function getSessionId() {
+    try {
+        // Try localStorage first
+        const sessionId = localStorage.getItem('umami.sessionId');
+        if (sessionId) return sessionId;
+    } catch { }
+
+    try {
+        // Fallback: generate and store own session ID
+        let sessionId = localStorage.getItem('feedback-session-id');
+        if (!sessionId) {
+            // Generate UUID v4
+            sessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            localStorage.setItem('feedback-session-id', sessionId);
+        }
+        return sessionId;
+    } catch {
+        return null;
+    }
+}
+
 function getSystemInfo() {
     const nav = navigator;
     const perf = performance;
@@ -447,7 +472,7 @@ function updateDataInfo(type) {
             infoText = 'This report will include: Console logs + System info';
             break;
         case 'feature':
-            infoText = 'This report will not include system data';
+            infoText = '';
             break;
         case 'suggestion':
             infoText = 'This report will include: System info';
@@ -456,7 +481,7 @@ function updateDataInfo(type) {
             infoText = 'This report will include: Console logs';
             break;
         case 'other':
-            infoText = 'This report will include: Console logs + System info';
+            infoText = '';
             break;
     }
 
@@ -661,8 +686,8 @@ async function submitFeedback(form) {
         } else if (feedbackType === 'improvement') {
             includeLogs = true;
         } else if (feedbackType === 'other') {
-            includeLogs = true;
-            includeSystemInfo = true;
+            includeLogs = false;
+            includeSystemInfo = false;
         }
 
         let description = String(formData.get('message') || '');
@@ -680,6 +705,7 @@ async function submitFeedback(form) {
         const actual = String(formData.get('actual') || '').trim();
         const categories = String(formData.get('categories') || '').trim();
         const repro = String(formData.get('repro') || 'sometimes');
+        const sessionId = getSessionId();
 
         // Build a clean description (just the user's message)
         let body = `${description}`;
@@ -698,6 +724,7 @@ async function submitFeedback(form) {
             timestamp: new Date().toISOString(),
             footer: { text: 'Broadcast Generator • Feedback' }
         };
+        if (sessionId) embed.fields.push({ name: 'Session ID', value: sessionId, inline: true });
         if (categories) embed.fields.push({ name: 'Categories', value: categories.split(',').join(', ').slice(0, 500), inline: true });
         embed.fields.push({ name: 'Reproducibility', value: repro, inline: true });
         if (steps) embed.fields.push({ name: 'Steps', value: steps.slice(0, 1024) });
