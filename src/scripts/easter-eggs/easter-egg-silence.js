@@ -314,7 +314,7 @@
           if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
             window.umami.track('Easter_Egg_Activated', { 
               type: 'silence',
-              trigger: 'Shift+Ctrl+P+S+C+P',
+              trigger: '(Shift|Ctrl)+SCP',
               page: window.location.pathname
             });
           }

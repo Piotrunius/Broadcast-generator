@@ -143,7 +143,7 @@ Special hidden features are tracked when discovered:
 | `Easter_Egg_Activated` | Page loaded at 00:00 or 03:33 | `type`: 'clock_anomaly', `time`, `page` |
 | `Easter_Egg_Activated` | Click title 13 times | `type`: 'flickering', `clicks`, `page` |
 | `Easter_Egg_Activated` | Threat pattern: High→Low→Medium→High→Low | `type`: 'pattern', `sequence`, `page` |
-| `Easter_Egg_Activated` | Press Shift+Ctrl+P, then type "SCP" | `type`: 'silence', `trigger`, `page` |
+| `Easter_Egg_Activated` | Press Shift or Ctrl, then type "SCP" | `type`: 'silence', `trigger`, `page` |
 
 ## Testing
 
@@ -160,7 +160,7 @@ To test tracking:
 - **Clock Anomaly**: Load page at exactly 00:00 or 03:33
 - **Flickering**: Click "Broadcast Terminal" title 13 times
 - **Pattern**: Select threat levels in sequence: High→Low→Medium→High→Low
-- **Silence**: Press Shift+Ctrl+P, then type "SCP"
+- **Silence**: Hold Shift or Ctrl, then type "SCP"
 
 ## Future Enhancements
 
