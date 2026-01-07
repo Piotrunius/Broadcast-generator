@@ -188,6 +188,8 @@
       import { initPerformanceToggle } from '../../src/scripts/core/performance-toggle.js';
       import { initAudioToggle } from '../../src/scripts/core/audio-toggle.js';
       import { AudioManager } from '../../src/scripts/utils/audio-manager.js';
+      import { trackEvent, trackNavigation } from '../../src/scripts/utils/umami-tracker.js'; // Umami tracking
+      
       initPerformanceToggle();
       initAudioToggle();
 
@@ -205,6 +207,9 @@
         toggle.classList.toggle('expanded');
         links.classList.toggle('show');
         audioManager.playClickSound();
+        
+        // Umami tracking: Track resources toggle
+        trackEvent('Resources_Toggle', { expanded: !isExpanded });
       });
 
       // Add hover/click sounds to all buttons
@@ -212,6 +217,37 @@
       buttons.forEach(btn => {
         btn.addEventListener('mouseenter', () => audioManager.playHoverSound());
         btn.addEventListener('click', () => audioManager.playClickSound());
+      });
+      
+      // Umami tracking: Track main navigation buttons
+      const broadcastBtn = document.querySelector('button.main-btn[onclick*="broadcast/simple"]');
+      if (broadcastBtn) {
+        broadcastBtn.addEventListener('click', () => {
+          trackNavigation('broadcast_simple', 'home');
+        });
+      }
+      
+      const scp914Btn = document.querySelector('button.main-btn[onclick*="scp-914"]');
+      if (scp914Btn) {
+        scp914Btn.addEventListener('click', () => {
+          trackNavigation('scp914', 'home');
+        });
+      }
+      
+      const creditsBtn = document.querySelector('button.main-btn[onclick*="credits"]');
+      if (creditsBtn) {
+        creditsBtn.addEventListener('click', () => {
+          trackNavigation('credits', 'home');
+        });
+      }
+      
+      // Umami tracking: Track external links
+      const linkBtns = document.querySelectorAll('.link-btn');
+      linkBtns.forEach(link => {
+        link.addEventListener('click', () => {
+          const linkText = link.textContent.trim();
+          trackEvent('External_Link_Clicked', { link: linkText });
+        });
       });
     </script>
     <script>

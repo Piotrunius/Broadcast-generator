@@ -5,6 +5,7 @@
 
 import { Logger } from './logger.js';
 import performanceMode from './performance-mode.js';
+import { trackToggle } from '../utils/umami-tracker.js'; // Umami tracking
 
 const log = Logger.create('PERFORMANCE');
 
@@ -49,6 +50,9 @@ export function createPerformanceToggle() {
     const nowEnabled = performanceMode.isEnabled();
     log.log(`Performance mode: ${wasEnabled} -> ${nowEnabled}, toggle returned: ${newState}`);
     updateUI(nowEnabled);
+    
+    // Umami tracking: Track performance mode toggle
+    trackToggle('Performance', nowEnabled);
   });
 
   // Observe mode changes
