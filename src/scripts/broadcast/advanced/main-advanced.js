@@ -6,6 +6,7 @@ import {
   typeText as typeTextAnimation,
 } from '../animations/typewriter.js';
 import { BroadcastGenerator } from '../engine/broadcast-generator.js';
+import { trackEvent, trackNavigation } from '../../utils/umami-tracker.js'; // Umami tracking
 
 const generator = new BroadcastGenerator();
 // Use global AudioManager if available (created by core/index.js), otherwise create new instance
@@ -73,6 +74,9 @@ function initializeApp() {
       if (!isAlreadyOpen) {
         contentPanel.classList.add('show');
         mainBtn.setAttribute('aria-expanded', 'true');
+        
+        // Umami tracking: Track menu open in advanced mode
+        trackEvent('Menu_Opened_Advanced', { menu: panelId });
       }
       audioManager.playToggle();
     });
@@ -102,6 +106,12 @@ function initializeApp() {
 
           debouncedUpdateLiveOutput();
           audioManager.playClick();
+          
+          // Umami tracking: Track menu option selection in advanced mode
+          trackEvent('Menu_Option_Selected_Advanced', { 
+            menu: panelId, 
+            option: selectedValue 
+          });
         });
       });
     }
@@ -151,6 +161,14 @@ function initializeApp() {
           }
           debouncedUpdateLiveOutput();
           audioManager.playClick();
+          
+          // Umami tracking: Track checkbox toggle in advanced mode
+          const checkboxLabel = checkbox.closest('label')?.textContent.trim() || checkbox.id;
+          trackEvent('Checkbox_Toggled_Advanced', { 
+            menu: panelId,
+            checkbox: checkboxLabel,
+            checked: checkbox.checked 
+          });
         });
       });
     }
@@ -254,6 +272,11 @@ function initializeApp() {
           copyBtn.textContent = 'COPIED!';
           setTimeout(() => (copyBtn.textContent = 'COPY'), 1000);
           audioManager.playSuccess();
+          
+          // Umami tracking: Track copy in advanced mode
+          trackEvent('Copy_Button_Clicked_Advanced', { 
+            characterCount: generatedOutput.message.length 
+          });
         })
         .catch((err) => {
           audioManager.playError();
@@ -699,6 +722,9 @@ function clearAll() {
 
   // Force UI refresh
   document.body.offsetHeight; // Trigger reflow
+  
+  // Umami tracking: Track clear action in advanced mode
+  trackEvent('Clear_Button_Clicked_Advanced', { page: 'broadcast_advanced' });
 }
 
 const style = document.createElement('style');
@@ -727,6 +753,10 @@ const switchBtn = document.getElementById('modeSwitch');
 if (switchBtn) {
   switchBtn.classList.add('active');
   switchBtn.addEventListener('click', () => {
+    // Umami tracking: Track mode switch from advanced to simple
+    trackNavigation('broadcast_simple', 'broadcast_advanced');
+    trackEvent('Mode_Switch_Clicked', { from: 'advanced', to: 'simple' });
+    
     window.location.href = '../simple/index.html';
   });
   switchBtn.addEventListener('mouseenter', () => audioManager.playHover());

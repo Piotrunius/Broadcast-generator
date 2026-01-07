@@ -1,4 +1,5 @@
 import { AudioManager } from '../../utils/audio-manager.js';
+import { trackEvent, trackNavigation } from '../../utils/umami-tracker.js'; // Umami tracking
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -92,6 +93,9 @@ menuButtons.forEach(btn => {
       btn.setAttribute('aria-expanded', 'true');
       list.setAttribute('aria-hidden', 'false');
       if (menuId === 'alarm') wrapEl.classList.add('threat-open');
+      
+      // Umami tracking: Track menu open action
+      trackEvent('Menu_Opened', { menu: menuId });
     }
   });
 });
@@ -141,6 +145,11 @@ document.querySelectorAll('.menu-list button').forEach(optBtn => {
     if (parentMenu.id === "status") updateStatusLED(optBtn.dataset.option);
     if (parentMenu.id === "events") updateEventLED(optBtn.dataset.option);
 
+    // Umami tracking: Track menu option selection
+    trackEvent('Menu_Option_Selected', { 
+      menu: parentMenu.id, 
+      option: optBtn.dataset.option 
+    });
 
     try { beep(880, 0.06, 0.04); } catch (e) { }
 
@@ -462,6 +471,14 @@ document.getElementById('generateBtn')?.addEventListener('click', () => {
   void outputEl.offsetWidth; // Force reflow to restart animation
   outputEl.classList.add('flash');
 
+  // Umami tracking: Track broadcast generation
+  trackEvent('Generate_Button_Clicked', { 
+    hasAlarm: alarm !== 'SELECT',
+    hasStatus: status !== 'SELECT',
+    hasTesting: testing !== 'SELECT',
+    characterCount: outputEl.value.length
+  });
+
   playAlert(alarm);
 });
 
@@ -475,12 +492,23 @@ document.getElementById('copyBtn')?.addEventListener('click', () => {
       const copyBtn = document.getElementById('copyBtn');
       copyBtn.textContent = 'COPIED!';
       setTimeout(() => copyBtn.textContent = 'COPY', 1000);
+      
+      // Umami tracking: Track copy action
+      trackEvent('Copy_Button_Clicked', { 
+        characterCount: outputEl.value.length 
+      });
     })
     .catch(() => {
       document.execCommand('copy');
       const copyBtn = document.getElementById('copyBtn');
       copyBtn.textContent = 'COPIED!';
       setTimeout(() => copyBtn.textContent = 'COPY', 1000);
+      
+      // Umami tracking: Track copy action (fallback)
+      trackEvent('Copy_Button_Clicked', { 
+        characterCount: outputEl.value.length,
+        method: 'fallback'
+      });
     });
 });
 
@@ -519,6 +547,9 @@ document.getElementById('clearBtn')?.addEventListener('click', () => {
   document.getElementById("scp701").checked = false;
   document.getElementById("scp035").checked = false;
   document.getElementById("containmentCheck").checked = false;
+  
+  // Umami tracking: Track clear action
+  trackEvent('Clear_Button_Clicked', { page: 'broadcast_simple' });
 });
 // MODE SWITCH - SIMPLE PAGE
 const switchBtn = document.getElementById("modeSwitch");
@@ -528,6 +559,10 @@ const switchBtn = document.getElementById("modeSwitch");
 switchBtn.classList.remove("active");
 
 switchBtn.addEventListener("click", () => {
+  // Umami tracking: Track mode switch
+  trackNavigation('broadcast_advanced', 'broadcast_simple');
+  trackEvent('Mode_Switch_Clicked', { from: 'simple', to: 'advanced' });
+  
   window.location.href = "../advanced/index.html";
 });
 
@@ -564,3 +599,35 @@ uiElements.forEach(el => {
   el.addEventListener('mouseenter', playHoverSound);
   el.addEventListener('click', playClickSound);
 });
+
+// Umami tracking: Track checkbox changes
+const checkboxes = {
+  'scp035': 'SCP035',
+  'scp008': 'SCP008',
+  'scp409': 'SCP409',
+  'scp701': 'SCP701',
+  'containmentCheck': 'CON-X',
+  'idCheck': 'ID'
+};
+
+Object.entries(checkboxes).forEach(([id, name]) => {
+  const checkbox = document.getElementById(id);
+  if (checkbox) {
+    checkbox.addEventListener('change', () => {
+      trackEvent('Checkbox_Toggled', { 
+        checkbox: name, 
+        checked: checkbox.checked 
+      });
+    });
+  }
+});
+
+// Umami tracking: Track Back button click
+const backBtn = document.getElementById('backBtn');
+if (backBtn) {
+  backBtn.addEventListener('click', () => {
+    trackNavigation('home', 'broadcast_simple');
+    trackEvent('Back_Button_Clicked', { from: 'broadcast_simple' });
+    window.location.href = '../../home/index.html';
+  });
+}

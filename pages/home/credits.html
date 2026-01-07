@@ -59,7 +59,7 @@
         </div>
       </section>
       <div class="back-container">
-        <button class="back-btn" onclick="window.location.href='index.html'">
+        <button class="back-btn" id="backBtnCredits">
           BACK
         </button>
       </div>
@@ -71,8 +71,20 @@
       <script type="module">
         import { initPerformanceToggle } from '../../src/scripts/core/performance-toggle.js';
         import { initAudioToggle } from '../../src/scripts/core/audio-toggle.js';
+        import { trackNavigation, trackEvent } from '../../src/scripts/utils/umami-tracker.js'; // Umami tracking
+        
         initPerformanceToggle();
         initAudioToggle();
+        
+        // Umami tracking: Track Back button click in credits page
+        const backBtnCredits = document.getElementById('backBtnCredits');
+        if (backBtnCredits) {
+          backBtnCredits.addEventListener('click', () => {
+            trackNavigation('home', 'credits');
+            trackEvent('Back_Button_Clicked', { from: 'credits' });
+            window.location.href = 'index.html';
+          });
+        }
       </script>
       <script>
         // Reveal only after full load to avoid FOUC/layout flashes
