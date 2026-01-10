@@ -158,6 +158,8 @@
               <a class="link-btn"
                 href="https://docs.google.com/document/d/1E9COV22lsYdjOyBqmb_e4M2eQc-cHMHJJdtScDIDUjo/edit?tab=t.0"
                 target="_blank" rel="noopener noreferrer">Rulebook</a>
+              <a class="link-btn" href="https://discord.com/channels/567122927859007514/1442245435543785573"
+                target="_blank" rel="noopener noreferrer">Forum Discord</a>
             </div>
           </div>
           <small>victorbot365 • Control Panel</small>
@@ -189,7 +191,7 @@
       import { initAudioToggle } from '../../src/scripts/core/audio-toggle.js';
       import { AudioManager } from '../../src/scripts/utils/audio-manager.js';
       import { trackEvent, trackNavigation } from '../../src/scripts/utils/umami-tracker.js'; // Umami tracking
-      
+
       initPerformanceToggle();
       initAudioToggle();
 
@@ -207,7 +209,7 @@
         toggle.classList.toggle('expanded');
         links.classList.toggle('show');
         audioManager.playClickSound();
-        
+
         // Umami tracking: Track resources toggle
         trackEvent('Resources_Toggle', { expanded: !isExpanded });
       });
@@ -218,7 +220,7 @@
         btn.addEventListener('mouseenter', () => audioManager.playHoverSound());
         btn.addEventListener('click', () => audioManager.playClickSound());
       });
-      
+
       // Umami tracking: Track main navigation buttons
       const broadcastBtn = document.querySelector('button.main-btn[onclick*="broadcast/simple"]');
       if (broadcastBtn) {
@@ -226,21 +228,21 @@
           trackNavigation('broadcast_simple', 'home');
         });
       }
-      
+
       const scp914Btn = document.querySelector('button.main-btn[onclick*="scp-914"]');
       if (scp914Btn) {
         scp914Btn.addEventListener('click', () => {
           trackNavigation('scp914', 'home');
         });
       }
-      
+
       const creditsBtn = document.querySelector('button.main-btn[onclick*="credits"]');
       if (creditsBtn) {
         creditsBtn.addEventListener('click', () => {
           trackNavigation('credits', 'home');
         });
       }
-      
+
       // Umami tracking: Track external links
       const linkBtns = document.querySelectorAll('.link-btn');
       linkBtns.forEach(link => {
