@@ -1,7 +1,6 @@
 export const RAW_RECIPES = `
 Blowtorch|Rough|Coffee
 Cassette|Rough|Photograph
-Clipboard|Rough|Coffee
 Crowbar|Rough|Ventilation Map
 Desert Eagle|Rough|Coffee
 Flashlight|Rough|Crowbar
@@ -27,8 +26,6 @@ Wall Patch|Rough|Crowbar
 Wood Planks|Rough|Mop
 
 Blowtorch|1:1|Crowbar
-Clipboard|1:1|Food Tray
-Coffee|1:1|Clipboard
 Crowbar|1:1|Flashlight
 Flashlight|1:1|Wall Patch
 Food Tray|1:1|Coffee
@@ -59,7 +56,6 @@ Photograph|1:1|Photograph
 Cassette|1:1|Cassette
 
 Blowtorch|Fine|Hacking Tool
-Clipboard|Fine|Flashlight
 Coffee|Fine|Orange Food
 Crowbar|Fine|Wall Patch
 Flashlight|Fine|Coffee
@@ -80,14 +76,12 @@ Desert Eagle|Fine|MP5SD
 Stolen M4|Fine|AK74
 SCAR-L|Fine|Blowtorch
 UMP-45|Fine|Riot Shield
-Teddy|Fine|Clipboard
 Lavender|Fine|Pizza
 Hacking Tool|Fine|Flashlight
 Photograph|Fine|Photograph
 Cassette|Fine|Cassette
 
 Blowtorch|Very Fine|Wall Patch
-Clipboard|Very Fine|Glock-17
 Coffee|Very Fine|Pizza
 Crowbar|Very Fine|Blowtorch
 Food Tray|Very Fine|Coffee
