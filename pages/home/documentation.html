@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <style>
+    html.pre-init body {
+      visibility: hidden;
+    }
+
+    html.pre-init * {
+      animation: none !important;
+      transition: none !important;
+    }
+  </style>
+  <script>
+    document.documentElement.classList.add('pre-init');
+    if (localStorage.getItem('broadcast-generator-performance-mode') === 'true') {
+      document.documentElement.classList.add('performance-mode');
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documentation | SCP Broadcast Generator</title>
+  <link rel="icon" type="image/png" href="../../assets/icons/scp-logo.png" />
+  <script defer src="https://umami-proxy.piotrunius.workers.dev/script.js"
+    data-website-id="933e33b2-1c22-42cf-b978-140f25ac6920"></script>
+
+  <link rel="stylesheet" href="../../src/styles/base/design-system.css" />
+  <link rel="stylesheet" href="../../src/styles/base/components.css" />
+  <link rel="stylesheet" href="../../src/styles/base/animations-v2.css" />
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .docs-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 3rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .docs-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .docs-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      color: #f9fafb;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+    }
+
+    .docs-header p {
+      font-size: 1.1rem;
+      color: #9ca3af;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 0.75rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-bottom: 2rem;
+    }
+
+    .back-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      transform: translateX(-5px);
+    }
+
+    .docs-section {
+      margin-bottom: 3rem;
+    }
+
+    .docs-section h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.75rem;
+      color: #ef4444;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .docs-section h3 {
+      font-size: 1.25rem;
+      color: #f9fafb;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .docs-section p, .docs-section li {
+      font-size: 1rem;
+      color: #d1d5db;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .docs-section ul, .docs-section ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .docs-section li {
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .feature-card {
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(239, 68, 68, 0.5);
+      transform: translateY(-5px);
+    }
+
+    .feature-card h4 {
+      font-size: 1.1rem;
+      color: #ef4444;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      color: #9ca3af;
+      margin: 0;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: #10b981;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .tip-box {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 4px solid #3b82f6;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .tip-box strong {
+      color: #3b82f6;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .warning-box {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid #f59e0b;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .warning-box strong {
+      color: #f59e0b;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="docs-container animate-fade-in">
+    <a href="index.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+      Back to Home
+    </a>
+
+    <div class="docs-header">
+      <h1>DOCUMENTATION</h1>
+      <p>Complete guide for using the SCP Broadcast Generator</p>
+    </div>
+
+    <!-- Getting Started -->
+    <section class="docs-section">
+      <h2>🚀 Getting Started</h2>
+      <p>
+        Welcome to the SCP Broadcast Generator, a comprehensive web-based control panel designed specifically for
+        the SCP Site Roleplay game on Roblox. This tool helps you create professional broadcasts and analyze
+        SCP-914 recipes quickly and efficiently.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>Broadcast Generator</h4>
+          <p>Generate standard and advanced broadcasts for SCP containment events with customizable options.</p>
+        </div>
+        <div class="feature-card">
+          <h4>SCP-914 Calculator</h4>
+          <p>Search and calculate refinement paths for all SCP-914 recipes available in the game.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Performance Mode</h4>
+          <p>Toggle animations for better performance on lower-end devices without losing functionality.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Broadcast Generator Guide -->
+    <section class="docs-section">
+      <h2>📡 Broadcast Generator</h2>
+      
+      <h3>Simple Mode</h3>
+      <p>The simple broadcast generator allows you to quickly create standard broadcasts for common scenarios:</p>
+      <ol>
+        <li>Select the <strong>SCP breach event</strong> from the checkboxes (035, 008, 409, 701)</li>
+        <li>Choose the <strong>threat level</strong> (HIGH, MEDIUM, LOW)</li>
+        <li>Select the <strong>site status</strong> (SCP BREACH, SITE LOCKDOWN, etc.)</li>
+        <li>Pick the <strong>message length</strong> (LONG, SHORT, MINIMAL)</li>
+        <li>Click <strong>GENERATE</strong> to create your broadcast</li>
+        <li>Copy the generated message to use in-game</li>
+      </ol>
+
+      <div class="tip-box">
+        <strong>💡 Pro Tip:</strong>
+        <p>The character counter shows your remaining characters (200 max). Keep broadcasts concise for better in-game communication.</p>
+      </div>
+
+      <h3>Advanced Mode</h3>
+      <p>Advanced mode provides additional features for power users:</p>
+      <ul>
+        <li>Support for more SCP types (076, 323, 610)</li>
+        <li>Custom message modification</li>
+        <li>Number-free formatting to avoid Roblox tagging</li>
+        <li>Requirement authorization options</li>
+        <li>Hidden Easter eggs (Konami code compatible!)</li>
+      </ul>
+    </section>
+
+    <!-- SCP-914 Guide -->
+    <section class="docs-section">
+      <h2>⚙️ SCP-914 Recipes</h2>
+      
+      <h3>How to Use</h3>
+      <ol>
+        <li>Enter an <strong>input item</strong> in the search field</li>
+        <li>Optionally enter an <strong>output item</strong> (leave blank to see all possible outputs)</li>
+        <li>Press <strong>CALCULATE RECIPES</strong> or hit Enter</li>
+        <li>View the refinement path and settings needed</li>
+      </ol>
+
+      <h3>Keyboard Shortcuts</h3>
+      <div class="code-block">
+TAB    - Autocomplete with first matching element
+ENTER  - Calculate recipes
+ESC    - Clear all fields
+      </div>
+
+      <div class="tip-box">
+        <strong>💡 Pro Tip:</strong>
+        <p>The highlighted settings (ROUGH, COARSE, 1:1, FINE, VERY FINE) show which refinement type to use for each step.</p>
+      </div>
+
+      <h3>Recipe Data Source</h3>
+      <p>
+        All recipes are sourced from the official 
+        <a href="https://scpsiteroleplay.miraheze.org/wiki/SCP-914" target="_blank" style="color: #ef4444;">
+          SCP-914 Wiki
+        </a>
+        and are regularly updated to match the game.
+      </p>
+    </section>
+
+    <!-- Features Guide -->
+    <section class="docs-section">
+      <h2>✨ Features & Settings</h2>
+      
+      <h3>Performance Mode</h3>
+      <p>
+        Performance mode disables animations and transitions to improve performance on lower-end devices.
+        All functionality remains intact, only visual effects are reduced.
+      </p>
+      <ul>
+        <li>Toggle in the Settings page</li>
+        <li>Persists across page visits</li>
+        <li>No impact on core functionality</li>
+      </ul>
+
+      <h3>Audio Controls</h3>
+      <p>
+        The application includes subtle sound effects for button interactions. You can toggle these on/off in Settings.
+      </p>
+
+      <h3>Dark Theme</h3>
+      <p>
+        The interface uses a dark cyberpunk theme inspired by the SCP Foundation aesthetic, optimized for long sessions
+        and reduced eye strain.
+      </p>
+    </section>
+
+    <!-- Tips & Tricks -->
+    <section class="docs-section">
+      <h2>🎯 Tips & Tricks</h2>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>Quick Copy</h4>
+          <p>Generated broadcasts automatically show a "COPY" button - one click copies to clipboard.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Mobile Friendly</h4>
+          <p>All pages are fully responsive and work great on mobile devices and tablets.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Easter Eggs</h4>
+          <p>Try the Konami code in Advanced mode for hidden features! (↑↑↓↓←→←→BA)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section class="docs-section">
+      <h2>🔧 Troubleshooting</h2>
+      
+      <h3>Broadcast Not Generating</h3>
+      <p>Ensure you have:</p>
+      <ul>
+        <li>Selected at least one SCP (if applicable)</li>
+        <li>Chosen a threat level</li>
+        <li>Selected a site status</li>
+      </ul>
+
+      <h3>Performance Issues</h3>
+      <p>If the site feels slow:</p>
+      <ul>
+        <li>Enable Performance Mode in Settings</li>
+        <li>Close unused browser tabs</li>
+        <li>Try a different browser (Chrome/Firefox recommended)</li>
+      </ul>
+
+      <div class="warning-box">
+        <strong>⚠️ Note:</strong>
+        <p>The broadcast feature is currently temporarily disabled due to new Roblox regulations. Check the Discord for updates.</p>
+      </div>
+    </section>
+
+    <!-- Contact & Support -->
+    <section class="docs-section">
+      <h2>📞 Support & Contact</h2>
+      <p>Need help or found a bug?</p>
+      <ul>
+        <li><strong>Discord:</strong> Join the official SCP Site Roleplay Discord server</li>
+        <li><strong>GitHub:</strong> Report issues on the project repository</li>
+        <li><strong>Wiki:</strong> Check the Fandom or Miraheze wikis for game-specific help</li>
+      </ul>
+      
+      <p style="margin-top: 2rem; text-align: center; color: #6b7280;">
+        Made with ❤️ by victorbot365 & Piotrunius for the SCP Site Roleplay community
+      </p>
+    </section>
+  </div>
+
+  <script>
+    const reveal = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.classList.remove('pre-init');
+        });
+      });
+    };
+    if (document.readyState === 'complete') {
+      reveal();
+    } else {
+      window.addEventListener('load', reveal, { once: true });
+    }
+  </script>
+</body>
+
+</html>

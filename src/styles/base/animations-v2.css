@@ -1,0 +1,404 @@
+/**
+ * Animations v2.0 - Enhanced Smooth Animations
+ */
+
+/* ===== Page Entry Animations ===== */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== Apply Animations ===== */
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.6s ease-out forwards;
+}
+
+.animate-slide-left {
+  animation: slide-left 0.6s ease-out forwards;
+}
+
+.animate-slide-right {
+  animation: slide-right 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out forwards;
+}
+
+/* ===== Staggered Animations ===== */
+.animate-stagger > * {
+  opacity: 0;
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.animate-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.animate-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.animate-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.animate-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+.animate-stagger > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* ===== Hover Effects ===== */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ===== Pulse Animations ===== */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulse-scale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===== Glow Effects ===== */
+@keyframes glow-red {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5),
+                0 0 10px rgba(239, 68, 68, 0.3),
+                0 0 15px rgba(239, 68, 68, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8),
+                0 0 20px rgba(239, 68, 68, 0.6),
+                0 0 30px rgba(239, 68, 68, 0.4);
+  }
+}
+
+@keyframes glow-green {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5),
+                0 0 10px rgba(16, 185, 129, 0.3),
+                0 0 15px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.8),
+                0 0 20px rgba(16, 185, 129, 0.6),
+                0 0 30px rgba(16, 185, 129, 0.4);
+  }
+}
+
+@keyframes glow-blue {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5),
+                0 0 10px rgba(59, 130, 246, 0.3),
+                0 0 15px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.8),
+                0 0 20px rgba(59, 130, 246, 0.6),
+                0 0 30px rgba(59, 130, 246, 0.4);
+  }
+}
+
+.animate-glow-red {
+  animation: glow-red 2s ease-in-out infinite;
+}
+
+.animate-glow-green {
+  animation: glow-green 2s ease-in-out infinite;
+}
+
+.animate-glow-blue {
+  animation: glow-blue 2s ease-in-out infinite;
+}
+
+/* ===== Spin Animation ===== */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+/* ===== Bounce Animation ===== */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+/* ===== Shake Animation ===== */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ===== Flip Animation ===== */
+@keyframes flip {
+  from { transform: perspective(400px) rotateY(0); }
+  to { transform: perspective(400px) rotateY(360deg); }
+}
+
+.animate-flip {
+  animation: flip 0.6s ease-in-out;
+}
+
+/* ===== Background Effects ===== */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* ===== Typing Effect ===== */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: var(--accent-red); }
+}
+
+.typing-effect {
+  overflow: hidden;
+  border-right: 2px solid;
+  white-space: nowrap;
+  animation: typing 2s steps(40) 1s forwards,
+             blink-caret 0.75s step-end infinite;
+}
+
+/* ===== Particle/Star Field Effect ===== */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+/* ===== Scan Line Effect ===== */
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.scan-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to bottom, 
+    transparent 0%,
+    rgba(239, 68, 68, 0.5) 50%,
+    transparent 100%);
+  pointer-events: none;
+  animation: scan-line 4s linear infinite;
+  z-index: var(--z-fixed);
+}
+
+/* ===== Glitch Effect ===== */
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+.animate-glitch {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* ===== Progress/Loading Animations ===== */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ===== Button Ripple Effect ===== */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+}
+
+.btn-ripple:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+/* ===== Notification Slide In ===== */
+@keyframes notification-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-enter {
+  animation: notification-slide-in 0.3s ease-out;
+}
+
+/* ===== Performance Mode - Disable Animations ===== */
+.performance-mode * {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
+/* ===== Reduced Motion Support ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

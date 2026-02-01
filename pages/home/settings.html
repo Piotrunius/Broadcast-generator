@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <style>
+    html.pre-init body {
+      visibility: hidden;
+    }
+
+    html.pre-init * {
+      animation: none !important;
+      transition: none !important;
+    }
+  </style>
+  <script>
+    document.documentElement.classList.add('pre-init');
+    if (localStorage.getItem('broadcast-generator-performance-mode') === 'true') {
+      document.documentElement.classList.add('performance-mode');
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings | SCP Broadcast Generator</title>
+  <link rel="icon" type="image/png" href="../../assets/icons/scp-logo.png" />
+  <script defer src="https://umami-proxy.piotrunius.workers.dev/script.js"
+    data-website-id="933e33b2-1c22-42cf-b978-140f25ac6920"></script>
+
+  <link rel="stylesheet" href="../../src/styles/base/design-system.css" />
+  <link rel="stylesheet" href="../../src/styles/base/components.css" />
+  <link rel="stylesheet" href="../../src/styles/base/animations-v2.css" />
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .settings-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .settings-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .settings-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      color: #f9fafb;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+    }
+
+    .settings-header p {
+      font-size: 1.1rem;
+      color: #9ca3af;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 0.75rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-bottom: 2rem;
+    }
+
+    .back-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      transform: translateX(-5px);
+    }
+
+    .setting-group {
+      margin-bottom: 2rem;
+    }
+
+    .setting-group h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+      color: #ef4444;
+      margin-bottom: 1rem;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s;
+    }
+
+    .setting-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .setting-info {
+      flex: 1;
+      margin-right: 2rem;
+    }
+
+    .setting-info h4 {
+      font-size: 1.1rem;
+      color: #f9fafb;
+      margin-bottom: 0.375rem;
+      font-weight: 600;
+    }
+
+    .setting-info p {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 56px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: 0.3s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-color: #ef4444;
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    .toggle-slider:hover {
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-badge.enabled {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-badge.disabled {
+      background: rgba(107, 114, 128, 0.2);
+      color: #9ca3af;
+      border: 1px solid rgba(107, 114, 128, 0.3);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: #d1d5db;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Info Box */
+    .info-box {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 4px solid #3b82f6;
+      padding: 1.25rem 1.5rem;
+      border-radius: 0.75rem;
+      margin-top: 2rem;
+    }
+
+    .info-box p {
+      color: #d1d5db;
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .info-box strong {
+      color: #3b82f6;
+    }
+
+    /* Success Message */
+    .success-message {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      background: rgba(16, 185, 129, 0.9);
+      color: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      font-weight: 600;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .success-message.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="settings-container animate-fade-in">
+    <a href="index.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+      Back to Home
+    </a>
+
+    <div class="settings-card">
+      <div class="settings-header">
+        <h1>SETTINGS</h1>
+        <p>Configure your experience</p>
+      </div>
+
+      <!-- Performance Settings -->
+      <div class="setting-group">
+        <h3>⚡ Performance</h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Performance Mode</h4>
+            <p>Disable animations and transitions for better performance on lower-end devices</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="performanceMode">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Reduced Motion</h4>
+            <p>Minimize motion effects for users sensitive to animations</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="reducedMotion">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Audio Settings -->
+      <div class="setting-group">
+        <h3>🔊 Audio</h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Sound Effects</h4>
+            <p>Enable button click and hover sound effects</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="audioEnabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Audio Volume</h4>
+            <p>Adjust the volume level for sound effects (requires refresh)</p>
+          </div>
+          <input type="range" id="audioVolume" min="0" max="100" value="50" 
+                 style="width: 120px; accent-color: #ef4444;">
+        </div>
+      </div>
+
+      <!-- Display Settings -->
+      <div class="setting-group">
+        <h3>🎨 Display</h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Particle Effects</h4>
+            <p>Show animated particles in the background</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="particlesEnabled" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Scan Line Effect</h4>
+            <p>Display retro CRT scan line animation</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="scanLineEnabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Application Settings -->
+      <div class="setting-group">
+        <h3>📋 Application</h3>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Current Version</h4>
+            <p>Application version and build info</p>
+          </div>
+          <span class="status-badge enabled">
+            <span class="status-dot"></span>
+            v2.0.0
+          </span>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <h4>Analytics</h4>
+            <p>Privacy-focused usage statistics (Umami)</p>
+          </div>
+          <span class="status-badge enabled">
+            <span class="status-dot"></span>
+            Enabled
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn-action btn-secondary" onclick="resetSettings()">
+          Reset to Defaults
+        </button>
+        <button class="btn-action btn-primary" onclick="saveSettings()">
+          Save Settings
+        </button>
+      </div>
+
+      <!-- Info Box -->
+      <div class="info-box">
+        <p>
+          <strong>💡 Note:</strong> Settings are saved locally in your browser and will persist across visits.
+          Performance mode can significantly improve the experience on lower-end devices.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" id="successMessage">
+    ✓ Settings saved successfully!
+  </div>
+
+  <script type="module">
+    import { AudioManager } from '../../src/scripts/utils/audio-manager.js';
+
+    // Initialize audio manager
+    const audioManager = window.audioManager || new AudioManager();
+    window.audioManager = audioManager;
+
+    // Load settings on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSettings();
+    });
+
+    function loadSettings() {
+      // Performance Mode
+      const performanceMode = localStorage.getItem('broadcast-generator-performance-mode') === 'true';
+      document.getElementById('performanceMode').checked = performanceMode;
+
+      // Audio Settings
+      const audioEnabled = localStorage.getItem('broadcast-generator-audio-enabled') !== 'false';
+      document.getElementById('audioEnabled').checked = audioEnabled;
+
+      const audioVolume = localStorage.getItem('broadcast-generator-audio-volume') || '50';
+      document.getElementById('audioVolume').value = audioVolume;
+
+      // Display Settings
+      const particlesEnabled = localStorage.getItem('broadcast-generator-particles-enabled') !== 'false';
+      document.getElementById('particlesEnabled').checked = particlesEnabled;
+
+      const scanLineEnabled = localStorage.getItem('broadcast-generator-scanline-enabled') === 'true';
+      document.getElementById('scanLineEnabled').checked = scanLineEnabled;
+
+      const reducedMotion = localStorage.getItem('broadcast-generator-reduced-motion') === 'true';
+      document.getElementById('reducedMotion').checked = reducedMotion;
+    }
+
+    window.saveSettings = function() {
+      // Performance Mode
+      const performanceMode = document.getElementById('performanceMode').checked;
+      localStorage.setItem('broadcast-generator-performance-mode', performanceMode);
+
+      // Audio Settings
+      const audioEnabled = document.getElementById('audioEnabled').checked;
+      localStorage.setItem('broadcast-generator-audio-enabled', audioEnabled);
+
+      const audioVolume = document.getElementById('audioVolume').value;
+      localStorage.setItem('broadcast-generator-audio-volume', audioVolume);
+
+      // Display Settings
+      const particlesEnabled = document.getElementById('particlesEnabled').checked;
+      localStorage.setItem('broadcast-generator-particles-enabled', particlesEnabled);
+
+      const scanLineEnabled = document.getElementById('scanLineEnabled').checked;
+      localStorage.setItem('broadcast-generator-scanline-enabled', scanLineEnabled);
+
+      const reducedMotion = document.getElementById('reducedMotion').checked;
+      localStorage.setItem('broadcast-generator-reduced-motion', reducedMotion);
+
+      // Apply performance mode immediately
+      if (performanceMode) {
+        document.documentElement.classList.add('performance-mode');
+      } else {
+        document.documentElement.classList.remove('performance-mode');
+      }
+
+      // Show success message
+      const successMessage = document.getElementById('successMessage');
+      successMessage.classList.add('show');
+      audioManager.playClickSound();
+
+      setTimeout(() => {
+        successMessage.classList.remove('show');
+      }, 3000);
+    }
+
+    window.resetSettings = function() {
+      if (confirm('Are you sure you want to reset all settings to defaults?')) {
+        localStorage.removeItem('broadcast-generator-performance-mode');
+        localStorage.removeItem('broadcast-generator-audio-enabled');
+        localStorage.removeItem('broadcast-generator-audio-volume');
+        localStorage.removeItem('broadcast-generator-particles-enabled');
+        localStorage.removeItem('broadcast-generator-scanline-enabled');
+        localStorage.removeItem('broadcast-generator-reduced-motion');
+
+        loadSettings();
+        document.documentElement.classList.remove('performance-mode');
+        
+        audioManager.playClickSound();
+        alert('Settings reset to defaults!');
+      }
+    }
+
+    // Add hover/click sounds
+    document.querySelectorAll('button, a, .toggle-switch').forEach(el => {
+      el.addEventListener('mouseenter', () => audioManager.playHoverSound());
+      el.addEventListener('click', () => audioManager.playClickSound());
+    });
+  </script>
+
+  <script>
+    const reveal = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.classList.remove('pre-init');
+        });
+      });
+    };
+    if (document.readyState === 'complete') {
+      reveal();
+    } else {
+      window.addEventListener('load', reveal, { once: true });
+    }
+  </script>
+</body>
+
+</html>
