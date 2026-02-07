@@ -678,9 +678,13 @@ async function submitFeedback(form) {
 
         turnstileContainer = document.createElement('div');
         turnstileContainer.id = 'hiddenTurnstileContainer';
+        // Make it invisible to user but functional for Turnstile
         turnstileContainer.style.position = 'fixed';
-        turnstileContainer.style.left = '-999999px';
-        turnstileContainer.style.visibility = 'hidden';
+        turnstileContainer.style.bottom = '-1000px';
+        turnstileContainer.style.left = '0';
+        turnstileContainer.style.opacity = '0';
+        turnstileContainer.style.pointerEvents = 'none';
+        turnstileContainer.style.zIndex = '-1';
         document.body.appendChild(turnstileContainer);
 
         // Wait for Turnstile API to be available
@@ -694,26 +698,92 @@ async function submitFeedback(form) {
             throw new Error('Turnstile API not available');
         }
 
-        // Render widget
-        window.turnstile.render('#hiddenTurnstileContainer', {
-            sitekey: TURNSTILE_SITE_KEY,
-            theme: 'light'
-        });
+        // Get token using hidden widget with callback
+        const turnstileToken = await new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+                console.warn('[Turnstile] Timeout waiting for token');
+                reject(new Error('Turnstile timeout'));
+            }, 30000); // 30 second timeout
 
-        // Wait for widget to be ready and get token
-        let tokenWait = 0;
-        let turnstileToken = null;
-        while (!turnstileToken && tokenWait < 30) {
-            turnstileToken = window.turnstile.getResponse();
-            if (!turnstileToken) {
-                await new Promise(r => setTimeout(r, 100));
-                tokenWait++;
+            let widgetId = null;
+            let resolved = false;
+            let pollCount = 0;
+
+            try {
+                console.log('[Turnstile] Rendering widget...');
+                widgetId = window.turnstile.render('#hiddenTurnstileContainer', {
+                    sitekey: TURNSTILE_SITE_KEY,
+                    theme: 'light',
+                    size: 'compact',
+                    callback: (token) => {
+                        console.log('[Turnstile] Callback fired with token:', token ? 'YES' : 'NO');
+                        if (!resolved && token) {
+                            resolved = true;
+                            clearTimeout(timeoutId);
+                            resolve(token);
+                        }
+                    },
+                    'error-callback': () => {
+                        console.error('[Turnstile] Error callback fired');
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timeoutId);
+                            reject(new Error('Turnstile verification failed'));
+                        }
+                    },
+                    'timeout-callback': () => {
+                        console.error('[Turnstile] Timeout callback fired');
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timeoutId);
+                            reject(new Error('Turnstile timeout'));
+                        }
+                    },
+                    'expired-callback': () => {
+                        console.error('[Turnstile] Expired callback fired');
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timeoutId);
+                            reject(new Error('Turnstile token expired'));
+                        }
+                    }
+                });
+
+                console.log('[Turnstile] Widget ID:', widgetId);
+
+                // Wait a moment for widget to fully initialize before polling
+                setTimeout(() => {
+                    console.log('[Turnstile] Starting to poll for token...');
+                    // Poll for response as fallback (in case callback doesn't fire)
+                    const pollInterval = setInterval(() => {
+                        if (!resolved && widgetId !== null) {
+                            try {
+                                const token = window.turnstile.getResponse(widgetId);
+                                pollCount++;
+                                if (pollCount % 10 === 0) {
+                                    console.log(`[Turnstile] Poll attempt ${pollCount}, token: ${token ? 'YES' : 'NO'}`);
+                                }
+                                if (token) {
+                                    console.log('[Turnstile] Token retrieved via polling');
+                                    resolved = true;
+                                    clearTimeout(timeoutId);
+                                    clearInterval(pollInterval);
+                                    resolve(token);
+                                }
+                            } catch (e) {
+                                // Continue polling
+                            }
+                        } else if (resolved) {
+                            clearInterval(pollInterval);
+                        }
+                    }, 300); // Poll every 300ms
+                }, 1000); // Wait 1 second before starting to poll
+            } catch (error) {
+                console.error('[Turnstile] Render error:', error);
+                clearTimeout(timeoutId);
+                reject(error);
             }
-        }
-
-        if (!turnstileToken) {
-            throw new Error('Failed to get Turnstile token');
-        }
+        });
 
         const formData = new FormData(form);
         const feedbackType = formData.get('type');
@@ -791,21 +861,43 @@ async function submitFeedback(form) {
 
         const payload = {
             embeds: [embed],
-            content: '',
-            turnstile_token: turnstileToken
+            content: ''
         };
+
+        console.log('[Feedback] Sending feedback with token:', turnstileToken ? 'YES' : 'NO');
+        console.log('[Feedback] Token preview:', turnstileToken ? turnstileToken.substring(0, 20) + '...' : 'NONE');
+        console.log('[Feedback] Payload keys:', Object.keys(payload));
 
         const res = await fetch(FEEDBACK_PROXY, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Captcha-Token': turnstileToken,
+                'X-Origin-Verify': window.location.origin
             },
             body: JSON.stringify(payload)
         });
         if (!res.ok) {
             const errorText = await res.text();
+            let errorMessage = `Proxy error: ${res.status}`;
+
+            // Parse error response for better user feedback
+            try {
+                const errorJson = JSON.parse(errorText);
+                if (errorJson.error === 'Captcha token required' || errorJson.message?.includes('captcha')) {
+                    errorMessage = 'Please complete the captcha verification and try again';
+                } else if (errorJson.error || errorJson.message) {
+                    errorMessage = errorJson.error || errorJson.message;
+                }
+            } catch (e) {
+                // If not JSON, use the error text if it's short
+                if (errorText && errorText.length < 100) {
+                    errorMessage = errorText;
+                }
+            }
+
             console.error('Proxy response:', errorText);
-            throw new Error(`Proxy error: ${res.status}`);
+            throw new Error(errorMessage);
         }
 
         // Visual success on the submit button (no status text)
@@ -834,13 +926,25 @@ async function submitFeedback(form) {
         const progressEl = submitBtn.querySelector('.hold-progress');
         submitBtn.classList.remove('success');
         submitBtn.classList.add('error');
-        if (labelEl) labelEl.textContent = 'Error';
+
+        // Show more descriptive error message
+        const errorMsg = error.message || 'Unknown error';
+        if (labelEl) {
+            // Truncate long error messages for display
+            labelEl.textContent = errorMsg.length > 30 ? errorMsg.substring(0, 27) + '...' : errorMsg;
+            labelEl.title = errorMsg; // Full message in tooltip
+        }
+
         if (progressEl) progressEl.style.setProperty('--hold-progress', '0');
-        // Revert back after a short delay so user can retry
+
+        // Revert back after a longer delay for user to read the error
         setTimeout(() => {
             submitBtn.classList.remove('error');
-            if (labelEl) labelEl.textContent = 'Hold to Send';
-        }, 2000);
+            if (labelEl) {
+                labelEl.textContent = 'Hold to Send';
+                labelEl.title = '';
+            }
+        }, 4000);
     } finally {
         submitBtn.disabled = false;
     }
