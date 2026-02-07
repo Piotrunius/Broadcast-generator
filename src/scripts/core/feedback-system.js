@@ -20,8 +20,12 @@ const PAGES = [
     { value: 'credits', label: 'Credits' }
 ];
 
-// Discord webhook target (requested by user)
-const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1458167312988246129/6xq1hrNJMnD5VR1KvyCGxUisIjnGohwB66k507sA3E0nDgBRiwaooEB6hprVTEvLxGsN';
+// Cloudflare Turnstile configuration
+const TURNSTILE_SITE_KEY = '0x4AAAAAACY41I_bTFCmq-xo';
+const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+
+// Proxy endpoint for sending feedback
+const FEEDBACK_PROXY = 'https://webhook.piotrunius.workers.dev/';
 
 // GitHub repository target (kept for optional future use)
 const GITHUB_OWNER = 'aresysite';
@@ -183,6 +187,15 @@ function playAudio(kind) {
 }
 
 function createFeedbackUI() {
+    // Load Turnstile script
+    if (!window.turnstile && !document.querySelector(`script[src="${TURNSTILE_SCRIPT}"]`)) {
+        const script = document.createElement('script');
+        script.src = TURNSTILE_SCRIPT;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+
     const feedbackBtn = document.createElement('button');
     feedbackBtn.id = 'feedbackBtn';
     feedbackBtn.className = 'feedback-btn';
@@ -334,9 +347,6 @@ function createFeedbackUI() {
                     </div>
 
                     <!-- Options removed - logs and system info sent automatically per type -->
-
-
-
 
                 <!-- Buttons -->
                 <div class="form-actions full">
@@ -659,6 +669,52 @@ async function submitFeedback(form) {
 
         submitBtn.disabled = true;
 
+        // Create or reset hidden Turnstile container
+        let turnstileContainer = document.getElementById('hiddenTurnstileContainer');
+        if (turnstileContainer) {
+            // Remove old container to avoid "already rendered" error
+            turnstileContainer.remove();
+        }
+
+        turnstileContainer = document.createElement('div');
+        turnstileContainer.id = 'hiddenTurnstileContainer';
+        turnstileContainer.style.position = 'fixed';
+        turnstileContainer.style.left = '-999999px';
+        turnstileContainer.style.visibility = 'hidden';
+        document.body.appendChild(turnstileContainer);
+
+        // Wait for Turnstile API to be available
+        let maxWait = 50;
+        while (!window.turnstile && maxWait > 0) {
+            await new Promise(r => setTimeout(r, 100));
+            maxWait--;
+        }
+
+        if (!window.turnstile) {
+            throw new Error('Turnstile API not available');
+        }
+
+        // Render widget
+        window.turnstile.render('#hiddenTurnstileContainer', {
+            sitekey: TURNSTILE_SITE_KEY,
+            theme: 'light'
+        });
+
+        // Wait for widget to be ready and get token
+        let tokenWait = 0;
+        let turnstileToken = null;
+        while (!turnstileToken && tokenWait < 30) {
+            turnstileToken = window.turnstile.getResponse();
+            if (!turnstileToken) {
+                await new Promise(r => setTimeout(r, 100));
+                tokenWait++;
+            }
+        }
+
+        if (!turnstileToken) {
+            throw new Error('Failed to get Turnstile token');
+        }
+
         const formData = new FormData(form);
         const feedbackType = formData.get('type');
         const nickname = String(formData.get('nickname') || '').trim();
@@ -709,7 +765,7 @@ async function submitFeedback(form) {
         // Build a clean description (just the user's message)
         let body = `${description}`;
 
-        // Send to Discord webhook
+        // Send to Discord webhook through proxy
         const color = (FEEDBACK_TYPES.find(t => t.value === feedbackType)?.color) || 0xff3333;
         const embed = {
             title: `${String(formData.get('title') || '').slice(0, 240)}`,
@@ -733,15 +789,24 @@ async function submitFeedback(form) {
         if (sysInfoBlock) embed.fields.push({ name: 'System', value: '```\n' + sysInfoBlock.slice(0, 600) + '\n```' });
         if (logsPreview) embed.fields.push({ name: 'Logs', value: '```\n' + logsPreview.slice(-600) + '\n```' });
 
-        const formDataReq = new FormData();
-        const payload = { embeds: [embed], content: '' };
-        formDataReq.append('payload_json', JSON.stringify(payload));
+        const payload = {
+            embeds: [embed],
+            content: '',
+            turnstile_token: turnstileToken
+        };
 
-        const res = await fetch(DISCORD_WEBHOOK, {
+        const res = await fetch(FEEDBACK_PROXY, {
             method: 'POST',
-            body: formDataReq
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error(`Discord webhook failed: ${res.status}`);
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('Proxy response:', errorText);
+            throw new Error(`Proxy error: ${res.status}`);
+        }
 
         // Visual success on the submit button (no status text)
         const labelEl = submitBtn.querySelector('.btn-label');
@@ -759,6 +824,8 @@ async function submitFeedback(form) {
                 document.getElementById('feedbackModal').classList.remove('show');
                 form.reset();
             }
+            // Clean up Turnstile container
+            if (turnstileContainer) turnstileContainer.remove();
         }, 1200);
     } catch (error) {
         console.error('Feedback error:', error);
