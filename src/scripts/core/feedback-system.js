@@ -868,12 +868,17 @@ async function submitFeedback(form) {
         console.log('[Feedback] Token preview:', turnstileToken ? turnstileToken.substring(0, 20) + '...' : 'NONE');
         console.log('[Feedback] Payload keys:', Object.keys(payload));
 
+        // Determine proxy page header. Worker expects "broadcast" for all broadcast pages.
+        let proxyPageId = String(formData.get('page') || '').trim();
+        if (proxyPageId.startsWith('broadcast')) proxyPageId = 'broadcast';
+
         const res = await fetch(FEEDBACK_PROXY, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Captcha-Token': turnstileToken,
-                'X-Origin-Verify': window.location.origin
+                'X-Origin-Verify': window.location.origin,
+                'X-Page-ID': proxyPageId
             },
             body: JSON.stringify(payload)
         });
