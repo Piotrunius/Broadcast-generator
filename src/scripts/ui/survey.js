@@ -53,8 +53,23 @@ function createPanel() {
 function injectStyles() {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    // root-absolute path to work on GitHub Pages
-    link.href = '/src/styles/pages/survey.css';
+    try {
+        // Attempt to resolve the CSS path relative to the running script.
+        const scriptSrc = (document.currentScript && document.currentScript.src) || (() => {
+            const scripts = document.getElementsByTagName('script');
+            for (let i = scripts.length - 1; i >= 0; i--) {
+                if (scripts[i].src && scripts[i].src.includes('survey')) return scripts[i].src;
+            }
+            return window.location.href;
+        })();
+        // CSS is located two levels up from /src/scripts/ui/ -> ../../styles/pages/survey.css
+        link.href = new URL('../../styles/pages/survey.css', scriptSrc).href;
+    } catch (e) {
+        // Fallback: try repo-root relative path (works if hosted at repo root)
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        const repo = parts.length ? '/' + parts[0] : '';
+        link.href = repo + '/src/styles/pages/survey.css';
+    }
     document.head.appendChild(link);
 }
 
