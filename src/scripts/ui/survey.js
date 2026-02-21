@@ -1,3 +1,5 @@
+import { trackEvent } from '../utils/umami-tracker.js';
+
 const FEEDBACK_WORKER_URL = 'https://webhook.piotrunius.workers.dev';
 const TURNSTILE_SITE_KEY = '0x4AAAAAACY41I_bTFCmq-xo';
 
@@ -36,6 +38,12 @@ function createPanel() {
     // Close only for this session: remove the element but do NOT set STORAGE_KEY_CLOSED,
     // so the panel will reappear on the next page refresh.
     document.getElementById('survey-hide').addEventListener('click', () => {
+        // Track that the survey was minimized without voting
+        try {
+            trackEvent('Survey_Minimized', { survey: 'broadcast', answered: false });
+        } catch (e) {
+            // ignore tracking errors
+        }
         panel.remove();
     });
 
@@ -223,6 +231,13 @@ async function submitAnswer(answer) {
 
         const json = await resp.json().catch(() => ({}));
         if (!resp.ok) throw new Error(json.error || 'Submission failed');
+
+        // Track successful vote (Yes/No)
+        try {
+            trackEvent('Survey_Voted', { survey: 'broadcast', choice: answer });
+        } catch (e) {
+            // ignore tracking errors
+        }
 
         status.textContent = 'Thanks — your response was recorded!';
         // mark answered permanently
