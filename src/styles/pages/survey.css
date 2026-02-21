@@ -1,0 +1,195 @@
+/* --- SURVEY PANEL: SCP Broadcast Style --- */
+#survey-panel {
+    width: min(350px, 90vw);
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 0, 0, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    color: #eee;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    overflow: hidden;
+    z-index: 80;
+    opacity: 0;
+    animation: simpleFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 0.05s;
+}
+
+#survey-panel .survey-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 10px 18px;
+    background: linear-gradient(135deg, rgba(255, 26, 26, 0.2) 0%, rgba(255, 26, 26, 0.1) 100%);
+    border-bottom: 1px solid rgba(255, 0, 0, 0.18);
+}
+
+#survey-panel .survey-title {
+    font-weight: 700;
+    color: var(--red);
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 6px rgba(255, 0, 0, 0.08);
+}
+
+#survey-panel .survey-hide {
+    background: transparent;
+    border: none;
+    color: var(--red);
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+#survey-panel .survey-hide:hover {
+    color: #fff;
+}
+
+#survey-panel .survey-body {
+    padding: 18px;
+}
+
+#survey-panel .survey-question {
+    margin: 0 0 16px 0;
+    color: #eee;
+    font-size: 15px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+#survey-panel .survey-question a {
+    color: var(--red);
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+#survey-panel .survey-question a:hover {
+    color: #fff;
+}
+
+#survey-panel .survey-choices {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.survey-yes,
+.survey-no {
+    flex: 1;
+    padding: 14px 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.12);
+    background: linear-gradient(180deg, rgba(255, 0, 0, 0.04), rgba(255, 0, 0, 0.02));
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), inset 0 -6px 12px rgba(255, 0, 0, 0.03);
+    margin: 0;
+    overflow: hidden;
+}
+
+.survey-yes::before,
+.survey-no::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--red);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+.survey-yes::after,
+.survey-no::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 0, 0, 0.4) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.survey-yes:hover {
+    /* affirmative hover: green-accent background but keep white label like No */
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), rgba(52, 211, 153, 0.12));
+    color: #fff;
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.18), 0 0 24px rgba(16, 185, 129, 0.08), inset 0 -6px 12px rgba(16, 185, 129, 0.04);
+}
+
+.survey-yes:hover::before {
+    border-color: rgba(16, 185, 129, 0.9);
+    opacity: 0.7;
+}
+
+.survey-yes:hover::after {
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+    opacity: 1;
+}
+
+.survey-no:hover {
+    /* negative hover: red-accent background matching Yes gradient structure (red variant) */
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.18), rgba(249, 115, 22, 0.12));
+    color: #fff;
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.25), 0 0 24px rgba(239, 68, 68, 0.12), inset 0 -6px 12px rgba(239, 68, 68, 0.04);
+}
+
+.survey-no:hover::before {
+    border-color: rgba(239, 68, 68, 0.9);
+    opacity: 0.7;
+}
+
+.survey-no:hover::after {
+    background: radial-gradient(circle at center, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+    opacity: 1;
+}
+
+.survey-yes:active,
+.survey-no:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.08s ease;
+}
+
+/* textarea removed; styles intentionally omitted */
+
+#survey-status {
+    margin-top: 8px;
+    color: #ff8080;
+    font-size: 13px;
+}
+
+.hidden-captcha {
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+@media (max-width: 640px) {
+    #survey-panel {
+        right: 8px;
+        left: 8px;
+        bottom: 8px;
+        width: auto;
+        min-width: 0;
+        padding: 0;
+    }
+
+    #survey-panel .survey-body {
+        padding: 10px;
+    }
+
+    #survey-panel .survey-top {
+        padding: 10px 12px 8px 12px;
+    }
+}
