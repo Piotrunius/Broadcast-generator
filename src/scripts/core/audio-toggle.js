@@ -3,11 +3,11 @@
  * Adds a toggle button to pages for audio mute/unmute
  */
 
-import { AudioManager } from '../utils/audio-manager.js';
-import { trackToggle } from '../utils/umami-tracker.js'; // Umami tracking
-import { Logger } from './logger.js';
+import { AudioManager } from "../utils/audio-manager.js";
+import { trackToggle } from "../utils/umami-tracker.js"; // Umami tracking
+import { Logger } from "./logger.js";
 
-const log = Logger.create('AUDIO');
+const log = Logger.create("AUDIO");
 
 // Get or create global AudioManager instance
 function getAudioManager() {
@@ -24,43 +24,45 @@ function getAudioManager() {
 }
 
 export function createAudioToggle() {
-  log.log('Creating audio toggle...');
-  const toggle = document.createElement('div');
-  toggle.className = 'audio-toggle';
-  log.log('Toggle div created');
+  log.log("Creating audio toggle...");
+  const toggle = document.createElement("div");
+  toggle.className = "audio-toggle";
+  log.log("Toggle div created");
 
   const audioManager = getAudioManager();
   const isMuted = audioManager.isMuted;
-  log.log('Audio is muted:', isMuted);
+  log.log("Audio is muted:", isMuted);
 
-  const speakerOnSvg = () => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15 9a3 3 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/></svg>`;
-  const speakerMuteSvg = () => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="16" y1="8" x2="22" y2="16"/><line x1="22" y1="8" x2="16" y2="16"/></svg>`;
+  const speakerOnSvg = () =>
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15 9a3 3 0 0 1 0 6"/><path d="M19 7a7 7 0 0 1 0 10"/></svg>`;
+  const speakerMuteSvg = () =>
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="16" y1="8" x2="22" y2="16"/><line x1="22" y1="8" x2="16" y2="16"/></svg>`;
 
   toggle.innerHTML = `
     <button class="audio-toggle-btn" title="Toggle Audio Mute (Mute/Unmute sounds)">
       <span class="audio-icon">${isMuted ? speakerMuteSvg() : speakerOnSvg()}</span>
       <span class="audio-label">Audio</span>
-      <span class="audio-status">${isMuted ? 'OFF' : 'ON'}</span>
+      <span class="audio-status">${isMuted ? "OFF" : "ON"}</span>
     </button>
   `;
 
-  const button = toggle.querySelector('.audio-toggle-btn');
-  const iconSpan = toggle.querySelector('.audio-icon');
-  const statusSpan = toggle.querySelector('.audio-status');
+  const button = toggle.querySelector(".audio-toggle-btn");
+  const iconSpan = toggle.querySelector(".audio-icon");
+  const statusSpan = toggle.querySelector(".audio-status");
 
-  log.log('Button found:', !!button);
-  log.log('Status span found:', !!statusSpan);
+  log.log("Button found:", !!button);
+  log.log("Status span found:", !!statusSpan);
 
   // Update UI based on mute state
   const updateUI = (isMuted) => {
     iconSpan.innerHTML = isMuted ? speakerMuteSvg() : speakerOnSvg();
-    statusSpan.textContent = isMuted ? 'OFF' : 'ON';
-    button.classList.toggle('active', isMuted);
+    statusSpan.textContent = isMuted ? "OFF" : "ON";
+    button.classList.toggle("active", isMuted);
   };
 
   // Toggle on click
-  button.addEventListener('click', (e) => {
-    log.log('Audio toggle clicked');
+  button.addEventListener("click", (e) => {
+    log.log("Audio toggle clicked");
     e.preventDefault();
     e.stopPropagation();
     const audioMgr = getAudioManager();
@@ -71,7 +73,7 @@ export function createAudioToggle() {
     updateUI(nowMuted);
 
     // Umami tracking: Track audio toggle state change
-    trackToggle('Audio', !nowMuted);
+    trackToggle("Audio", !nowMuted);
   });
 
   // Initial state
@@ -84,10 +86,10 @@ export function createAudioToggle() {
 }
 
 function injectToggleStyles() {
-  if (document.getElementById('audio-toggle-styles')) return;
+  if (document.getElementById("audio-toggle-styles")) return;
 
-  const style = document.createElement('style');
-  style.id = 'audio-toggle-styles';
+  const style = document.createElement("style");
+  style.id = "audio-toggle-styles";
   style.textContent = `
     .audio-toggle {
       position: fixed;
@@ -192,25 +194,25 @@ function injectToggleStyles() {
 
 // Auto-add toggle to page on load
 export function initAudioToggle() {
-  log.log('Initializing Audio Toggle...');
+  log.log("Initializing Audio Toggle...");
 
   const addToggle = () => {
     if (!document.body) {
-      log.warn('document.body not available, retrying...');
+      log.warn("document.body not available, retrying...");
       setTimeout(addToggle, 100);
       return;
     }
-    log.log('Creating and adding toggle to body');
+    log.log("Creating and adding toggle to body");
     const toggle = createAudioToggle();
     document.body.appendChild(toggle);
-    log.log('Audio toggle added to body');
+    log.log("Audio toggle added to body");
   };
 
-  if (document.readyState === 'loading') {
-    log.log('DOM loading, waiting for DOMContentLoaded');
-    document.addEventListener('DOMContentLoaded', addToggle);
+  if (document.readyState === "loading") {
+    log.log("DOM loading, waiting for DOMContentLoaded");
+    document.addEventListener("DOMContentLoaded", addToggle);
   } else {
-    log.log('DOM already loaded, adding toggle');
+    log.log("DOM already loaded, adding toggle");
     addToggle();
   }
 }

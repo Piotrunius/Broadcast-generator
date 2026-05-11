@@ -4,7 +4,7 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
   function createRipple(event) {
     const button = event.currentTarget;
@@ -13,14 +13,14 @@
     // Don't stop propagation - let event bubble up
 
     // Remove any existing ripples
-    const existingRipple = button.querySelector('.ripple-effect');
+    const existingRipple = button.querySelector(".ripple-effect");
     if (existingRipple) {
       existingRipple.remove();
     }
 
     // Create ripple element
-    const ripple = document.createElement('span');
-    ripple.classList.add('ripple-effect');
+    const ripple = document.createElement("span");
+    ripple.classList.add("ripple-effect");
 
     // Get click position relative to button
     const rect = button.getBoundingClientRect();
@@ -29,9 +29,9 @@
     const y = event.clientY - rect.top - size / 2;
 
     // Set ripple styles
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
+    ripple.style.width = ripple.style.height = size + "px";
+    ripple.style.left = x + "px";
+    ripple.style.top = y + "px";
 
     button.appendChild(ripple);
 
@@ -42,7 +42,7 @@
   }
 
   // Add CSS for ripple effect
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     .ripple-effect {
       position: absolute;
@@ -69,18 +69,20 @@
 
   // Initialize ripple effect on all buttons
   function initRippleEffects() {
-    const buttons = document.querySelectorAll('button, .main-btn, .primary, .btn-secondary');
+    const buttons = document.querySelectorAll(
+      "button, .main-btn, .primary, .btn-secondary",
+    );
 
     buttons.forEach((button) => {
       // Remove existing listeners to prevent duplicates
-      button.removeEventListener('click', createRipple);
-      button.addEventListener('click', createRipple);
+      button.removeEventListener("click", createRipple);
+      button.addEventListener("click", createRipple);
     });
   }
 
   // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initRippleEffects);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initRippleEffects);
   } else {
     initRippleEffects();
   }

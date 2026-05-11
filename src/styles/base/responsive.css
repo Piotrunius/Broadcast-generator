@@ -6,7 +6,6 @@
 
 /* Touch-friendly sizes for mobile */
 @media (max-width: 768px) {
-
     /* Increase touch targets */
     button,
     input[type="button"],
@@ -27,7 +26,6 @@
 
 /* Small phones */
 @media (max-width: 480px) {
-
     /* Prevent zoom on input focus (iOS) */
     input,
     textarea,

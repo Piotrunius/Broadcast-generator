@@ -4,10 +4,10 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
   let copyCount = 0;
-  let lastCopiedText = '';
+  let lastCopiedText = "";
   let isActive = false;
 
   class ClipboardAnomalyEffect {
@@ -37,7 +37,7 @@
     }
 
     showWarning() {
-      const warning = document.createElement('div');
+      const warning = document.createElement("div");
       warning.style.cssText = `
         position: fixed;
         top: 50%;
@@ -83,7 +83,7 @@
         body.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
         shakeCount++;
         if (shakeCount > 20) {
-          body.style.transform = '';
+          body.style.transform = "";
           clearInterval(interval);
         }
       }, 50);
@@ -92,10 +92,10 @@
       // Color inversion flashes
       let flashCount = 0;
       const flashInterval = setInterval(() => {
-        body.style.filter = flashCount % 2 === 0 ? 'invert(1)' : 'invert(0)';
+        body.style.filter = flashCount % 2 === 0 ? "invert(1)" : "invert(0)";
         flashCount++;
         if (flashCount > 8) {
-          body.style.filter = '';
+          body.style.filter = "";
           clearInterval(flashInterval);
         }
       }, 200);
@@ -110,8 +110,8 @@
     }
 
     spawnWarningSymbol() {
-      const symbols = ['⚠', '☢', '☣', '⚡', '💀', '⬛', '◼'];
-      const symbol = document.createElement('div');
+      const symbols = ["⚠", "☢", "☣", "⚡", "💀", "⬛", "◼"];
+      const symbol = document.createElement("div");
       symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
       symbol.style.cssText = `
         position: fixed;
@@ -135,7 +135,9 @@
       if (window.audioManager && window.audioManager.isMuted) return;
 
       try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
 
         // Alert sequence
         [800, 600, 800, 600, 1000, 800, 1000].forEach((freq, i) => {
@@ -143,7 +145,7 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
-            osc.type = 'square';
+            osc.type = "square";
             osc.frequency.value = freq;
             gain.gain.value = 0.2;
 
@@ -151,11 +153,14 @@
             gain.connect(audioCtx.destination);
 
             osc.start();
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              audioCtx.currentTime + 0.15,
+            );
             setTimeout(() => osc.stop(), 150);
           }, i * 100);
         });
-      } catch (e) { }
+      } catch (e) {}
     }
 
     modifyClipboard() {
@@ -178,10 +183,10 @@ You will not remember reading this.
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard
             .writeText(anomalousText)
-            .then(() => { })
-            .catch((err) => { });
+            .then(() => {})
+            .catch((err) => {});
         }
-      } catch (e) { }
+      } catch (e) {}
     }
 
     end() {
@@ -204,17 +209,17 @@ You will not remember reading this.
       this.elements = [];
 
       // Reset styles
-      document.body.style.transform = '';
-      document.body.style.filter = '';
+      document.body.style.transform = "";
+      document.body.style.filter = "";
 
       // Reset counter
       copyCount = 0;
-      lastCopiedText = '';
+      lastCopiedText = "";
     }
   }
 
   // Add CSS
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     @keyframes warningPopup {
       0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
@@ -230,13 +235,13 @@ You will not remember reading this.
   document.head.appendChild(style);
 
   // Listen for copy events
-  document.addEventListener('DOMContentLoaded', () => {
-    const copyBtn = document.getElementById('copyBtn');
-    const outputEl = document.getElementById('output');
+  document.addEventListener("DOMContentLoaded", () => {
+    const copyBtn = document.getElementById("copyBtn");
+    const outputEl = document.getElementById("output");
 
     if (!copyBtn || !outputEl) return;
 
-    copyBtn.addEventListener('click', () => {
+    copyBtn.addEventListener("click", () => {
       if (isActive) return;
 
       const currentText = outputEl.value;
@@ -250,10 +255,14 @@ You will not remember reading this.
           effect.start();
 
           // Umami tracking: Track clipboard Easter egg activation
-          if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-            window.umami.track('Easter_Egg_Activated', {
-              type: 'clipboard_anomaly',
-              page: window.location.pathname
+          if (
+            typeof window !== "undefined" &&
+            window.umami &&
+            typeof window.umami.track === "function"
+          ) {
+            window.umami.track("Easter_Egg_Activated", {
+              type: "clipboard_anomaly",
+              page: window.location.pathname,
             });
           }
         }
@@ -264,7 +273,7 @@ You will not remember reading this.
     });
 
     // Reset if output changes
-    outputEl.addEventListener('input', () => {
+    outputEl.addEventListener("input", () => {
       if (outputEl.value !== lastCopiedText) {
         copyCount = 0;
       }

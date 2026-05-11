@@ -6,7 +6,7 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
   let hasTriggered = false;
   const CHECK_INTERVAL = 10000; // Check every 10 seconds
@@ -38,9 +38,9 @@
     }
 
     showTimeWarning() {
-      const warning = document.createElement('div');
+      const warning = document.createElement("div");
       const now = new Date();
-      const time = now.toLocaleTimeString('en-US', { hour12: false });
+      const time = now.toLocaleTimeString("en-US", { hour12: false });
 
       warning.style.cssText = `
         position: fixed;
@@ -93,8 +93,8 @@
 
         glitchCount++;
         if (glitchCount > 40) {
-          body.style.transform = '';
-          body.style.filter = '';
+          body.style.transform = "";
+          body.style.filter = "";
           clearInterval(interval);
         }
       }, 150);
@@ -108,15 +108,29 @@
     }
 
     spawnTimeNumber() {
-      const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', '?', '∞'];
-      const number = document.createElement('div');
+      const numbers = [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        ":",
+        "?",
+        "∞",
+      ];
+      const number = document.createElement("div");
       number.textContent = numbers[Math.floor(Math.random() * numbers.length)];
       number.style.cssText = `
         position: fixed;
         top: -50px;
         left: ${Math.random() * 100}%;
         font-size: ${30 + Math.random() * 40}px;
-        color: ${Math.random() > 0.5 ? '#ff00ff' : '#00ffff'};
+        color: ${Math.random() > 0.5 ? "#ff00ff" : "#00ffff"};
         font-family: 'Courier New', monospace;
         font-weight: bold;
         z-index: 99998;
@@ -133,17 +147,17 @@
 
     spawnBrokenClocks() {
       const times = [
-        '??:??:??',
-        '13:13:13',
-        '00:00:00',
-        '∞∞:∞∞:∞∞',
-        '25:99:77',
-        '03:33:33',
-        '--:--:--',
+        "??:??:??",
+        "13:13:13",
+        "00:00:00",
+        "∞∞:∞∞:∞∞",
+        "25:99:77",
+        "03:33:33",
+        "--:--:--",
       ];
 
       const interval = setInterval(() => {
-        const clock = document.createElement('div');
+        const clock = document.createElement("div");
         clock.textContent = times[Math.floor(Math.random() * times.length)];
         clock.style.cssText = `
           position: fixed;
@@ -172,14 +186,16 @@
       if (window.audioManager && window.audioManager.isMuted) return;
 
       try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
 
         // Deep mechanical clock ticks - more serious
         const tickInterval = setInterval(() => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
 
-          osc.type = 'square';
+          osc.type = "square";
           osc.frequency.value = 200 + Math.random() * 100; // Lower, more mechanical
           gain.gain.value = 0.25;
 
@@ -187,7 +203,10 @@
           gain.connect(audioCtx.destination);
 
           osc.start();
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + 0.08,
+          );
           setTimeout(() => osc.stop(), 80);
         }, 300);
 
@@ -199,7 +218,7 @@
           const drone = audioCtx.createOscillator();
           const droneGain = audioCtx.createGain();
 
-          drone.type = 'sawtooth';
+          drone.type = "sawtooth";
           drone.frequency.value = 60;
           droneGain.gain.value = 0.2;
 
@@ -218,7 +237,7 @@
             setTimeout(() => drone.stop(), 1000);
           }, 2000);
         }, 3000);
-      } catch (e) { }
+      } catch (e) {}
     }
 
     end() {
@@ -239,8 +258,8 @@
       this.elements = [];
 
       // Reset styles
-      document.body.style.transform = '';
-      document.body.style.filter = '';
+      document.body.style.transform = "";
+      document.body.style.filter = "";
 
       // Allow triggering again after 1 hour
       setTimeout(() => {
@@ -250,7 +269,7 @@
   }
 
   // Add CSS
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     @keyframes timePopup {
       0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
@@ -292,11 +311,15 @@
       effect.start();
 
       // Umami tracking: Track clock anomaly Easter egg activation
-      if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-        window.umami.track('Easter_Egg_Activated', {
-          type: 'clock_anomaly',
+      if (
+        typeof window !== "undefined" &&
+        window.umami &&
+        typeof window.umami.track === "function"
+      ) {
+        window.umami.track("Easter_Egg_Activated", {
+          type: "clock_anomaly",
           time: `${hours}:${minutes}`,
-          page: window.location.pathname
+          page: window.location.pathname,
         });
       }
     }
@@ -309,7 +332,7 @@
   setInterval(checkTime, CHECK_INTERVAL);
 
   // Hook for dev panel force trigger
-  window.addEventListener('forceClockAnomaly', () => {
+  window.addEventListener("forceClockAnomaly", () => {
     hasTriggered = false; // Reset flag
     const effect = new ClockAnomalyEffect();
     effect.start();

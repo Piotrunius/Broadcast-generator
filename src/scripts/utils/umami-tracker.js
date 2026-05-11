@@ -12,7 +12,10 @@
  * @returns {boolean} True if localhost/127.0.0.1
  */
 function isDevelopmentMode() {
-  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  return (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  );
 }
 
 /**
@@ -23,7 +26,11 @@ function isDevelopmentMode() {
 export function trackEvent(eventName, eventData = {}) {
   try {
     // Check if Umami tracking is available
-    if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
+    if (
+      typeof window !== "undefined" &&
+      window.umami &&
+      typeof window.umami.track === "function"
+    ) {
       window.umami.track(eventName, eventData);
       // Only log in development mode
       if (isDevelopmentMode()) {
@@ -32,7 +39,9 @@ export function trackEvent(eventName, eventData = {}) {
     } else {
       // Fallback: log warning if Umami is not yet loaded (development only)
       if (isDevelopmentMode()) {
-        console.warn(`[Umami] Tracking not available yet for event: ${eventName}`);
+        console.warn(
+          `[Umami] Tracking not available yet for event: ${eventName}`,
+        );
       }
     }
   } catch (error) {
@@ -47,9 +56,16 @@ export function trackEvent(eventName, eventData = {}) {
  * @param {Object} [eventData] - Optional additional data
  * @param {string} [eventType='click'] - The event type to listen for (default: 'click')
  */
-export function addTracking(element, eventName, eventData = {}, eventType = 'click') {
+export function addTracking(
+  element,
+  eventName,
+  eventData = {},
+  eventType = "click",
+) {
   if (!element) {
-    console.warn(`[Umami] Cannot add tracking: element is null for event '${eventName}'`);
+    console.warn(
+      `[Umami] Cannot add tracking: element is null for event '${eventName}'`,
+    );
     return;
   }
 
@@ -65,7 +81,12 @@ export function addTracking(element, eventName, eventData = {}, eventType = 'cli
  * @param {Object} [eventData] - Optional additional data
  * @param {string} [eventType='click'] - The event type to listen for
  */
-export function addTrackingToAll(selector, eventName, eventData = {}, eventType = 'click') {
+export function addTrackingToAll(
+  selector,
+  eventName,
+  eventData = {},
+  eventType = "click",
+) {
   const elements = document.querySelectorAll(selector);
   elements.forEach((element, index) => {
     const data = { ...eventData, index };
@@ -81,10 +102,15 @@ export function addTrackingToAll(selector, eventName, eventData = {}, eventType 
  * @param {string} sourcePage - The current page name
  * @param {number} delay - Delay in ms before navigation (default: 100)
  */
-export function trackAndNavigate(targetUrl, targetPage, sourcePage = '', delay = 100) {
-  trackEvent('Page_Navigation', {
+export function trackAndNavigate(
+  targetUrl,
+  targetPage,
+  sourcePage = "",
+  delay = 100,
+) {
+  trackEvent("Page_Navigation", {
     target: targetPage,
-    source: sourcePage || window.location.pathname
+    source: sourcePage || window.location.pathname,
   });
 
   // Use a small delay to ensure tracking completes
@@ -99,10 +125,10 @@ export function trackAndNavigate(targetUrl, targetPage, sourcePage = '', delay =
  * @param {string} targetPage - The page being navigated to
  * @param {string} sourcePage - The current page
  */
-export function trackNavigation(targetPage, sourcePage = '') {
-  trackEvent('Page_Navigation', {
+export function trackNavigation(targetPage, sourcePage = "") {
+  trackEvent("Page_Navigation", {
     target: targetPage,
-    source: sourcePage || window.location.pathname
+    source: sourcePage || window.location.pathname,
   });
 }
 
@@ -112,9 +138,9 @@ export function trackNavigation(targetPage, sourcePage = '') {
  * @param {Object} [additionalData] - Additional form data to track
  */
 export function trackFormSubmit(formName, additionalData = {}) {
-  trackEvent('Form_Submit', {
+  trackEvent("Form_Submit", {
     form: formName,
-    ...additionalData
+    ...additionalData,
   });
 }
 
@@ -125,6 +151,6 @@ export function trackFormSubmit(formName, additionalData = {}) {
  */
 export function trackToggle(toggleName, newState) {
   trackEvent(`${toggleName}_Toggle`, {
-    state: newState ? 'on' : 'off'
+    state: newState ? "on" : "off",
   });
 }

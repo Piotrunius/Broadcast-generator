@@ -1,4 +1,8 @@
-import { EVENT_MESSAGES, REQUIREMENT_MESSAGES, STATUS_MESSAGES } from '../data/broadcast-data.js';
+import {
+  EVENT_MESSAGES,
+  REQUIREMENT_MESSAGES,
+  STATUS_MESSAGES,
+} from "../data/broadcast-data.js";
 
 export class BroadcastGenerator {
   constructor() {
@@ -7,29 +11,29 @@ export class BroadcastGenerator {
 
     // Event name mappings without numbers (for tagging prevention)
     this.eventNameMap = {
-      '610 EVENT': {
-        LONG: 'Flesh anomaly active. Avoid exposure. Containment and quarantine teams deploy immediately',
-        SHORT: 'Flesh anomaly active. Avoid exposure.',
-        MINIMAL: 'Flesh anomaly.',
+      "610 EVENT": {
+        LONG: "Flesh anomaly active. Avoid exposure. Containment and quarantine teams deploy immediately",
+        SHORT: "Flesh anomaly active. Avoid exposure.",
+        MINIMAL: "Flesh anomaly.",
       },
-      '076 EVENT': {
-        LONG: 'Abel breach. Armed response teams engage immediately with heavy gunfire',
-        SHORT: 'Abel breach. Armed response needed.',
-        MINIMAL: 'Abel breach.',
+      "076 EVENT": {
+        LONG: "Abel breach. Armed response teams engage immediately with heavy gunfire",
+        SHORT: "Abel breach. Armed response needed.",
+        MINIMAL: "Abel breach.",
       },
-      '323 BREACH': {
-        LONG: 'Wendigo breach. All personnel evacuate immediately. Response teams engage with full-force authorization',
-        SHORT: 'Wendigo breach.',
-        MINIMAL: 'Wendigo breach.',
+      "323 BREACH": {
+        LONG: "Wendigo breach. All personnel evacuate immediately. Response teams engage with full-force authorization",
+        SHORT: "Wendigo breach.",
+        MINIMAL: "Wendigo breach.",
       },
     };
 
     // Requirement name mappings without numbers (for tagging prevention)
     this.requirementNameMap = {
-      '008': 'Zombie pathogen',
-      '409': 'Crystal virus',
-      '701': 'Hanged King',
-      '035': 'Possessive mask',
+      "008": "Zombie pathogen",
+      409: "Crystal virus",
+      701: "Hanged King",
+      "035": "Possessive mask",
     };
   }
 
@@ -54,28 +58,28 @@ export class BroadcastGenerator {
     const testParts = [];
 
     // Count numbers from events
-    events.forEach(eventKey => {
+    events.forEach((eventKey) => {
       const normalizedKey = eventKey.toUpperCase();
-      const eventText = EVENT_MESSAGES.LONG?.[normalizedKey] || '';
+      const eventText = EVENT_MESSAGES.LONG?.[normalizedKey] || "";
       testParts.push(eventText);
     });
 
     // Count numbers from breached SCPs
     if (breachedSCPs.length > 0) {
-      testParts.push(breachedSCPs.join(', '));
+      testParts.push(breachedSCPs.join(", "));
     }
 
     // Count numbers from requirements
     const reqItems = [];
-    if (requirements.scp008) reqItems.push('008');
-    if (requirements.scp409) reqItems.push('409');
-    if (requirements.scp701) reqItems.push('701');
-    if (requirements.scp035) reqItems.push('035');
+    if (requirements.scp008) reqItems.push("008");
+    if (requirements.scp409) reqItems.push("409");
+    if (requirements.scp701) reqItems.push("701");
+    if (requirements.scp035) reqItems.push("035");
     if (reqItems.length > 0) {
-      testParts.push(reqItems.join(', '));
+      testParts.push(reqItems.join(", "));
     }
 
-    const testMessage = prefix + testParts.join(' | ');
+    const testMessage = prefix + testParts.join(" | ");
     const numberCount = this.countNumbers(testMessage);
 
     // Use number-free format if 3+ numbers detected
@@ -84,9 +88,9 @@ export class BroadcastGenerator {
 
   generate(options) {
     const {
-      status = 'N/A',
-      alarm = 'N/A',
-      testing = 'N/A',
+      status = "N/A",
+      alarm = "N/A",
+      testing = "N/A",
       events = [],
       breachedSCPs = [],
       requirements = {},
@@ -102,23 +106,23 @@ export class BroadcastGenerator {
     const messageParts = [];
 
     // 1. Status Message
-    const suppressStatusForEvents = ['076 EVENT', '610 EVENT', '323 BREACH'];
+    const suppressStatusForEvents = ["076 EVENT", "610 EVENT", "323 BREACH"];
     const hasSuppressingEvent = events.some((e) =>
-      suppressStatusForEvents.includes(e.toUpperCase())
+      suppressStatusForEvents.includes(e.toUpperCase()),
     );
 
-    let initialStatusLevel = 'LONG'; // Start at LONG
-    if (normalizedStatus === 'SCP BREACH' && hasSuppressingEvent) {
-      initialStatusLevel = 'NONE';
+    let initialStatusLevel = "LONG"; // Start at LONG
+    if (normalizedStatus === "SCP BREACH" && hasSuppressingEvent) {
+      initialStatusLevel = "NONE";
     }
 
     messageParts.push({
-      type: 'status',
+      type: "status",
       key: normalizedStatus,
       currentLevel: initialStatusLevel,
       priority: 10,
-      get_text: (lvl) => STATUS_MESSAGES[lvl]?.[normalizedStatus] || '',
-      levels: ['LONG', 'SHORT', 'MINIMAL'],
+      get_text: (lvl) => STATUS_MESSAGES[lvl]?.[normalizedStatus] || "",
+      levels: ["LONG", "SHORT", "MINIMAL"],
     });
 
     // 2. Event Messages
@@ -127,98 +131,111 @@ export class BroadcastGenerator {
       const generator = this; // Reference for get_text
 
       messageParts.push({
-        type: 'event',
+        type: "event",
         key: normalizedEventKey,
-        currentLevel: 'LONG', // Start at LONG
+        currentLevel: "LONG", // Start at LONG
         priority: 11, // Higher priority than status (was 8)
         get_text: (lvl) => {
           // If using number-free format, use pre-defined name-based descriptions
           if (useNumberFree && generator.eventNameMap[normalizedEventKey]) {
-            return generator.eventNameMap[normalizedEventKey][lvl] || '';
+            return generator.eventNameMap[normalizedEventKey][lvl] || "";
           }
 
           // Use original format with numbers
-          return EVENT_MESSAGES[lvl]?.[normalizedEventKey] || '';
+          return EVENT_MESSAGES[lvl]?.[normalizedEventKey] || "";
         },
-        levels: ['LONG', 'SHORT', 'MINIMAL'],
+        levels: ["LONG", "SHORT", "MINIMAL"],
       });
     });
 
     // 3. Breached SCPs
     if (breachedSCPs.length > 0) {
       messageParts.push({
-        type: 'breached_scp',
-        key: 'BREACHED_SCPS_LIST',
-        currentLevel: 'LONG', // Start at LONG
+        type: "breached_scp",
+        key: "BREACHED_SCPS_LIST",
+        currentLevel: "LONG", // Start at LONG
         priority: 7,
         get_text: (lvl) => {
           const count = breachedSCPs.length;
 
           // TAGGING PREVENTION: Use count format if number-free mode is enabled
           if (useNumberFree) {
-            if (lvl === 'LONG') return `Breached: ${count} SCP${count > 1 ? 's' : ''}`;
-            if (lvl === 'SHORT') return `${count} breaches`;
-            if (lvl === 'MINIMAL') return `${count} breaches`;
+            if (lvl === "LONG")
+              return `Breached: ${count} SCP${count > 1 ? "s" : ""}`;
+            if (lvl === "SHORT") return `${count} breaches`;
+            if (lvl === "MINIMAL") return `${count} breaches`;
           }
 
           // Safe to show numbers: Use original format
-          if (lvl === 'LONG') return `Breached: ${breachedSCPs.join(', ')}`;
-          if (lvl === 'SHORT') {
+          if (lvl === "LONG") return `Breached: ${breachedSCPs.join(", ")}`;
+          if (lvl === "SHORT") {
             // Shorten by stripping the 'SCP-' prefix for compact display
-            const abbreviate = (names) => names.map((n) => n.replace(/^SCP-?/i, '').trim());
-            const sliced = abbreviate(breachedSCPs.slice(0, Math.min(count, 3)));
-            return `Breached: ${sliced.join(', ')}${count > 3 ? ` (+${count - 3})` : ''}`;
+            const abbreviate = (names) =>
+              names.map((n) => n.replace(/^SCP-?/i, "").trim());
+            const sliced = abbreviate(
+              breachedSCPs.slice(0, Math.min(count, 3)),
+            );
+            return `Breached: ${sliced.join(", ")}${count > 3 ? ` (+${count - 3})` : ""}`;
           }
-          if (lvl === 'MINIMAL') return `${count} breaches`;
-          return '';
+          if (lvl === "MINIMAL") return `${count} breaches`;
+          return "";
         },
-        levels: ['LONG', 'SHORT', 'MINIMAL'],
+        levels: ["LONG", "SHORT", "MINIMAL"],
       });
     }
 
     // 4. Requirements Messages
     if (requirements.idCheck) {
       messageParts.push({
-        type: 'requirement',
-        key: 'ID_CHECK',
-        currentLevel: 'LONG', // Start at LONG
+        type: "requirement",
+        key: "ID_CHECK",
+        currentLevel: "LONG", // Start at LONG
         priority: 9,
-        get_text: (lvl) => REQUIREMENT_MESSAGES.ID_CHECK[lvl] || '',
-        levels: ['LONG', 'SHORT', 'MINIMAL'],
+        get_text: (lvl) => REQUIREMENT_MESSAGES.ID_CHECK[lvl] || "",
+        levels: ["LONG", "SHORT", "MINIMAL"],
       });
     }
 
     const sidPlusAuthItems = [];
-    if (requirements.conX) sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_CONX);
-    if (requirements.scp008) sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_008);
-    if (requirements.scp409) sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_409);
-    if (requirements.scp701) sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_701);
-    if (requirements.scp035) sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_035);
+    if (requirements.conX)
+      sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_CONX);
+    if (requirements.scp008)
+      sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_008);
+    if (requirements.scp409)
+      sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_409);
+    if (requirements.scp701)
+      sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_701);
+    if (requirements.scp035)
+      sidPlusAuthItems.push(REQUIREMENT_MESSAGES.AUTH_SCP_035);
 
     if (sidPlusAuthItems.length > 0) {
       const generator = this; // Reference for get_text
 
       messageParts.push({
-        type: 'requirement',
-        key: 'SID_PLUS_AUTH',
-        currentLevel: 'LONG', // Start at LONG
+        type: "requirement",
+        key: "SID_PLUS_AUTH",
+        currentLevel: "LONG", // Start at LONG
         priority: 9,
         get_text: (lvl) => {
           // TAGGING PREVENTION: Use name-based descriptions if needed
           if (useNumberFree) {
-            const nameBased = sidPlusAuthItems.map(item => {
+            const nameBased = sidPlusAuthItems.map((item) => {
               return generator.requirementNameMap[item] || item; // Keep non-numeric items as-is (like CON-X)
             });
 
-            if (lvl === 'LONG') return `SID+ Auth required for ${nameBased.join(', ')} tests`;
-            if (lvl === 'SHORT') return `SID+ Auth req: ${nameBased.join(', ')}`;
-            if (lvl === 'MINIMAL') return `Auth req: ${nameBased.join(', ')}`;
+            if (lvl === "LONG")
+              return `SID+ Auth required for ${nameBased.join(", ")} tests`;
+            if (lvl === "SHORT")
+              return `SID+ Auth req: ${nameBased.join(", ")}`;
+            if (lvl === "MINIMAL") return `Auth req: ${nameBased.join(", ")}`;
           }
 
           // Use original format with numbers
-          return REQUIREMENT_MESSAGES.SID_PLUS_AUTH[lvl](sidPlusAuthItems) || '';
+          return (
+            REQUIREMENT_MESSAGES.SID_PLUS_AUTH[lvl](sidPlusAuthItems) || ""
+          );
         },
-        levels: ['LONG', 'SHORT', 'MINIMAL'],
+        levels: ["LONG", "SHORT", "MINIMAL"],
       });
     }
 
@@ -228,7 +245,7 @@ export class BroadcastGenerator {
         const text = part.get_text(part.currentLevel);
         if (text) finalOutputParts.push(text);
       });
-      return prefix + finalOutputParts.filter(Boolean).join(' | ');
+      return prefix + finalOutputParts.filter(Boolean).join(" | ");
     };
 
     // --- Phase 1: Shrink if initial  is too long (should rarely happen) ---
@@ -238,7 +255,10 @@ export class BroadcastGenerator {
     let shrinkIterations = 0;
 
     // Iteratively shrink until it fits or no more options
-    while (currentMessage.length > this.maxChars && shrinkIterations < this.maxIterations) {
+    while (
+      currentMessage.length > this.maxChars &&
+      shrinkIterations < this.maxIterations
+    ) {
       shrinkIterations++;
       let shortenedThisIteration = false;
       let bestCandidateIndex = -1;
@@ -262,7 +282,7 @@ export class BroadcastGenerator {
           const lowerText = part.get_text(lowerLevel);
           if (
             lowerText.length < currentText.length ||
-            (lowerText !== currentText && lowerLevel === 'MINIMAL')
+            (lowerText !== currentText && lowerLevel === "MINIMAL")
           ) {
             targetLevel = lowerLevel;
             break;
@@ -283,8 +303,11 @@ export class BroadcastGenerator {
         if (bestCandidateTargetLevel) {
           partToShorten.currentLevel = bestCandidateTargetLevel;
         } else {
-          const currentLevelIndex = partToShorten.levels.indexOf(partToShorten.currentLevel);
-          partToShorten.currentLevel = partToShorten.levels[currentLevelIndex + 1];
+          const currentLevelIndex = partToShorten.levels.indexOf(
+            partToShorten.currentLevel,
+          );
+          partToShorten.currentLevel =
+            partToShorten.levels[currentLevelIndex + 1];
         }
         shortenedThisIteration = true;
       }
@@ -343,8 +366,11 @@ export class BroadcastGenerator {
 
         if (bestCandidateIndex !== -1) {
           const partToExpand = messageParts[bestCandidateIndex];
-          const currentLevelIndex = partToExpand.levels.indexOf(partToExpand.currentLevel);
-          partToExpand.currentLevel = partToExpand.levels[currentLevelIndex - 1]; // Move up
+          const currentLevelIndex = partToExpand.levels.indexOf(
+            partToExpand.currentLevel,
+          );
+          partToExpand.currentLevel =
+            partToExpand.levels[currentLevelIndex - 1]; // Move up
           currentMessage = bestTestMessage; // Use the pre-calculated message
         } else {
           break; // No more expansions possible

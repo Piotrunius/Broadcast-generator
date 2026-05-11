@@ -53,19 +53,25 @@ function sleep(ms) {
  * - Fully responsive to user interactions
  * - Handles edge cases gracefully
  */
-export async function typeText(element, targetText, updateCounterFn, updateColorFn, callback) {
+export async function typeText(
+  element,
+  targetText,
+  updateCounterFn,
+  updateColorFn,
+  callback,
+) {
   if (!element) return false;
 
   // Check performance mode - if enabled, skip animation
   if (window.performanceMode && window.performanceMode.isEnabled()) {
-    element.value = (targetText ?? '').toString();
+    element.value = (targetText ?? "").toString();
     updateCounterFn?.();
     updateColorFn?.();
     callback?.();
     return true;
   }
 
-  const target = (targetText ?? '').toString();
+  const target = (targetText ?? "").toString();
   const animationId = Date.now() + Math.random(); // Unique ID
 
   // Set as current animation - cancels any previous
@@ -74,7 +80,11 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
 
   // Wait for previous animation to finish (timeout: 500ms)
   let waitMs = 0;
-  while (previousId !== null && currentAnimationId === animationId && waitMs < 500) {
+  while (
+    previousId !== null &&
+    currentAnimationId === animationId &&
+    waitMs < 500
+  ) {
     await sleep(20);
     waitMs += 20;
   }
@@ -84,11 +94,14 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
     return false;
   }
 
-  const current = element.value || '';
+  const current = element.value || "";
 
   // Calculate diff between current and target
   const prefixLen = findCommonPrefix(current, target);
-  const suffixLen = findCommonSuffix(current.substring(prefixLen), target.substring(prefixLen));
+  const suffixLen = findCommonSuffix(
+    current.substring(prefixLen),
+    target.substring(prefixLen),
+  );
 
   const deleteText = current.substring(prefixLen, current.length - suffixLen);
   const typeText = target.substring(prefixLen, target.length - suffixLen);
@@ -192,10 +205,15 @@ export async function typeText(element, targetText, updateCounterFn, updateColor
 /**
  * Instant text update (fallback/emergency)
  */
-export function setTextInstant(element, targetText, updateCounterFn, updateColorFn) {
+export function setTextInstant(
+  element,
+  targetText,
+  updateCounterFn,
+  updateColorFn,
+) {
   if (!element) return;
   currentAnimationId = null;
-  element.value = (targetText ?? '').toString();
+  element.value = (targetText ?? "").toString();
   updateCounterFn?.();
   updateColorFn?.();
 }

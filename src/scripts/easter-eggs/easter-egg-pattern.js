@@ -4,9 +4,9 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
-  const PATTERN = ['High', 'Low', 'Medium', 'High', 'Low'];
+  const PATTERN = ["High", "Low", "Medium", "High", "Low"];
   let currentSequence = [];
   let isActive = false;
 
@@ -37,7 +37,7 @@
     }
 
     showUnlockNotification() {
-      const notification = document.createElement('div');
+      const notification = document.createElement("div");
       notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -72,23 +72,23 @@
 
     revealHiddenProtocol() {
       // Show Omega Protocol message directly without button
-      const output = document.getElementById('output');
+      const output = document.getElementById("output");
       if (output) {
         output.value =
-          '⚠ OMEGA PROTOCOL ACTIVATED ⚠\n\n' +
-          '=== SITE-64 EMERGENCY BROADCAST ===\n' +
-          'Location: Northern Canada\n' +
-          'Status: CRITICAL CONTAINMENT FAILURE\n\n' +
-          'SITE-WIDE EVACUATION INITIATED\n' +
-          'ALL PERSONNEL TO DESIGNATED SHELTERS\n' +
-          'CHAOS INSURGENCY BREACH DETECTED\n' +
-          'MULTIPLE SCP ENTITIES COMPROMISED\n\n' +
-          'XK-CLASS END-OF-WORLD SCENARIO IMMINENT\n\n' +
-          'THIS IS NOT A DRILL\n' +
-          '[O5 AUTHORIZATION CONFIRMED]\n' +
-          '[SITE-64 COMMAND]\n\n' +
-          'SECURE. CONTAIN. PROTECT.\n\n' +
-          'May God have mercy on our souls.';
+          "⚠ OMEGA PROTOCOL ACTIVATED ⚠\n\n" +
+          "=== SITE-64 EMERGENCY BROADCAST ===\n" +
+          "Location: Northern Canada\n" +
+          "Status: CRITICAL CONTAINMENT FAILURE\n\n" +
+          "SITE-WIDE EVACUATION INITIATED\n" +
+          "ALL PERSONNEL TO DESIGNATED SHELTERS\n" +
+          "CHAOS INSURGENCY BREACH DETECTED\n" +
+          "MULTIPLE SCP ENTITIES COMPROMISED\n\n" +
+          "XK-CLASS END-OF-WORLD SCENARIO IMMINENT\n\n" +
+          "THIS IS NOT A DRILL\n" +
+          "[O5 AUTHORIZATION CONFIRMED]\n" +
+          "[SITE-64 COMMAND]\n\n" +
+          "SECURE. CONTAIN. PROTECT.\n\n" +
+          "May God have mercy on our souls.";
       }
       this.playOmegaSound();
     }
@@ -98,7 +98,9 @@
       if (window.audioManager && window.audioManager.isMuted) return;
 
       try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
 
         // Ascending unlock sequence
         [261.63, 329.63, 392.0, 523.25, 659.25].forEach((freq, i) => {
@@ -106,7 +108,7 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
-            osc.type = 'sine';
+            osc.type = "sine";
             osc.frequency.value = freq;
             gain.gain.value = 0.2;
 
@@ -114,7 +116,10 @@
             gain.connect(audioCtx.destination);
 
             osc.start();
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              audioCtx.currentTime + 0.3,
+            );
             setTimeout(() => osc.stop(), 300);
           }, i * 100);
         });
@@ -125,7 +130,7 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
-            osc.type = 'sine';
+            osc.type = "sine";
             osc.frequency.value = freq;
             gain.gain.value = 0.15;
 
@@ -133,11 +138,14 @@
             gain.connect(audioCtx.destination);
 
             osc.start();
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              audioCtx.currentTime + 0.5,
+            );
             setTimeout(() => osc.stop(), 500);
           });
         }, 600);
-      } catch (e) { }
+      } catch (e) {}
     }
 
     playOmegaSound() {
@@ -145,13 +153,15 @@
       if (window.audioManager && window.audioManager.isMuted) return;
 
       try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
 
         // Ominous deep tone
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
 
-        osc.type = 'sawtooth';
+        osc.type = "sawtooth";
         osc.frequency.value = 50;
         gain.gain.value = 0.3;
 
@@ -168,7 +178,7 @@
             const osc2 = audioCtx.createOscillator();
             const gain2 = audioCtx.createGain();
 
-            osc2.type = 'square';
+            osc2.type = "square";
             osc2.frequency.value = freq;
             gain2.gain.value = 0.2;
 
@@ -176,19 +186,23 @@
             gain2.connect(audioCtx.destination);
 
             osc2.start();
-            gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+            gain2.gain.exponentialRampToValueAtTime(
+              0.001,
+              audioCtx.currentTime + 0.2,
+            );
             setTimeout(() => osc2.stop(), 200);
           }, i * 250);
         });
-      } catch (e) { }
+      } catch (e) {}
     }
 
     spawnPatternSymbols() {
-      const symbols = ['🔓', '✓', '●', '◆', '▲'];
+      const symbols = ["🔓", "✓", "●", "◆", "▲"];
 
       const interval = setInterval(() => {
-        const symbol = document.createElement('div');
-        symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        const symbol = document.createElement("div");
+        symbol.textContent =
+          symbols[Math.floor(Math.random() * symbols.length)];
         symbol.style.cssText = `
           position: fixed;
           top: ${Math.random() * 100}%;
@@ -236,7 +250,7 @@
   }
 
   // Add CSS
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     @keyframes unlockSlide {
       0% { transform: translateX(-50%) translateY(-100px); opacity: 0; }
@@ -266,20 +280,20 @@
   document.head.appendChild(style);
 
   // Listen for threat level selections
-  document.addEventListener('DOMContentLoaded', () => {
-    const alarmContent = document.getElementById('alarmContent');
+  document.addEventListener("DOMContentLoaded", () => {
+    const alarmContent = document.getElementById("alarmContent");
     if (!alarmContent) return;
 
-    alarmContent.addEventListener('click', (e) => {
+    alarmContent.addEventListener("click", (e) => {
       if (isActive) return;
 
-      const button = e.target.closest('button[data-option]');
+      const button = e.target.closest("button[data-option]");
       if (!button) return;
 
       const option = button.dataset.option;
 
       // Check if it's a threat level option
-      if (['High', 'Medium', 'Low'].includes(option)) {
+      if (["High", "Medium", "Low"].includes(option)) {
         currentSequence.push(option);
 
         // Keep only last 5
@@ -289,7 +303,9 @@
 
         // Check if pattern matches
         if (currentSequence.length === 5) {
-          const matches = currentSequence.every((val, idx) => val === PATTERN[idx]);
+          const matches = currentSequence.every(
+            (val, idx) => val === PATTERN[idx],
+          );
 
           if (matches) {
             currentSequence = [];
@@ -297,11 +313,15 @@
             effect.start();
 
             // Umami tracking: Track pattern Easter egg activation
-            if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-              window.umami.track('Easter_Egg_Activated', {
-                type: 'pattern',
-                sequence: PATTERN.join('→'),
-                page: window.location.pathname
+            if (
+              typeof window !== "undefined" &&
+              window.umami &&
+              typeof window.umami.track === "function"
+            ) {
+              window.umami.track("Easter_Egg_Activated", {
+                type: "pattern",
+                sequence: PATTERN.join("→"),
+                page: window.location.pathname,
               });
             }
           }

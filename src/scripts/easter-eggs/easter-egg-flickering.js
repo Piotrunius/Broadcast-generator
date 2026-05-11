@@ -4,7 +4,7 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
   let clickCount = 0;
   let isActive = false;
@@ -44,15 +44,15 @@
       const body = document.body;
       const interval = setInterval(() => {
         if (Math.random() > 0.5) {
-          body.style.filter = 'brightness(0.3) contrast(1.5)';
-          body.style.animation = 'flicker 0.05s infinite';
+          body.style.filter = "brightness(0.3) contrast(1.5)";
+          body.style.animation = "flicker 0.05s infinite";
         } else {
-          body.style.filter = 'brightness(1.5) contrast(0.8)';
+          body.style.filter = "brightness(1.5) contrast(0.8)";
         }
 
         this.flickerCount++;
         if (this.flickerCount > 50) {
-          body.style.filter = '';
+          body.style.filter = "";
           clearInterval(interval);
         }
       }, 100);
@@ -61,18 +61,18 @@
 
     showSubliminalMessages() {
       const messages = [
-        'DO NOT LOOK AWAY',
-        'YOU ARE BEING WATCHED',
-        'THERE IS NO ESCAPE',
-        'SCP-███ HAS BREACHED',
-        '[REDACTED]',
-        'THEY KNOW YOU SAW THIS',
-        'BLINK AND YOU DIE',
-        'CLASS-A AMNESTETICS REQUIRED',
+        "DO NOT LOOK AWAY",
+        "YOU ARE BEING WATCHED",
+        "THERE IS NO ESCAPE",
+        "SCP-███ HAS BREACHED",
+        "[REDACTED]",
+        "THEY KNOW YOU SAW THIS",
+        "BLINK AND YOU DIE",
+        "CLASS-A AMNESTETICS REQUIRED",
       ];
 
       const interval = setInterval(() => {
-        const msg = document.createElement('div');
+        const msg = document.createElement("div");
         msg.textContent = messages[Math.floor(Math.random() * messages.length)];
         msg.style.cssText = `
           position: fixed;
@@ -100,7 +100,7 @@
     }
 
     createStaticNoise() {
-      const staticCanvas = document.createElement('canvas');
+      const staticCanvas = document.createElement("canvas");
       staticCanvas.width = window.innerWidth;
       staticCanvas.height = window.innerHeight;
       staticCanvas.style.cssText = `
@@ -118,9 +118,12 @@
       document.body.appendChild(staticCanvas);
       this.elements.push(staticCanvas);
 
-      const ctx = staticCanvas.getContext('2d');
+      const ctx = staticCanvas.getContext("2d");
       const interval = setInterval(() => {
-        const imageData = ctx.createImageData(staticCanvas.width, staticCanvas.height);
+        const imageData = ctx.createImageData(
+          staticCanvas.width,
+          staticCanvas.height,
+        );
         for (let i = 0; i < imageData.data.length; i += 4) {
           const value = Math.random() * 255;
           imageData.data[i] = value;
@@ -139,17 +142,17 @@
     spawnGhostElements() {
       // Create ghost checkbox that appears and disappears
       const ghostOptions = [
-        '⚠ SCP-████ BREACH',
-        '☠ MTF MOBILIZED',
-        '⬛ [DATA EXPUNGED]',
-        '👁 YOU ARE BEING MONITORED',
-        '💀 SITE-64 COMPROMISED',
-        '⚠ CHAOS INSURGENCY DETECTED',
+        "⚠ SCP-████ BREACH",
+        "☠ MTF MOBILIZED",
+        "⬛ [DATA EXPUNGED]",
+        "👁 YOU ARE BEING MONITORED",
+        "💀 SITE-64 COMPROMISED",
+        "⚠ CHAOS INSURGENCY DETECTED",
       ];
 
       const interval = setInterval(() => {
-        const ghost = document.createElement('div');
-        ghost.className = 'checkbox-btn';
+        const ghost = document.createElement("div");
+        ghost.className = "checkbox-btn";
         ghost.innerHTML = `
           <input type="checkbox" checked disabled>
           <label>${ghostOptions[Math.floor(Math.random() * ghostOptions.length)]}</label>
@@ -179,9 +182,15 @@
       if (window.audioManager && window.audioManager.isMuted) return;
 
       try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
         const bufferSize = 2 * audioCtx.sampleRate;
-        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const noiseBuffer = audioCtx.createBuffer(
+          1,
+          bufferSize,
+          audioCtx.sampleRate,
+        );
         const output = noiseBuffer.getChannelData(0);
 
         for (let i = 0; i < bufferSize; i++) {
@@ -200,10 +209,13 @@
         whiteNoise.start();
 
         setTimeout(() => {
-          gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+          gainNode.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + 0.5,
+          );
           setTimeout(() => whiteNoise.stop(), 500);
         }, 3000);
-      } catch (e) { }
+      } catch (e) {}
     }
 
     end() {
@@ -226,8 +238,8 @@
       this.elements = [];
 
       // Reset body styles
-      document.body.style.filter = '';
-      document.body.style.animation = '';
+      document.body.style.filter = "";
+      document.body.style.animation = "";
       document.body.style.backgroundColor = this.originalBgColor;
 
       // Reset click counter
@@ -236,7 +248,7 @@
   }
 
   // Add CSS animations
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     @keyframes flicker {
       0%, 100% { opacity: 1; }
@@ -258,22 +270,22 @@
   document.head.appendChild(style);
 
   // Listen for title clicks
-  document.addEventListener('DOMContentLoaded', () => {
-    const title = document.querySelector('h1');
+  document.addEventListener("DOMContentLoaded", () => {
+    const title = document.querySelector("h1");
     if (!title) return;
 
-    title.style.cursor = 'pointer';
-    title.style.userSelect = 'none';
+    title.style.cursor = "pointer";
+    title.style.userSelect = "none";
 
-    title.addEventListener('click', (e) => {
+    title.addEventListener("click", (e) => {
       if (isActive) return;
 
       clickCount++;
 
       // Visual feedback
-      title.style.color = '#ff0000';
+      title.style.color = "#ff0000";
       setTimeout(() => {
-        title.style.color = '';
+        title.style.color = "";
       }, 100);
 
       // Reset timeout
@@ -290,11 +302,15 @@
         effect.start();
 
         // Umami tracking: Track flickering Easter egg activation
-        if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-          window.umami.track('Easter_Egg_Activated', {
-            type: 'flickering',
+        if (
+          typeof window !== "undefined" &&
+          window.umami &&
+          typeof window.umami.track === "function"
+        ) {
+          window.umami.track("Easter_Egg_Activated", {
+            type: "flickering",
             clicks: REQUIRED_CLICKS,
-            page: window.location.pathname
+            page: window.location.pathname,
           });
         }
       }

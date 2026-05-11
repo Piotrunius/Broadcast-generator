@@ -3,13 +3,13 @@
  * Site-wide persistent toggle for disabling animations and effects
  */
 
-import { Logger } from './logger.js';
+import { Logger } from "./logger.js";
 
-const log = Logger.create('PERFORMANCE');
+const log = Logger.create("PERFORMANCE");
 
 class PerformanceMode {
   constructor() {
-    this.storageKey = 'broadcast-generator-performance-mode';
+    this.storageKey = "broadcast-generator-performance-mode";
     this.enabled = this.loadState();
     this.observers = [];
   }
@@ -19,7 +19,7 @@ class PerformanceMode {
    */
   loadState() {
     const saved = localStorage.getItem(this.storageKey);
-    return saved === 'true';
+    return saved === "true";
   }
 
   /**
@@ -40,41 +40,41 @@ class PerformanceMode {
    * Enable performance mode
    */
   enable() {
-    log.log('Enabling performance mode');
+    log.log("Enabling performance mode");
     this.enabled = true;
     this.saveState(true);
-    log.log('Saved to localStorage, calling applyMode()');
+    log.log("Saved to localStorage, calling applyMode()");
     this.applyMode();
-    log.log('applyMode() complete, notifying observers');
+    log.log("applyMode() complete, notifying observers");
     this.notifyObservers();
-    log.log('Observers notified');
+    log.log("Observers notified");
   }
 
   /**
    * Disable performance mode
    */
   disable() {
-    log.log('Disabling performance mode');
+    log.log("Disabling performance mode");
     this.enabled = false;
     this.saveState(false);
-    log.log('Saved to localStorage, calling applyMode()');
+    log.log("Saved to localStorage, calling applyMode()");
     this.applyMode();
-    log.log('applyMode() complete, notifying observers');
+    log.log("applyMode() complete, notifying observers");
     this.notifyObservers();
-    log.log('Observers notified');
+    log.log("Observers notified");
   }
 
   /**
    * Toggle performance mode
    */
   toggle() {
-    log.log('Toggling performance mode from:', this.enabled);
+    log.log("Toggling performance mode from:", this.enabled);
     if (this.enabled) {
       this.disable();
     } else {
       this.enable();
     }
-    log.log('Toggled to:', this.enabled);
+    log.log("Toggled to:", this.enabled);
     return this.enabled;
   }
 
@@ -83,39 +83,39 @@ class PerformanceMode {
    */
   applyMode() {
     const body = document.body;
-    log.log('Applying mode, enabled:', this.enabled);
+    log.log("Applying mode, enabled:", this.enabled);
 
     if (this.enabled) {
-      log.log('Enabling performance mode - stopping particles');
+      log.log("Enabling performance mode - stopping particles");
       // Add performance mode class
-      body.classList.add('performance-mode');
+      body.classList.add("performance-mode");
 
       // Disable animations globally
-      body.style.setProperty('--animation-duration', '0s');
-      body.style.setProperty('--transition-duration', '0s');
+      body.style.setProperty("--animation-duration", "0s");
+      body.style.setProperty("--transition-duration", "0s");
 
       // Stop particles if present
       if (window.stopParticles) {
-        log.log('Calling window.stopParticles()');
+        log.log("Calling window.stopParticles()");
         window.stopParticles();
       } else {
-        log.warn('window.stopParticles not found');
+        log.warn("window.stopParticles not found");
       }
     } else {
-      log.log('Disabling performance mode - starting particles');
+      log.log("Disabling performance mode - starting particles");
       // Remove performance mode class
-      body.classList.remove('performance-mode');
+      body.classList.remove("performance-mode");
 
       // Restore animations
-      body.style.removeProperty('--animation-duration');
-      body.style.removeProperty('--transition-duration');
+      body.style.removeProperty("--animation-duration");
+      body.style.removeProperty("--transition-duration");
 
       // Restart particles if present
       if (window.startParticles) {
-        log.log('Calling window.startParticles()');
+        log.log("Calling window.startParticles()");
         window.startParticles();
       } else {
-        log.warn('window.startParticles not found');
+        log.warn("window.startParticles not found");
       }
     }
   }
@@ -135,7 +135,7 @@ class PerformanceMode {
       try {
         callback(this.enabled);
       } catch (e) {
-        log.error('Performance mode observer error:', e);
+        log.error("Performance mode observer error:", e);
       }
     });
   }
@@ -144,7 +144,7 @@ class PerformanceMode {
    * Initialize performance mode on page load
    */
   init() {
-    log.log('PerformanceMode.init() called');
+    log.log("PerformanceMode.init() called");
     // Expose to window for easy access FIRST
     window.performanceMode = this;
 
@@ -154,18 +154,18 @@ class PerformanceMode {
     // Apply initial state IMMEDIATELY (including particles)
     // Force synchronous application
     if (this.enabled) {
-      log.log('Performance mode enabled at init - stopping particles');
-      document.body.classList.add('performance-mode');
-      document.body.style.setProperty('--animation-duration', '0s');
-      document.body.style.setProperty('--transition-duration', '0s');
+      log.log("Performance mode enabled at init - stopping particles");
+      document.body.classList.add("performance-mode");
+      document.body.style.setProperty("--animation-duration", "0s");
+      document.body.style.setProperty("--transition-duration", "0s");
 
       // Stop particles immediately if they exist
       const stopParticlesNow = () => {
         if (window.stopParticles) {
-          log.log('Calling window.stopParticles() from init');
+          log.log("Calling window.stopParticles() from init");
           window.stopParticles();
         } else if (window.scpParticleSystem) {
-          log.log('Calling window.scpParticleSystem.stop() from init');
+          log.log("Calling window.scpParticleSystem.stop() from init");
           window.scpParticleSystem.stop();
         }
       };
@@ -180,15 +180,15 @@ class PerformanceMode {
 
     this.applyMode();
 
-    log.log(`Performance Mode: ${this.enabled ? 'ENABLED' : 'DISABLED'}`);
+    log.log(`Performance Mode: ${this.enabled ? "ENABLED" : "DISABLED"}`);
   }
 
   /**
    * Inject global CSS rules for performance mode
    */
   injectGlobalStyles() {
-    const style = document.createElement('style');
-    style.id = 'performance-mode-styles';
+    const style = document.createElement("style");
+    style.id = "performance-mode-styles";
     style.textContent = `
             /* Performance Mode Global Overrides */
             body.performance-mode * {
@@ -245,8 +245,10 @@ class PerformanceMode {
 const performanceModeInstance = new PerformanceMode();
 
 // Auto-initialize on DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => performanceModeInstance.init());
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () =>
+    performanceModeInstance.init(),
+  );
 } else {
   performanceModeInstance.init();
 }

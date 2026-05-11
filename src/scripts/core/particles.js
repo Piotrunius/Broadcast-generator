@@ -4,7 +4,7 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
   // Configuration
   const config = {
@@ -14,10 +14,10 @@
     minSpeed: 0.2,
     maxSpeed: 0.8,
     colors: [
-      'rgba(255, 30, 30, 0.6)', // Red
-      'rgba(255, 30, 30, 0.4)', // Red lighter
-      'rgba(255, 100, 100, 0.3)', // Pink
-      'rgba(100, 100, 100, 0.3)', // Gray
+      "rgba(255, 30, 30, 0.6)", // Red
+      "rgba(255, 30, 30, 0.4)", // Red lighter
+      "rgba(255, 100, 100, 0.3)", // Pink
+      "rgba(100, 100, 100, 0.3)", // Gray
     ],
     glowIntensity: 15,
   };
@@ -31,10 +31,16 @@
     reset() {
       this.x = Math.random() * this.canvas.width;
       this.y = Math.random() * this.canvas.height;
-      this.size = config.minSize + Math.random() * (config.maxSize - config.minSize);
-      this.speedX = (Math.random() - 0.5) * (config.maxSpeed - config.minSpeed) + config.minSpeed;
-      this.speedY = (Math.random() - 0.5) * (config.maxSpeed - config.minSpeed) + config.minSpeed;
-      this.color = config.colors[Math.floor(Math.random() * config.colors.length)];
+      this.size =
+        config.minSize + Math.random() * (config.maxSize - config.minSize);
+      this.speedX =
+        (Math.random() - 0.5) * (config.maxSpeed - config.minSpeed) +
+        config.minSpeed;
+      this.speedY =
+        (Math.random() - 0.5) * (config.maxSpeed - config.minSpeed) +
+        config.minSpeed;
+      this.color =
+        config.colors[Math.floor(Math.random() * config.colors.length)];
       this.opacity = 0.3 + Math.random() * 0.7;
       this.pulseSpeed = 0.01 + Math.random() * 0.02;
       this.pulsePhase = Math.random() * Math.PI * 2;
@@ -65,17 +71,23 @@
         0,
         this.x,
         this.y,
-        this.currentSize * config.glowIntensity
+        this.currentSize * config.glowIntensity,
       );
 
       gradient.addColorStop(0, this.color);
-      gradient.addColorStop(0.3, this.color.replace(/[\d.]+\)$/g, '0.2)'));
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      gradient.addColorStop(0.3, this.color.replace(/[\d.]+\)$/g, "0.2)"));
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
       // Draw glow
       ctx.fillStyle = gradient;
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.currentSize * config.glowIntensity, 0, Math.PI * 2);
+      ctx.arc(
+        this.x,
+        this.y,
+        this.currentSize * config.glowIntensity,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
 
       // Draw particle core
@@ -88,8 +100,8 @@
 
   class ParticleSystem {
     constructor() {
-      this.canvas = document.createElement('canvas');
-      this.ctx = this.canvas.getContext('2d');
+      this.canvas = document.createElement("canvas");
+      this.ctx = this.canvas.getContext("2d");
       this.particles = [];
       this.animationId = null;
       this.isRunning = true;
@@ -101,14 +113,14 @@
     }
 
     setupCanvas() {
-      this.canvas.style.position = 'fixed';
-      this.canvas.style.top = '0';
-      this.canvas.style.left = '0';
-      this.canvas.style.width = '100%';
-      this.canvas.style.height = '100%';
-      this.canvas.style.pointerEvents = 'none';
-      this.canvas.style.zIndex = '0';
-      this.canvas.style.opacity = '0.6';
+      this.canvas.style.position = "fixed";
+      this.canvas.style.top = "0";
+      this.canvas.style.left = "0";
+      this.canvas.style.width = "100%";
+      this.canvas.style.height = "100%";
+      this.canvas.style.pointerEvents = "none";
+      this.canvas.style.zIndex = "0";
+      this.canvas.style.opacity = "0.6";
 
       this.resize();
       document.body.prepend(this.canvas);
@@ -121,7 +133,7 @@
 
     setupResizeHandler() {
       let resizeTimeout;
-      window.addEventListener('resize', () => {
+      window.addEventListener("resize", () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => this.resize(), 250);
       });
@@ -203,8 +215,8 @@
   }
 
   // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
       window.scpParticleSystem = new ParticleSystem();
     });
   } else {
@@ -225,10 +237,10 @@
   };
 
   // Pause/resume on tab visibility changes (saves CPU in background)
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener("visibilitychange", () => {
     const perfEnabled = !!(
       window.performanceMode &&
-      typeof window.performanceMode.isEnabled === 'function' &&
+      typeof window.performanceMode.isEnabled === "function" &&
       window.performanceMode.isEnabled()
     );
     if (document.hidden || perfEnabled) {
@@ -239,7 +251,7 @@
   });
 
   // Cleanup on page unload
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener("beforeunload", () => {
     if (window.scpParticleSystem) {
       window.scpParticleSystem.destroy();
     }

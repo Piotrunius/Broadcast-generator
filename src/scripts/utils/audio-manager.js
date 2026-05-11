@@ -6,7 +6,7 @@ const ensureAudioContext = () => {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-  if (audioCtx.state === 'suspended') {
+  if (audioCtx.state === "suspended") {
     audioCtx.resume();
   }
   return audioCtx;
@@ -14,19 +14,19 @@ const ensureAudioContext = () => {
 
 const unlockAudio = () => {
   ensureAudioContext();
-  document.removeEventListener('pointerdown', unlockAudio);
-  document.removeEventListener('keydown', unlockAudio);
+  document.removeEventListener("pointerdown", unlockAudio);
+  document.removeEventListener("keydown", unlockAudio);
 };
 
-document.addEventListener('pointerdown', unlockAudio, { once: true });
-document.addEventListener('keydown', unlockAudio, { once: true });
+document.addEventListener("pointerdown", unlockAudio, { once: true });
+document.addEventListener("keydown", unlockAudio, { once: true });
 
 /**
  * Internal helper to play an oscillator sound.
  */
-function playTone(freq, duration, vol, type = 'sine', ramp = true) {
+function playTone(freq, duration, vol, type = "sine", ramp = true) {
   const ctx = ensureAudioContext();
-  if (ctx.state === 'suspended') ctx.resume();
+  if (ctx.state === "suspended") ctx.resume();
   try {
     const o = ctx.createOscillator();
     const g = ctx.createGain();
@@ -55,7 +55,8 @@ function playTone(freq, duration, vol, type = 'sine', ramp = true) {
 export class AudioManager {
   constructor() {
     // Check if audio is muted in localStorage
-    this.isMuted = localStorage.getItem('broadcast-generator-audio-muted') === 'true';
+    this.isMuted =
+      localStorage.getItem("broadcast-generator-audio-muted") === "true";
     this.updateMuteState();
   }
 
@@ -64,9 +65,9 @@ export class AudioManager {
    */
   updateMuteState() {
     if (this.isMuted) {
-      document.documentElement.classList.add('audio-muted');
+      document.documentElement.classList.add("audio-muted");
     } else {
-      document.documentElement.classList.remove('audio-muted');
+      document.documentElement.classList.remove("audio-muted");
     }
   }
 
@@ -75,7 +76,10 @@ export class AudioManager {
    */
   toggleMute() {
     this.isMuted = !this.isMuted;
-    localStorage.setItem('broadcast-generator-audio-muted', this.isMuted.toString());
+    localStorage.setItem(
+      "broadcast-generator-audio-muted",
+      this.isMuted.toString(),
+    );
     this.updateMuteState();
   }
 
@@ -85,7 +89,7 @@ export class AudioManager {
    */
   playClick() {
     if (this.isMuted) return;
-    playTone(1200, 0.08, 0.15, 'sine'); // Vol 0.05 -> 0.15
+    playTone(1200, 0.08, 0.15, "sine"); // Vol 0.05 -> 0.15
   }
 
   /**
@@ -93,7 +97,7 @@ export class AudioManager {
    */
   playToggle() {
     if (this.isMuted) return;
-    playTone(880, 0.06, 0.15, 'triangle'); // Vol 0.05 -> 0.15
+    playTone(880, 0.06, 0.15, "triangle"); // Vol 0.05 -> 0.15
   }
 
   /**
@@ -102,7 +106,7 @@ export class AudioManager {
    */
   playHover() {
     if (this.isMuted) return;
-    playTone(2000, 0.02, 0.04, 'sine'); // Vol 0.01 -> 0.04
+    playTone(2000, 0.02, 0.04, "sine"); // Vol 0.01 -> 0.04
   }
 
   /**
@@ -113,7 +117,7 @@ export class AudioManager {
     if (this.isMuted) return;
     // Randomize pitch slightly (between 550Hz and 650Hz)
     const randomFreq = 550 + Math.random() * 100;
-    playTone(randomFreq, 0.04, 0.1, 'square'); // Vol 0.03 -> 0.1
+    playTone(randomFreq, 0.04, 0.1, "square"); // Vol 0.03 -> 0.1
   }
 
   /**
@@ -122,8 +126,8 @@ export class AudioManager {
    */
   playOpen() {
     if (this.isMuted) return;
-    playTone(300, 0.15, 0.1, 'sine');
-    setTimeout(() => playTone(600, 0.1, 0.08, 'sine'), 50);
+    playTone(300, 0.15, 0.1, "sine");
+    setTimeout(() => playTone(600, 0.1, 0.08, "sine"), 50);
   }
 
   /**
@@ -137,7 +141,7 @@ export class AudioManager {
     [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
       // Added C6
       setTimeout(() => {
-        playTone(freq, 0.12, volume, 'sine');
+        playTone(freq, 0.12, volume, "sine");
       }, i * 70);
     });
   }
@@ -147,8 +151,8 @@ export class AudioManager {
    */
   playError() {
     if (this.isMuted) return;
-    playTone(150, 0.4, 0.25, 'sawtooth'); // Vol 0.1 -> 0.25
-    setTimeout(() => playTone(140, 0.4, 0.25, 'sawtooth'), 150); // Double buzz
+    playTone(150, 0.4, 0.25, "sawtooth"); // Vol 0.1 -> 0.25
+    setTimeout(() => playTone(140, 0.4, 0.25, "sawtooth"), 150); // Double buzz
   }
 
   /**
@@ -157,12 +161,12 @@ export class AudioManager {
   playAlert(level) {
     if (this.isMuted) return;
     const upperLevel = level?.toUpperCase();
-    if (upperLevel === 'HIGH') {
-      playTone(880, 0.25, 0.25, 'square');
-    } else if (upperLevel === 'MEDIUM') {
-      playTone(660, 0.25, 0.2, 'sawtooth');
+    if (upperLevel === "HIGH") {
+      playTone(880, 0.25, 0.25, "square");
+    } else if (upperLevel === "MEDIUM") {
+      playTone(660, 0.25, 0.2, "sawtooth");
     } else {
-      playTone(440, 0.2, 0.15, 'sine');
+      playTone(440, 0.2, 0.15, "sine");
     }
   }
 }

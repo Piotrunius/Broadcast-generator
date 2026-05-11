@@ -3,20 +3,20 @@
  * Adds a toggle button to pages for performance mode
  */
 
-import { trackToggle } from '../utils/umami-tracker.js'; // Umami tracking
-import { Logger } from './logger.js';
-import performanceMode from './performance-mode.js';
+import { trackToggle } from "../utils/umami-tracker.js"; // Umami tracking
+import { Logger } from "./logger.js";
+import performanceMode from "./performance-mode.js";
 
-const log = Logger.create('PERFORMANCE');
+const log = Logger.create("PERFORMANCE");
 
 export function createPerformanceToggle() {
-  log.log('Creating performance toggle...');
-  const toggle = document.createElement('div');
-  toggle.className = 'performance-toggle';
-  log.log('Toggle div created');
+  log.log("Creating performance toggle...");
+  const toggle = document.createElement("div");
+  toggle.className = "performance-toggle";
+  log.log("Toggle div created");
 
   const isEnabled = performanceMode.isEnabled();
-  log.log('Performance mode is enabled:', isEnabled);
+  log.log("Performance mode is enabled:", isEnabled);
 
   const perfIconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
 
@@ -24,35 +24,37 @@ export function createPerformanceToggle() {
       <button class="performance-toggle-btn" title="Toggle Performance">
             <span class="perf-icon">${perfIconSvg}</span>
         <span class="perf-label">Performance</span>
-            <span class="perf-status">${isEnabled ? 'ON' : 'OFF'}</span>
+            <span class="perf-status">${isEnabled ? "ON" : "OFF"}</span>
         </button>
     `;
 
-  const button = toggle.querySelector('.performance-toggle-btn');
-  const statusSpan = toggle.querySelector('.perf-status');
+  const button = toggle.querySelector(".performance-toggle-btn");
+  const statusSpan = toggle.querySelector(".perf-status");
 
-  log.log('Button found:', !!button);
-  log.log('Status span found:', !!statusSpan);
+  log.log("Button found:", !!button);
+  log.log("Status span found:", !!statusSpan);
 
   // Update UI based on mode
   const updateUI = (enabled) => {
-    statusSpan.textContent = enabled ? 'ON' : 'OFF';
-    button.classList.toggle('active', enabled);
+    statusSpan.textContent = enabled ? "ON" : "OFF";
+    button.classList.toggle("active", enabled);
   };
 
   // Toggle on click
-  button.addEventListener('click', (e) => {
-    log.log('Performance toggle clicked');
+  button.addEventListener("click", (e) => {
+    log.log("Performance toggle clicked");
     e.preventDefault();
     e.stopPropagation();
     const wasEnabled = performanceMode.isEnabled();
     const newState = performanceMode.toggle();
     const nowEnabled = performanceMode.isEnabled();
-    log.log(`Performance mode: ${wasEnabled} -> ${nowEnabled}, toggle returned: ${newState}`);
+    log.log(
+      `Performance mode: ${wasEnabled} -> ${nowEnabled}, toggle returned: ${newState}`,
+    );
     updateUI(nowEnabled);
 
     // Umami tracking: Track performance mode toggle
-    trackToggle('Performance', nowEnabled);
+    trackToggle("Performance", nowEnabled);
   });
 
   // Observe mode changes
@@ -68,10 +70,10 @@ export function createPerformanceToggle() {
 }
 
 function injectToggleStyles() {
-  if (document.getElementById('performance-toggle-styles')) return;
+  if (document.getElementById("performance-toggle-styles")) return;
 
-  const style = document.createElement('style');
-  style.id = 'performance-toggle-styles';
+  const style = document.createElement("style");
+  style.id = "performance-toggle-styles";
   style.textContent = `
     .performance-toggle {
       position: fixed;
@@ -176,25 +178,25 @@ function injectToggleStyles() {
 
 // Auto-add toggle to page on load
 export function initPerformanceToggle() {
-  log.log('Initializing Performance Toggle...');
+  log.log("Initializing Performance Toggle...");
 
   const addToggle = () => {
     if (!document.body) {
-      log.warn('document.body not available, retrying...');
+      log.warn("document.body not available, retrying...");
       setTimeout(addToggle, 100);
       return;
     }
-    log.log('Creating and adding toggle to body');
+    log.log("Creating and adding toggle to body");
     const toggle = createPerformanceToggle();
     document.body.appendChild(toggle);
-    log.log('Performance toggle added to body');
+    log.log("Performance toggle added to body");
   };
 
-  if (document.readyState === 'loading') {
-    log.log('DOM loading, waiting for DOMContentLoaded');
-    document.addEventListener('DOMContentLoaded', addToggle);
+  if (document.readyState === "loading") {
+    log.log("DOM loading, waiting for DOMContentLoaded");
+    document.addEventListener("DOMContentLoaded", addToggle);
   } else {
-    log.log('DOM already loaded, adding toggle');
+    log.log("DOM already loaded, adding toggle");
     addToggle();
   }
 }

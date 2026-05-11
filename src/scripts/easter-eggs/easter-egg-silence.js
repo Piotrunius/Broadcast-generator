@@ -4,7 +4,7 @@
  */
 
 (function () {
-  'use strict';
+  "use strict";
 
   let isActive = false;
   const DURATION = 8000; // 8 seconds
@@ -45,7 +45,7 @@
         if (window.AudioContext || window.webkitAudioContext) {
           // Create a script that intercepts audio
         }
-      } catch (e) { }
+      } catch (e) {}
     }
 
     applyGrayscale() {
@@ -64,7 +64,7 @@
       this.intervals.push(interval);
 
       // Add vignette effect
-      const vignette = document.createElement('div');
+      const vignette = document.createElement("div");
       vignette.style.cssText = `
         position: fixed;
         top: 0;
@@ -81,12 +81,12 @@
       this.elements.push(vignette);
 
       setTimeout(() => {
-        vignette.style.opacity = '1';
+        vignette.style.opacity = "1";
       }, 100);
     }
 
     showNotification() {
-      const notification = document.createElement('div');
+      const notification = document.createElement("div");
       notification.style.cssText = `
         position: fixed;
         top: 50%;
@@ -126,19 +126,20 @@
       // Fade out after 5 seconds
       this.timeouts.push(
         setTimeout(() => {
-          notification.style.animation = 'silenceFadeOut 1s forwards';
+          notification.style.animation = "silenceFadeOut 1s forwards";
           setTimeout(() => notification.remove(), 1000);
-        }, 5000)
+        }, 5000),
       );
     }
 
     createSilenceSymbols() {
       // Floating mute symbols
-      const symbols = ['🔇', '⬛', '◼', '●', '▪'];
+      const symbols = ["🔇", "⬛", "◼", "●", "▪"];
 
       const interval = setInterval(() => {
-        const symbol = document.createElement('div');
-        symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        const symbol = document.createElement("div");
+        symbol.textContent =
+          symbols[Math.floor(Math.random() * symbols.length)];
         symbol.style.cssText = `
           position: fixed;
           top: ${Math.random() * 100}%;
@@ -164,7 +165,9 @@
 
       // Deep, unsettling drone
       try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (
+          window.AudioContext || window.webkitAudioContext
+        )();
 
         // Create multiple layers for richer sound
         const oscillators = [];
@@ -173,7 +176,7 @@
         // Layer 1: Deep bass
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
-        osc1.type = 'sine';
+        osc1.type = "sine";
         osc1.frequency.value = 40;
         gain1.gain.value = 0.2;
         osc1.connect(gain1);
@@ -184,7 +187,7 @@
         // Layer 2: Mid drone
         const osc2 = audioCtx.createOscillator();
         const gain2 = audioCtx.createGain();
-        osc2.type = 'triangle';
+        osc2.type = "triangle";
         osc2.frequency.value = 60;
         gain2.gain.value = 0.15;
         osc2.connect(gain2);
@@ -195,7 +198,7 @@
         // Layer 3: Harmonic
         const osc3 = audioCtx.createOscillator();
         const gain3 = audioCtx.createGain();
-        osc3.type = 'sawtooth';
+        osc3.type = "sawtooth";
         osc3.frequency.value = 80;
         gain3.gain.value = 0.1;
         osc3.connect(gain3);
@@ -217,11 +220,11 @@
               try {
                 osc.stop();
                 osc.disconnect();
-              } catch (e) { }
+              } catch (e) {}
             });
           }, 3000);
         }, DURATION - 3000);
-      } catch (e) { }
+      } catch (e) {}
     }
 
     end() {
@@ -260,7 +263,7 @@
   }
 
   // Add CSS
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     @keyframes silenceFadeIn {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
@@ -289,10 +292,10 @@
   document.head.appendChild(style);
 
   // Listen for Shift or Ctrl + "scp"
-  let keySequence = '';
+  let keySequence = "";
   let keyTimeout = null;
 
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener("keydown", (e) => {
     if (isActive) return;
 
     // Check if Shift OR Ctrl is held
@@ -302,27 +305,31 @@
 
         clearTimeout(keyTimeout);
         keyTimeout = setTimeout(() => {
-          keySequence = '';
+          keySequence = "";
         }, 1000);
 
-        if (keySequence === 'scp') {
-          keySequence = '';
+        if (keySequence === "scp") {
+          keySequence = "";
           const effect = new SilenceEffect();
           effect.start();
 
           // Umami tracking: Track silence Easter egg activation
-          if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-            window.umami.track('Easter_Egg_Activated', {
-              type: 'silence',
-              trigger: '(Shift|Ctrl)+SCP',
-              page: window.location.pathname
+          if (
+            typeof window !== "undefined" &&
+            window.umami &&
+            typeof window.umami.track === "function"
+          ) {
+            window.umami.track("Easter_Egg_Activated", {
+              type: "silence",
+              trigger: "(Shift|Ctrl)+SCP",
+              page: window.location.pathname,
             });
           }
         }
       }
     } else {
       // Reset if modifiers released
-      keySequence = '';
+      keySequence = "";
     }
   });
 })();

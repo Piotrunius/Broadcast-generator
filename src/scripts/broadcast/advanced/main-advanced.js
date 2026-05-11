@@ -1,12 +1,12 @@
-import { AudioManager } from '../../utils/audio-manager.js';
-import { trackAndNavigate, trackEvent } from '../../utils/umami-tracker.js'; // Umami tracking
+import { AudioManager } from "../../utils/audio-manager.js";
+import { trackAndNavigate, trackEvent } from "../../utils/umami-tracker.js"; // Umami tracking
 import {
   isTyping,
   setAudioManager as setTypewriterAudio,
   stopAnimation,
   typeText as typeTextAnimation,
-} from '../animations/typewriter.js';
-import { BroadcastGenerator } from '../engine/broadcast-generator.js';
+} from "../animations/typewriter.js";
+import { BroadcastGenerator } from "../engine/broadcast-generator.js";
 
 const generator = new BroadcastGenerator();
 // Use global AudioManager if available (created by core/index.js), otherwise create new instance
@@ -47,151 +47,169 @@ const debouncedUpdateLiveOutput = () => {
 
 // --- Main Setup ---
 function initializeApp() {
-  const allMenuBtns = document.querySelectorAll('.menu-btn');
-  const allContent = document.querySelectorAll('.menu-list, .collapsible-content');
+  const allMenuBtns = document.querySelectorAll(".menu-btn");
+  const allContent = document.querySelectorAll(
+    ".menu-list, .collapsible-content",
+  );
 
   // --- Unified Menu Toggling & Interaction Setup ---
-  document.querySelectorAll('.menu').forEach((menu) => {
-    const mainBtn = menu.querySelector('.menu-btn');
-    const contentPanel = menu.querySelector('.menu-list, .collapsible-content');
+  document.querySelectorAll(".menu").forEach((menu) => {
+    const mainBtn = menu.querySelector(".menu-btn");
+    const contentPanel = menu.querySelector(".menu-list, .collapsible-content");
 
     if (!mainBtn || !contentPanel) return;
 
     // Add hover sound to main menu button
-    mainBtn.addEventListener('mouseenter', () => audioManager.playHover());
+    mainBtn.addEventListener("mouseenter", () => audioManager.playHover());
 
     const panelId = contentPanel.id;
 
     // Store original text for reset
-    const textSpan = mainBtn.querySelector('.btn-text');
+    const textSpan = mainBtn.querySelector(".btn-text");
     if (textSpan) mainBtn.dataset.originalText = textSpan.textContent.trim();
 
     // Main button toggles its panel
-    mainBtn.addEventListener('click', (e) => {
+    mainBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isAlreadyOpen = contentPanel.classList.contains('show');
+      const isAlreadyOpen = contentPanel.classList.contains("show");
       closeAllMenus(); // Close all other menus first
       if (!isAlreadyOpen) {
-        contentPanel.classList.add('show');
-        mainBtn.setAttribute('aria-expanded', 'true');
+        contentPanel.classList.add("show");
+        mainBtn.setAttribute("aria-expanded", "true");
 
         // Umami tracking: Track menu open in advanced mode
-        trackEvent('Menu_Opened_Advanced', { menu: panelId });
+        trackEvent("Menu_Opened_Advanced", { menu: panelId });
       }
       audioManager.playToggle();
     });
 
     // Prevent propagation inside panels
-    contentPanel.addEventListener('click', (e) => e.stopPropagation());
+    contentPanel.addEventListener("click", (e) => e.stopPropagation());
 
     // --- Add specific interaction logic based on panel type ---
-    if (contentPanel.classList.contains('single-select')) {
-      contentPanel.querySelectorAll('button').forEach((optionBtn) => {
+    if (contentPanel.classList.contains("single-select")) {
+      contentPanel.querySelectorAll("button").forEach((optionBtn) => {
         // Add hover sound
-        optionBtn.addEventListener('mouseenter', () => audioManager.playHover());
+        optionBtn.addEventListener("mouseenter", () =>
+          audioManager.playHover(),
+        );
 
-        optionBtn.addEventListener('click', () => {
+        optionBtn.addEventListener("click", () => {
           const selectedValue = optionBtn.dataset.option;
           textSpan.textContent = selectedValue;
           mainBtn.dataset.selected = selectedValue;
 
           contentPanel
-            .querySelectorAll('button')
-            .forEach((btn) => btn.classList.remove('selected'));
-          optionBtn.classList.add('selected');
+            .querySelectorAll("button")
+            .forEach((btn) => btn.classList.remove("selected"));
+          optionBtn.classList.add("selected");
 
-          if (panelId === 'alarmContent') updateLED(panelId, selectedValue);
-          if (panelId === 'statusContent') updateStatusLED(selectedValue);
-          if (panelId === 'testingContent') updateLED(panelId, selectedValue);
+          if (panelId === "alarmContent") updateLED(panelId, selectedValue);
+          if (panelId === "statusContent") updateStatusLED(selectedValue);
+          if (panelId === "testingContent") updateLED(panelId, selectedValue);
 
           debouncedUpdateLiveOutput();
           audioManager.playClick();
 
           // Umami tracking: Track menu option selection in advanced mode
-          trackEvent('Menu_Option_Selected_Advanced', {
+          trackEvent("Menu_Option_Selected_Advanced", {
             menu: panelId,
-            option: selectedValue
+            option: selectedValue,
           });
         });
       });
     }
 
-    if (contentPanel.classList.contains('collapsible-content')) {
-      contentPanel.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-        const checkboxBtn = checkbox.closest('.checkbox-btn');
-        if (checkboxBtn) {
-          checkboxBtn.addEventListener('mouseenter', () => audioManager.playHover());
-        }
-
-        checkbox.addEventListener('change', () => {
-          const led = mainBtn?.querySelector('.led');
-          const checkedCount = contentPanel.querySelectorAll('input:checked').length;
-
-          checkbox.closest('.checkbox-btn').classList.toggle('selected', checkbox.checked);
-
-          if (led) {
-            led.style.opacity = '1';
-            led.className = 'led'; // Reset classes
-          }
-
-          if (panelId === 'breachedScpsContent') {
-            if (checkedCount >= 4)
-              led.classList.add('black', 'blink-fast'); // >= 4 breaches = purple
-            else if (checkedCount === 3) led.classList.add('high', 'blink');
-            else if (checkedCount === 2) led.classList.add('medium');
-            else if (checkedCount === 1) led.classList.add('allowed');
-            // No limit on selection, just visual feedback up to 4+
-            if (textSpan)
-              textSpan.textContent =
-                checkedCount > 0 ? `Breached SCPs (${checkedCount})` : mainBtn.dataset.originalText;
-          } else if (panelId === 'requirementsContent') {
-            if (checkedCount > 0) led.classList.add('allowed');
-            if (textSpan)
-              textSpan.textContent =
-                checkedCount > 0 ? `Requirements (${checkedCount})` : mainBtn.dataset.originalText;
-          } else if (panelId === 'eventsContent') {
-            // Get all currently selected events keys from label text
-            const selectedEventKeys = Array.from(contentPanel.querySelectorAll('input:checked')).map(
-              (cb) => cb.closest('label').textContent.trim()
+    if (contentPanel.classList.contains("collapsible-content")) {
+      contentPanel
+        .querySelectorAll('input[type="checkbox"]')
+        .forEach((checkbox) => {
+          const checkboxBtn = checkbox.closest(".checkbox-btn");
+          if (checkboxBtn) {
+            checkboxBtn.addEventListener("mouseenter", () =>
+              audioManager.playHover(),
             );
-            updateEventsLEDColor(led, selectedEventKeys); // Update LED based on selection
-            if (textSpan)
-              textSpan.textContent =
-                checkedCount > 0 ? `Events (${checkedCount})` : mainBtn.dataset.originalText;
           }
-          debouncedUpdateLiveOutput();
-          audioManager.playClick();
 
-          // Umami tracking: Track checkbox toggle in advanced mode
-          const checkboxLabel = checkbox.closest('label')?.textContent.trim() || checkbox.id;
-          trackEvent('Checkbox_Toggled_Advanced', {
-            menu: panelId,
-            checkbox: checkboxLabel,
-            checked: checkbox.checked
+          checkbox.addEventListener("change", () => {
+            const led = mainBtn?.querySelector(".led");
+            const checkedCount =
+              contentPanel.querySelectorAll("input:checked").length;
+
+            checkbox
+              .closest(".checkbox-btn")
+              .classList.toggle("selected", checkbox.checked);
+
+            if (led) {
+              led.style.opacity = "1";
+              led.className = "led"; // Reset classes
+            }
+
+            if (panelId === "breachedScpsContent") {
+              if (checkedCount >= 4)
+                led.classList.add("black", "blink-fast"); // >= 4 breaches = purple
+              else if (checkedCount === 3) led.classList.add("high", "blink");
+              else if (checkedCount === 2) led.classList.add("medium");
+              else if (checkedCount === 1) led.classList.add("allowed");
+              // No limit on selection, just visual feedback up to 4+
+              if (textSpan)
+                textSpan.textContent =
+                  checkedCount > 0
+                    ? `Breached SCPs (${checkedCount})`
+                    : mainBtn.dataset.originalText;
+            } else if (panelId === "requirementsContent") {
+              if (checkedCount > 0) led.classList.add("allowed");
+              if (textSpan)
+                textSpan.textContent =
+                  checkedCount > 0
+                    ? `Requirements (${checkedCount})`
+                    : mainBtn.dataset.originalText;
+            } else if (panelId === "eventsContent") {
+              // Get all currently selected events keys from label text
+              const selectedEventKeys = Array.from(
+                contentPanel.querySelectorAll("input:checked"),
+              ).map((cb) => cb.closest("label").textContent.trim());
+              updateEventsLEDColor(led, selectedEventKeys); // Update LED based on selection
+              if (textSpan)
+                textSpan.textContent =
+                  checkedCount > 0
+                    ? `Events (${checkedCount})`
+                    : mainBtn.dataset.originalText;
+            }
+            debouncedUpdateLiveOutput();
+            audioManager.playClick();
+
+            // Umami tracking: Track checkbox toggle in advanced mode
+            const checkboxLabel =
+              checkbox.closest("label")?.textContent.trim() || checkbox.id;
+            trackEvent("Checkbox_Toggled_Advanced", {
+              menu: panelId,
+              checkbox: checkboxLabel,
+              checked: checkbox.checked,
+            });
           });
         });
-      });
     }
   });
 
   const closeAllMenus = () => {
-    allContent.forEach((content) => content.classList.remove('show'));
-    allMenuBtns.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+    allContent.forEach((content) => content.classList.remove("show"));
+    allMenuBtns.forEach((btn) => btn.setAttribute("aria-expanded", "false"));
   };
-  document.addEventListener('click', closeAllMenus);
+  document.addEventListener("click", closeAllMenus);
 
   // --- Button Actions ---
-  const clearBtn = document.getElementById('clearBtn');
+  const clearBtn = document.getElementById("clearBtn");
   if (clearBtn) {
-    clearBtn.addEventListener('click', clearAll);
-    clearBtn.addEventListener('mouseenter', () => audioManager.playHover());
+    clearBtn.addEventListener("click", clearAll);
+    clearBtn.addEventListener("mouseenter", () => audioManager.playHover());
   }
 
   // Copy Button
-  const copyBtn = document.getElementById('copyBtn');
+  const copyBtn = document.getElementById("copyBtn");
   if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      const outputEl = document.getElementById('output');
+    copyBtn.addEventListener("click", () => {
+      const outputEl = document.getElementById("output");
 
       // Guard: no broadcast to copy
       if (!outputEl || !outputEl.value.trim()) {
@@ -215,50 +233,52 @@ function initializeApp() {
 
         // Easter egg: zmień tło na niebieskie, normalnie czerwone
         if (allSelected) {
-          outputEl.classList.add('copy-easter-egg');
+          outputEl.classList.add("copy-easter-egg");
         } else {
-          outputEl.classList.add('copy-error');
+          outputEl.classList.add("copy-error");
         }
-        outputEl.style.animation = 'none';
+        outputEl.style.animation = "none";
         outputEl.offsetHeight; // Trigger reflow to restart animation
-        outputEl.style.animation = 'shake 0.5s';
+        outputEl.style.animation = "shake 0.5s";
 
-        let errorEl = document.getElementById('char-limit-error');
-        const container = document.getElementById('error-message-slot');
+        let errorEl = document.getElementById("char-limit-error");
+        const container = document.getElementById("error-message-slot");
 
         if (!errorEl) {
-          errorEl = document.createElement('div');
-          errorEl.id = 'char-limit-error';
-          errorEl.style.color = 'var(--red)';
-          errorEl.style.textAlign = 'center';
-          errorEl.style.fontSize = '12px';
-          errorEl.style.fontWeight = 'bold';
-          errorEl.style.padding = '10px 20px';
-          errorEl.style.background = 'rgba(255, 0, 0, 0.15)';
-          errorEl.style.border = '1px solid rgba(255, 0, 0, 0.4)';
-          errorEl.style.borderRadius = '6px';
-          errorEl.style.width = '100%';
-          errorEl.style.maxWidth = '500px';
+          errorEl = document.createElement("div");
+          errorEl.id = "char-limit-error";
+          errorEl.style.color = "var(--red)";
+          errorEl.style.textAlign = "center";
+          errorEl.style.fontSize = "12px";
+          errorEl.style.fontWeight = "bold";
+          errorEl.style.padding = "10px 20px";
+          errorEl.style.background = "rgba(255, 0, 0, 0.15)";
+          errorEl.style.border = "1px solid rgba(255, 0, 0, 0.4)";
+          errorEl.style.borderRadius = "6px";
+          errorEl.style.width = "100%";
+          errorEl.style.maxWidth = "500px";
           container.appendChild(errorEl);
         }
 
         // Easter egg message gdy wszystkie opcje są zaznaczone
         if (allSelected) {
-          errorEl.textContent = 'You absolute madman... Just press ESC + L + ENTER at this point.';
-          errorEl.style.color = '#4da6ff';
-          errorEl.style.background = 'rgba(77, 166, 255, 0.15)';
-          errorEl.style.border = '1px solid rgba(77, 166, 255, 0.5)';
+          errorEl.textContent =
+            "You absolute madman... Just press ESC + L + ENTER at this point.";
+          errorEl.style.color = "#4da6ff";
+          errorEl.style.background = "rgba(77, 166, 255, 0.15)";
+          errorEl.style.border = "1px solid rgba(77, 166, 255, 0.5)";
         } else {
-          errorEl.textContent = 'MESSAGE TOO LONG! Exceeds 200 character limit.';
-          errorEl.style.color = 'var(--red)';
-          errorEl.style.background = 'rgba(255, 0, 0, 0.15)';
-          errorEl.style.border = '1px solid rgba(255, 0, 0, 0.4)';
+          errorEl.textContent =
+            "MESSAGE TOO LONG! Exceeds 200 character limit.";
+          errorEl.style.color = "var(--red)";
+          errorEl.style.background = "rgba(255, 0, 0, 0.15)";
+          errorEl.style.border = "1px solid rgba(255, 0, 0, 0.4)";
         }
-        errorEl.style.display = 'block';
+        errorEl.style.display = "block";
 
         setTimeout(() => {
-          errorEl.style.display = 'none';
-          outputEl.classList.remove('copy-error', 'copy-easter-egg');
+          errorEl.style.display = "none";
+          outputEl.classList.remove("copy-error", "copy-easter-egg");
         }, 3000);
 
         audioManager.playError();
@@ -269,20 +289,20 @@ function initializeApp() {
       navigator.clipboard
         .writeText(generatedOutput.message)
         .then(() => {
-          copyBtn.textContent = 'COPIED!';
-          setTimeout(() => (copyBtn.textContent = 'COPY'), 1000);
+          copyBtn.textContent = "COPIED!";
+          setTimeout(() => (copyBtn.textContent = "COPY"), 1000);
           audioManager.playSuccess();
 
           // Umami tracking: Track copy in advanced mode
-          trackEvent('Copy_Button_Clicked_Advanced', {
-            characterCount: generatedOutput.message.length
+          trackEvent("Copy_Button_Clicked_Advanced", {
+            characterCount: generatedOutput.message.length,
           });
         })
         .catch((err) => {
           audioManager.playError();
         });
     });
-    copyBtn.addEventListener('mouseenter', () => audioManager.playHover());
+    copyBtn.addEventListener("mouseenter", () => audioManager.playHover());
   }
 
   // Initialize character counter
@@ -293,8 +313,8 @@ function initializeApp() {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeApp);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeApp);
 } else {
   // DOM is already loaded (when module is loaded late)
   initializeApp();
@@ -302,31 +322,31 @@ if (document.readyState === 'loading') {
 
 // ============= KEYBOARD SHORTCUTS =============
 function setupKeyboardShortcuts() {
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener("keydown", (e) => {
     // Ctrl+Shift+R (Cmd+Shift+R on Mac) - Recovery
 
     // Ctrl+Alt+C (Cmd+Option+C on Mac) - Copy
-    if ((e.ctrlKey || e.metaKey) && e.altKey && e.code === 'KeyC') {
+    if ((e.ctrlKey || e.metaKey) && e.altKey && e.code === "KeyC") {
       e.preventDefault();
-      const copyBtn = document.getElementById('copyBtn');
+      const copyBtn = document.getElementById("copyBtn");
       if (copyBtn) {
         copyBtn.click();
-        showKeyboardFeedback('Copied to clipboard');
+        showKeyboardFeedback("Copied to clipboard");
       }
     }
 
     // Ctrl+Alt+X (Cmd+Option+X on Mac) - Clear
-    if ((e.ctrlKey || e.metaKey) && e.altKey && e.code === 'KeyX') {
+    if ((e.ctrlKey || e.metaKey) && e.altKey && e.code === "KeyX") {
       e.preventDefault();
-      const clearBtn = document.getElementById('clearBtn');
+      const clearBtn = document.getElementById("clearBtn");
       if (clearBtn) {
         clearBtn.click();
-        showKeyboardFeedback('Output cleared');
+        showKeyboardFeedback("Output cleared");
       }
     }
 
     // Shift+? - Show keyboard shortcuts help
-    if (e.shiftKey && e.code === 'Slash') {
+    if (e.shiftKey && e.code === "Slash") {
       e.preventDefault();
       showKeyboardShortcutsHelp();
     }
@@ -335,7 +355,7 @@ function setupKeyboardShortcuts() {
 
 // Display visual feedback for keyboard shortcut activation
 function showKeyboardFeedback(message) {
-  const feedback = document.createElement('div');
+  const feedback = document.createElement("div");
   feedback.style.cssText = `
     position: fixed;
     bottom: 20px;
@@ -353,7 +373,7 @@ function showKeyboardFeedback(message) {
   document.body.appendChild(feedback);
 
   setTimeout(() => {
-    feedback.style.animation = 'slide-out 0.3s ease-in';
+    feedback.style.animation = "slide-out 0.3s ease-in";
     setTimeout(() => feedback.remove(), 300);
   }, 2000);
 }
@@ -361,14 +381,18 @@ function showKeyboardFeedback(message) {
 // Show keyboard shortcuts reference
 function showKeyboardShortcutsHelp() {
   const shortcuts = [
-    { keys: 'Ctrl+Alt+C', mac: 'Cmd+Option+C', action: 'Copy output to clipboard' },
-    { keys: 'Ctrl+Alt+X', mac: 'Cmd+Option+X', action: 'Clear all output' },
-    { keys: 'Shift+?', mac: 'Shift+?', action: 'Show this help' },
+    {
+      keys: "Ctrl+Alt+C",
+      mac: "Cmd+Option+C",
+      action: "Copy output to clipboard",
+    },
+    { keys: "Ctrl+Alt+X", mac: "Cmd+Option+X", action: "Clear all output" },
+    { keys: "Shift+?", mac: "Shift+?", action: "Show this help" },
   ];
 
-  let helpText = '⌨️ KEYBOARD SHORTCUTS\n\n';
+  let helpText = "⌨️ KEYBOARD SHORTCUTS\n\n";
   shortcuts.forEach((s) => {
-    const keyDisplay = navigator.platform.includes('Mac') ? s.mac : s.keys;
+    const keyDisplay = navigator.platform.includes("Mac") ? s.mac : s.keys;
     helpText += `${keyDisplay.padEnd(15)} → ${s.action}\n`;
   });
 
@@ -377,8 +401,8 @@ function showKeyboardShortcutsHelp() {
 
 // Helper function to determine Events LED color
 function updateEventsLEDColor(ledElement, selectedEventKeys) {
-  ledElement.className = 'led'; // Reset classes
-  ledElement.style.opacity = '1';
+  ledElement.className = "led"; // Reset classes
+  ledElement.style.opacity = "1";
 
   if (selectedEventKeys.length === 0) {
     // No events selected, the LED should be off (gray).
@@ -386,21 +410,21 @@ function updateEventsLEDColor(ledElement, selectedEventKeys) {
     return;
   }
 
-  let has610 = selectedEventKeys.includes('610 Event');
-  let has076 = selectedEventKeys.includes('076 Event');
-  let has323 = selectedEventKeys.includes('323 Breach');
-  let hasClassDRiot = selectedEventKeys.includes('Class-D Riot');
+  let has610 = selectedEventKeys.includes("610 Event");
+  let has076 = selectedEventKeys.includes("076 Event");
+  let has323 = selectedEventKeys.includes("323 Breach");
+  let hasClassDRiot = selectedEventKeys.includes("Class-D Riot");
 
   // Priority: BLACK (Fiolet) > HIGH (Czerwony) > MEDIUM (Żółty)
   if (has610 || (has076 && has323 && hasClassDRiot)) {
-    ledElement.classList.add('black', 'blink-fast'); // Fioletowy, szybkie mruganie
+    ledElement.classList.add("black", "blink-fast"); // Fioletowy, szybkie mruganie
   } else if (has076) {
-    ledElement.classList.add('high', 'blink'); // Czerwony
+    ledElement.classList.add("high", "blink"); // Czerwony
   } else if (has323 || hasClassDRiot) {
-    ledElement.classList.add('medium', 'blink'); // Żółty
+    ledElement.classList.add("medium", "blink"); // Żółty
   } else {
     // Fallback for other potential events, or just a generic active state
-    ledElement.classList.add('prohibited', 'blink'); // Default red if events selected but no specific color rule met
+    ledElement.classList.add("prohibited", "blink"); // Default red if events selected but no specific color rule met
   }
 }
 
@@ -408,40 +432,43 @@ function updateEventsLEDColor(ledElement, selectedEventKeys) {
 function updateLED(target, level) {
   const led = document.querySelector(`.menu-btn[data-target="${target}"] .led`);
   if (!led) return;
-  led.className = 'led';
-  led.style.opacity = '1';
+  led.className = "led";
+  led.style.opacity = "1";
   const upperLevel = level?.toUpperCase();
-  if (upperLevel === 'HIGH') led.classList.add('high', 'blink');
-  else if (upperLevel === 'MEDIUM') led.classList.add('medium');
-  else if (upperLevel === 'LOW') led.classList.add('low');
-  else if (upperLevel === 'ALLOWED') led.classList.add('allowed');
-  else if (upperLevel === 'PROHIBITED') led.classList.add('prohibited', 'blink');
+  if (upperLevel === "HIGH") led.classList.add("high", "blink");
+  else if (upperLevel === "MEDIUM") led.classList.add("medium");
+  else if (upperLevel === "LOW") led.classList.add("low");
+  else if (upperLevel === "ALLOWED") led.classList.add("allowed");
+  else if (upperLevel === "PROHIBITED")
+    led.classList.add("prohibited", "blink");
 }
 
 function updateStatusLED(status) {
-  const led = document.querySelector('.menu-btn[data-target="statusContent"] .led');
+  const led = document.querySelector(
+    '.menu-btn[data-target="statusContent"] .led',
+  );
   if (!led) return;
-  led.className = 'led';
-  led.style.opacity = '1';
+  led.className = "led";
+  led.style.opacity = "1";
   const upperStatus = status?.toUpperCase();
   switch (upperStatus) {
-    case 'SCP BREACH':
-    case 'SITE LOCKDOWN':
-    case 'CHAOS INSURGENCY':
-      led.classList.add('high', 'blink');
+    case "SCP BREACH":
+    case "SITE LOCKDOWN":
+    case "CHAOS INSURGENCY":
+      led.classList.add("high", "blink");
       break;
-    case 'NUCLEAR PROTOCOL':
-      led.classList.add('black', 'blink-fast');
+    case "NUCLEAR PROTOCOL":
+      led.classList.add("black", "blink-fast");
       break;
-    case 'CLASS-D ESCAPE':
-      led.classList.add('medium');
+    case "CLASS-D ESCAPE":
+      led.classList.add("medium");
       break;
-    case 'CLEAR':
-      led.classList.add('allowed');
+    case "CLEAR":
+      led.classList.add("allowed");
       break;
-    case 'MAINTENANCE':
-    case 'O5 MEETING':
-      led.classList.add('white');
+    case "MAINTENANCE":
+    case "O5 MEETING":
+      led.classList.add("white");
       break;
   }
 }
@@ -450,27 +477,28 @@ function updateStatusLED(status) {
 
 function getBroadcastOptions() {
   const getSelected = (target) =>
-    document.querySelector(`.menu-btn[data-target="${target}"]`)?.dataset.selected;
+    document.querySelector(`.menu-btn[data-target="${target}"]`)?.dataset
+      .selected;
 
-  const alarm = getSelected('alarmContent');
-  const status = getSelected('statusContent');
-  const testing = getSelected('testingContent');
+  const alarm = getSelected("alarmContent");
+  const status = getSelected("statusContent");
+  const testing = getSelected("testingContent");
 
   // Events now use checkboxes instead of buttons
-  const events = Array.from(document.querySelectorAll('#eventsContent input:checked')).map(
-    (cb) => cb.closest('label').textContent.trim()
-  );
+  const events = Array.from(
+    document.querySelectorAll("#eventsContent input:checked"),
+  ).map((cb) => cb.closest("label").textContent.trim());
   const breachedSCPs = Array.from(
-    document.querySelectorAll('#breachedScpsContent input:checked')
-  ).map((cb) => cb.closest('label').textContent.trim());
+    document.querySelectorAll("#breachedScpsContent input:checked"),
+  ).map((cb) => cb.closest("label").textContent.trim());
 
   const requirements = {
-    idCheck: document.getElementById('idCheck')?.checked,
-    conX: document.getElementById('authConX')?.checked,
-    scp008: document.getElementById('authScp008')?.checked,
-    scp409: document.getElementById('authScp409')?.checked,
-    scp701: document.getElementById('authScp701')?.checked,
-    scp035: document.getElementById('authScp035')?.checked,
+    idCheck: document.getElementById("idCheck")?.checked,
+    conX: document.getElementById("authConX")?.checked,
+    scp008: document.getElementById("authScp008")?.checked,
+    scp409: document.getElementById("authScp409")?.checked,
+    scp701: document.getElementById("authScp701")?.checked,
+    scp035: document.getElementById("authScp035")?.checked,
   };
 
   return {
@@ -486,16 +514,28 @@ function getBroadcastOptions() {
 // Easter egg checker - sprawdza czy wszystkie opcje są zaznaczone
 function areAllOptionsSelected() {
   // Sprawdź czy wszystkie 11 checkboxów Breached SCPs jest zaznaczonych
-  const allBreachedScps = document.querySelectorAll('#breachedScpsContent input[type="checkbox"]');
-  const checkedBreachedScps = document.querySelectorAll('#breachedScpsContent input:checked');
+  const allBreachedScps = document.querySelectorAll(
+    '#breachedScpsContent input[type="checkbox"]',
+  );
+  const checkedBreachedScps = document.querySelectorAll(
+    "#breachedScpsContent input:checked",
+  );
 
   // Sprawdź czy wszystkie 6 checkboxów Requirements jest zaznaczonych
-  const allRequirements = document.querySelectorAll('#requirementsContent input[type="checkbox"]');
-  const checkedRequirements = document.querySelectorAll('#requirementsContent input:checked');
+  const allRequirements = document.querySelectorAll(
+    '#requirementsContent input[type="checkbox"]',
+  );
+  const checkedRequirements = document.querySelectorAll(
+    "#requirementsContent input:checked",
+  );
 
   // Sprawdź czy wszystkie 4 eventy są wybrane (teraz też checkboxy)
-  const allEvents = document.querySelectorAll('#eventsContent input[type="checkbox"]');
-  const selectedEvents = document.querySelectorAll('#eventsContent input:checked');
+  const allEvents = document.querySelectorAll(
+    '#eventsContent input[type="checkbox"]',
+  );
+  const selectedEvents = document.querySelectorAll(
+    "#eventsContent input:checked",
+  );
 
   return (
     allBreachedScps.length > 0 &&
@@ -509,22 +549,22 @@ function areAllOptionsSelected() {
 
 // Character counter - shows current length and provides visual feedback
 function updateCharCounter() {
-  const outputElement = document.getElementById('output');
+  const outputElement = document.getElementById("output");
   if (!outputElement) return;
 
   // Create counter element if it doesn't exist
-  let counterContainer = document.getElementById('char-counter-container');
+  let counterContainer = document.getElementById("char-counter-container");
   if (!counterContainer) {
-    counterContainer = document.createElement('div');
-    counterContainer.id = 'char-counter-container';
-    outputElement.parentElement.style.position = 'relative';
-    const counterSpan = document.createElement('span');
-    counterSpan.id = 'char-counter';
+    counterContainer = document.createElement("div");
+    counterContainer.id = "char-counter-container";
+    outputElement.parentElement.style.position = "relative";
+    const counterSpan = document.createElement("span");
+    counterSpan.id = "char-counter";
     counterContainer.appendChild(counterSpan);
     outputElement.parentElement.appendChild(counterContainer);
   }
 
-  const counterEl = document.getElementById('char-counter');
+  const counterEl = document.getElementById("char-counter");
   const currentLength = outputElement.value.length;
   const remaining = 200 - currentLength;
   const isOverLimit = currentLength > 200;
@@ -534,13 +574,13 @@ function updateCharCounter() {
 
   // Apply appropriate color class
   if (isOverLimit) {
-    counterEl.classList.remove('warning');
-    counterEl.classList.add('error');
+    counterEl.classList.remove("warning");
+    counterEl.classList.add("error");
   } else if (remaining < 50 && remaining > 0) {
-    counterEl.classList.remove('error');
-    counterEl.classList.add('warning');
+    counterEl.classList.remove("error");
+    counterEl.classList.add("warning");
   } else {
-    counterEl.classList.remove('warning', 'error');
+    counterEl.classList.remove("warning", "error");
   }
 
   // Update textarea color along with counter
@@ -549,38 +589,38 @@ function updateCharCounter() {
 
 // Update textarea and border color based on character count
 function updateOutputColor() {
-  const outputElement = document.getElementById('output');
+  const outputElement = document.getElementById("output");
   if (!outputElement) return;
 
   const currentLength = outputElement.value.length;
 
   if (currentLength > 200) {
     // RED - Over limit
-    outputElement.classList.remove('color-success', 'color-warning');
-    outputElement.classList.add('color-error');
+    outputElement.classList.remove("color-success", "color-warning");
+    outputElement.classList.add("color-error");
   } else if (currentLength > 150) {
     // YELLOW - Warning
-    outputElement.classList.remove('color-success', 'color-error');
-    outputElement.classList.add('color-warning');
+    outputElement.classList.remove("color-success", "color-error");
+    outputElement.classList.add("color-warning");
   } else {
     // GREEN - Good
-    outputElement.classList.remove('color-error', 'color-warning');
-    outputElement.classList.add('color-success');
+    outputElement.classList.remove("color-error", "color-warning");
+    outputElement.classList.add("color-success");
   }
 
   // Apply background color matching border color
   if (currentLength > 200) {
     // RED background
-    outputElement.classList.remove('output-bg-success', 'output-bg-warning');
-    outputElement.classList.add('output-bg-error');
+    outputElement.classList.remove("output-bg-success", "output-bg-warning");
+    outputElement.classList.add("output-bg-error");
   } else if (currentLength > 150) {
     // YELLOW background
-    outputElement.classList.remove('output-bg-success', 'output-bg-error');
-    outputElement.classList.add('output-bg-warning');
+    outputElement.classList.remove("output-bg-success", "output-bg-error");
+    outputElement.classList.add("output-bg-warning");
   } else {
     // GREEN background
-    outputElement.classList.remove('output-bg-error', 'output-bg-warning');
-    outputElement.classList.add('output-bg-success');
+    outputElement.classList.remove("output-bg-error", "output-bg-warning");
+    outputElement.classList.add("output-bg-success");
   }
 }
 
@@ -599,7 +639,7 @@ function updateOutputColor() {
 // - setTypewriterAudio (initialize audio manager)
 
 async function updateLiveOutput() {
-  const outputElement = document.getElementById('output');
+  const outputElement = document.getElementById("output");
   if (!outputElement) return;
 
   try {
@@ -615,16 +655,16 @@ async function updateLiveOutput() {
       () => {
         updateCharCounter();
         if (generatedOutput.overflow) {
-          outputElement.classList.add('overflow-warning');
+          outputElement.classList.add("overflow-warning");
           try {
             audioManager.playError();
           } catch (e) {
             // Silent
           }
         } else {
-          outputElement.classList.remove('overflow-warning');
+          outputElement.classList.remove("overflow-warning");
         }
-      }
+      },
     );
 
     // If animation didn't complete (was interrupted), ensure text is correct
@@ -634,17 +674,17 @@ async function updateLiveOutput() {
       updateOutputColor();
     }
   } catch (err) {
-    const outputElement = document.getElementById('output');
+    const outputElement = document.getElementById("output");
     if (outputElement) {
-      outputElement.value = 'Error generating broadcast. Please retry.';
+      outputElement.value = "Error generating broadcast. Please retry.";
       updateCharCounter();
-      outputElement.classList.add('overflow-warning');
+      outputElement.classList.add("overflow-warning");
     }
   }
 }
 
 function clearAll() {
-  const outputEl = document.getElementById('output');
+  const outputEl = document.getElementById("output");
 
   // Guard: no broadcast to clear
   if (!outputEl || !outputEl.value.trim()) {
@@ -662,52 +702,52 @@ function clearAll() {
   }
 
   // Reset custom text input
-  const customInput = document.getElementById('customTextInput');
-  if (customInput) customInput.value = '';
+  const customInput = document.getElementById("customTextInput");
+  if (customInput) customInput.value = "";
 
   // Reset ALL menu buttons to original state
-  document.querySelectorAll('.menu-btn').forEach((btn) => {
-    const textSpan = btn.querySelector('.btn-text');
+  document.querySelectorAll(".menu-btn").forEach((btn) => {
+    const textSpan = btn.querySelector(".btn-text");
     if (textSpan && btn.dataset.originalText) {
       textSpan.textContent = btn.dataset.originalText;
     }
     delete btn.dataset.selected;
-    btn.classList.remove('selected');
-    btn.setAttribute('aria-expanded', 'false');
+    btn.classList.remove("selected");
+    btn.setAttribute("aria-expanded", "false");
   });
 
   // Close all menus
-  document.querySelectorAll('.menu-list').forEach((menu) => {
-    menu.classList.remove('show');
+  document.querySelectorAll(".menu-list").forEach((menu) => {
+    menu.classList.remove("show");
   });
 
   // Deselect all selected elements
-  document.querySelectorAll('.selected').forEach((el) => {
-    el.classList.remove('selected');
+  document.querySelectorAll(".selected").forEach((el) => {
+    el.classList.remove("selected");
   });
 
   // Uncheck all checkboxes
   document.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
     cb.checked = false;
-    const checkboxBtn = cb.closest('.checkbox-btn');
-    if (checkboxBtn) checkboxBtn.classList.remove('selected');
+    const checkboxBtn = cb.closest(".checkbox-btn");
+    if (checkboxBtn) checkboxBtn.classList.remove("selected");
   });
 
   // Reset all LEDs to default state (no color)
-  document.querySelectorAll('.led').forEach((led) => {
-    led.className = 'led';
-    led.style.opacity = '1';
-    led.style.backgroundColor = '';
-    led.style.boxShadow = '';
+  document.querySelectorAll(".led").forEach((led) => {
+    led.className = "led";
+    led.style.opacity = "1";
+    led.style.backgroundColor = "";
+    led.style.boxShadow = "";
   });
 
   // Clear output textarea completely
   if (outputEl) {
-    outputEl.value = '';
+    outputEl.value = "";
     updateCharCounter();
     updateOutputColor();
-    outputEl.classList.remove('overflow-warning');
-    outputEl.style.cssText = ''; // Reset any inline styles
+    outputEl.classList.remove("overflow-warning");
+    outputEl.style.cssText = ""; // Reset any inline styles
   }
 
   // Update character counter
@@ -724,10 +764,10 @@ function clearAll() {
   document.body.offsetHeight; // Trigger reflow
 
   // Umami tracking: Track clear action in advanced mode
-  trackEvent('Clear_Button_Clicked_Advanced', { page: 'broadcast_advanced' });
+  trackEvent("Clear_Button_Clicked_Advanced", { page: "broadcast_advanced" });
 }
 
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
@@ -749,16 +789,20 @@ style.textContent = `
 document.head.appendChild(style);
 
 // MODE SWITCH - ADVANCED PAGE
-const switchBtn = document.getElementById('modeSwitch');
+const switchBtn = document.getElementById("modeSwitch");
 if (switchBtn) {
-  switchBtn.classList.add('active');
-  switchBtn.addEventListener('click', () => {
+  switchBtn.classList.add("active");
+  switchBtn.addEventListener("click", () => {
     // Umami tracking: Track mode switch from advanced to simple
-    trackEvent('Mode_Switch_Clicked', { from: 'advanced', to: 'simple' });
+    trackEvent("Mode_Switch_Clicked", { from: "advanced", to: "simple" });
     // Use utility function to track and navigate with proper timing
-    trackAndNavigate('../simple/index.html', 'broadcast_simple', 'broadcast_advanced');
+    trackAndNavigate(
+      "../simple/index.html",
+      "broadcast_simple",
+      "broadcast_advanced",
+    );
   });
-  switchBtn.addEventListener('mouseenter', () => audioManager.playHover());
+  switchBtn.addEventListener("mouseenter", () => audioManager.playHover());
 }
 
 /*
