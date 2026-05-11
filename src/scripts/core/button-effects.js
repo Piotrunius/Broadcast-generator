@@ -52,14 +52,14 @@
       animation: ripple-animation 0.6s ease-out;
       pointer-events: none;
     }
-    
+
     @keyframes ripple-animation {
       to {
         transform: scale(4);
         opacity: 0;
       }
     }
-    
+
     button, .main-btn, .primary, .btn-secondary, .menu-btn {
       position: relative;
       overflow: hidden;

@@ -4,7 +4,7 @@ export class BroadcastGenerator {
   constructor() {
     this.maxChars = 200;
     this.maxIterations = 50; // Safety limit
-    
+
     // Event name mappings without numbers (for tagging prevention)
     this.eventNameMap = {
       '610 EVENT': {
@@ -23,7 +23,7 @@ export class BroadcastGenerator {
         MINIMAL: 'Wendigo breach.',
       },
     };
-    
+
     // Requirement name mappings without numbers (for tagging prevention)
     this.requirementNameMap = {
       '008': 'Zombie pathogen',
@@ -42,29 +42,29 @@ export class BroadcastGenerator {
     const numberMatches = text.match(/\d{2,}/g);
     return numberMatches ? numberMatches.length : 0;
   }
-  
+
   /**
    * Pre-calculate if we should use number-free format to prevent tagging
    * Returns true if the message would contain 3+ numbers with default formatting
    */
   shouldUseNumberFreeFormat(options, prefix) {
     const { events = [], breachedSCPs = [], requirements = {} } = options;
-    
+
     // Build a test message with all default (numbered) formats
     const testParts = [];
-    
+
     // Count numbers from events
     events.forEach(eventKey => {
       const normalizedKey = eventKey.toUpperCase();
       const eventText = EVENT_MESSAGES.LONG?.[normalizedKey] || '';
       testParts.push(eventText);
     });
-    
+
     // Count numbers from breached SCPs
     if (breachedSCPs.length > 0) {
       testParts.push(breachedSCPs.join(', '));
     }
-    
+
     // Count numbers from requirements
     const reqItems = [];
     if (requirements.scp008) reqItems.push('008');
@@ -74,10 +74,10 @@ export class BroadcastGenerator {
     if (reqItems.length > 0) {
       testParts.push(reqItems.join(', '));
     }
-    
+
     const testMessage = prefix + testParts.join(' | ');
     const numberCount = this.countNumbers(testMessage);
-    
+
     // Use number-free format if 3+ numbers detected
     return numberCount >= 3;
   }
@@ -125,7 +125,7 @@ export class BroadcastGenerator {
     events.forEach((eventKey) => {
       const normalizedEventKey = eventKey.toUpperCase();
       const generator = this; // Reference for get_text
-      
+
       messageParts.push({
         type: 'event',
         key: normalizedEventKey,
@@ -136,7 +136,7 @@ export class BroadcastGenerator {
           if (useNumberFree && generator.eventNameMap[normalizedEventKey]) {
             return generator.eventNameMap[normalizedEventKey][lvl] || '';
           }
-          
+
           // Use original format with numbers
           return EVENT_MESSAGES[lvl]?.[normalizedEventKey] || '';
         },
@@ -153,14 +153,14 @@ export class BroadcastGenerator {
         priority: 7,
         get_text: (lvl) => {
           const count = breachedSCPs.length;
-          
+
           // TAGGING PREVENTION: Use count format if number-free mode is enabled
           if (useNumberFree) {
             if (lvl === 'LONG') return `Breached: ${count} SCP${count > 1 ? 's' : ''}`;
             if (lvl === 'SHORT') return `${count} breaches`;
             if (lvl === 'MINIMAL') return `${count} breaches`;
           }
-          
+
           // Safe to show numbers: Use original format
           if (lvl === 'LONG') return `Breached: ${breachedSCPs.join(', ')}`;
           if (lvl === 'SHORT') {
@@ -197,7 +197,7 @@ export class BroadcastGenerator {
 
     if (sidPlusAuthItems.length > 0) {
       const generator = this; // Reference for get_text
-      
+
       messageParts.push({
         type: 'requirement',
         key: 'SID_PLUS_AUTH',
@@ -209,12 +209,12 @@ export class BroadcastGenerator {
             const nameBased = sidPlusAuthItems.map(item => {
               return generator.requirementNameMap[item] || item; // Keep non-numeric items as-is (like CON-X)
             });
-            
+
             if (lvl === 'LONG') return `SID+ Auth required for ${nameBased.join(', ')} tests`;
             if (lvl === 'SHORT') return `SID+ Auth req: ${nameBased.join(', ')}`;
             if (lvl === 'MINIMAL') return `Auth req: ${nameBased.join(', ')}`;
           }
-          
+
           // Use original format with numbers
           return REQUIREMENT_MESSAGES.SID_PLUS_AUTH[lvl](sidPlusAuthItems) || '';
         },

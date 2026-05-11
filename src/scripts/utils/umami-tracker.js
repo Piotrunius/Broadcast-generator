@@ -1,7 +1,7 @@
 /**
  * Umami Event Tracking Utility
  * Centralized module for tracking user interactions with Umami Analytics
- * 
+ *
  * Usage:
  *   import { trackEvent } from './umami-tracker.js';
  *   trackEvent('Button_Clicked', { page: 'home' });
@@ -52,7 +52,7 @@ export function addTracking(element, eventName, eventData = {}, eventType = 'cli
     console.warn(`[Umami] Cannot add tracking: element is null for event '${eventName}'`);
     return;
   }
-  
+
   element.addEventListener(eventType, () => {
     trackEvent(eventName, eventData);
   });
@@ -86,7 +86,7 @@ export function trackAndNavigate(targetUrl, targetPage, sourcePage = '', delay =
     target: targetPage,
     source: sourcePage || window.location.pathname
   });
-  
+
   // Use a small delay to ensure tracking completes
   // This is a standard practice for analytics before page unload
   setTimeout(() => {

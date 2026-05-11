@@ -1,6 +1,6 @@
 import { AudioManager } from '../utils/audio-manager.js';
+import { trackAndNavigate, trackEvent } from '../utils/umami-tracker.js'; // Umami tracking
 import { RAW_RECIPES } from './data/scp-recipes.js';
-import { trackEvent, trackAndNavigate } from '../utils/umami-tracker.js'; // Umami tracking
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -193,7 +193,7 @@ if (clearBtn) {
 
     const resultEl = document.getElementById('result');
     if (resultEl) resultEl.textContent = '';
-    
+
     // Umami tracking: Track clear action in SCP-914
     trackEvent('Clear_Button_Clicked', { page: 'scp914' });
   });
@@ -397,12 +397,12 @@ if (calcBtn) {
     } else {
       playSuccess();
     }
-    
+
     // Umami tracking: Track calculate recipes action
-    trackEvent('Calculate_Recipes_Clicked', { 
-      hasInput: !!inputVal, 
+    trackEvent('Calculate_Recipes_Clicked', {
+      hasInput: !!inputVal,
       hasOutput: !!outputVal,
-      success: !!route 
+      success: !!route
     });
   });
 }

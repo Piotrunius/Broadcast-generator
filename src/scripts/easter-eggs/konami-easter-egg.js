@@ -942,10 +942,10 @@
           konamiPosition = 0;
           effectsController = new EasterEggEffects();
           effectsController.start();
-          
+
           // Umami tracking: Track Konami code Easter egg activation
           if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
-            window.umami.track('Easter_Egg_Activated', { 
+            window.umami.track('Easter_Egg_Activated', {
               type: 'konami_code',
               page: window.location.pathname
             });

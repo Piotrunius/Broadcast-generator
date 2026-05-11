@@ -1,5 +1,5 @@
 import { AudioManager } from '../../utils/audio-manager.js';
-import { trackEvent, trackAndNavigate } from '../../utils/umami-tracker.js'; // Umami tracking
+import { trackAndNavigate, trackEvent } from '../../utils/umami-tracker.js'; // Umami tracking
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -93,7 +93,7 @@ menuButtons.forEach(btn => {
       btn.setAttribute('aria-expanded', 'true');
       list.setAttribute('aria-hidden', 'false');
       if (menuId === 'alarm') wrapEl.classList.add('threat-open');
-      
+
       // Umami tracking: Track menu open action
       trackEvent('Menu_Opened', { menu: menuId });
     }
@@ -146,9 +146,9 @@ document.querySelectorAll('.menu-list button').forEach(optBtn => {
     if (parentMenu.id === "events") updateEventLED(optBtn.dataset.option);
 
     // Umami tracking: Track menu option selection
-    trackEvent('Menu_Option_Selected', { 
-      menu: parentMenu.id, 
-      option: optBtn.dataset.option 
+    trackEvent('Menu_Option_Selected', {
+      menu: parentMenu.id,
+      option: optBtn.dataset.option
     });
 
     try { beep(880, 0.06, 0.04); } catch (e) { }
@@ -249,7 +249,7 @@ function updateEventLED(value) {
 function updateStatusLED(status) {
   const menuBtn = document.querySelector('.menu-btn[data-menu="status"]');
   const caret = menuBtn.querySelector('.caret')?.outerHTML || "";
-  
+
   let color = "#555";
   let shadow = "none";
   let blinkClass = "";
@@ -472,7 +472,7 @@ document.getElementById('generateBtn')?.addEventListener('click', () => {
   outputEl.classList.add('flash');
 
   // Umami tracking: Track broadcast generation
-  trackEvent('Generate_Button_Clicked', { 
+  trackEvent('Generate_Button_Clicked', {
     hasAlarm: alarm !== 'SELECT',
     hasStatus: status !== 'SELECT',
     hasTesting: testing !== 'SELECT',
@@ -492,10 +492,10 @@ document.getElementById('copyBtn')?.addEventListener('click', () => {
       const copyBtn = document.getElementById('copyBtn');
       copyBtn.textContent = 'COPIED!';
       setTimeout(() => copyBtn.textContent = 'COPY', 1000);
-      
+
       // Umami tracking: Track copy action
-      trackEvent('Copy_Button_Clicked', { 
-        characterCount: outputEl.value.length 
+      trackEvent('Copy_Button_Clicked', {
+        characterCount: outputEl.value.length
       });
     })
     .catch(() => {
@@ -503,9 +503,9 @@ document.getElementById('copyBtn')?.addEventListener('click', () => {
       const copyBtn = document.getElementById('copyBtn');
       copyBtn.textContent = 'COPIED!';
       setTimeout(() => copyBtn.textContent = 'COPY', 1000);
-      
+
       // Umami tracking: Track copy action (fallback)
-      trackEvent('Copy_Button_Clicked', { 
+      trackEvent('Copy_Button_Clicked', {
         characterCount: outputEl.value.length,
         method: 'fallback'
       });
@@ -547,7 +547,7 @@ document.getElementById('clearBtn')?.addEventListener('click', () => {
   document.getElementById("scp701").checked = false;
   document.getElementById("scp035").checked = false;
   document.getElementById("containmentCheck").checked = false;
-  
+
   // Umami tracking: Track clear action
   trackEvent('Clear_Button_Clicked', { page: 'broadcast_simple' });
 });
@@ -613,9 +613,9 @@ Object.entries(checkboxes).forEach(([id, name]) => {
   const checkbox = document.getElementById(id);
   if (checkbox) {
     checkbox.addEventListener('change', () => {
-      trackEvent('Checkbox_Toggled', { 
-        checkbox: name, 
-        checked: checkbox.checked 
+      trackEvent('Checkbox_Toggled', {
+        checkbox: name,
+        checked: checkbox.checked
       });
     });
   }

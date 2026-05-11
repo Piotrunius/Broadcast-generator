@@ -4,8 +4,8 @@
  */
 
 import { AudioManager } from '../utils/audio-manager.js';
-import { Logger } from './logger.js';
 import { trackToggle } from '../utils/umami-tracker.js'; // Umami tracking
+import { Logger } from './logger.js';
 
 const log = Logger.create('AUDIO');
 
@@ -69,7 +69,7 @@ export function createAudioToggle() {
     const nowMuted = audioMgr.isMuted;
     log.log(`Audio mute: ${wasMuted} -> ${nowMuted}`);
     updateUI(nowMuted);
-    
+
     // Umami tracking: Track audio toggle state change
     trackToggle('Audio', !nowMuted);
   });

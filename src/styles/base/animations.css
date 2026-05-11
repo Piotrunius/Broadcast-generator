@@ -79,6 +79,7 @@
 /* ========== GLOW & PULSE EFFECTS ========== */
 
 @keyframes pulseGlow {
+
   0%,
   100% {
     box-shadow:
@@ -96,6 +97,7 @@
 }
 
 @keyframes pulseGlowGreen {
+
   0%,
   100% {
     box-shadow:
@@ -111,6 +113,7 @@
 }
 
 @keyframes subtlePulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -165,6 +168,7 @@
 /* ========== PARTICLE EFFECTS ========== */
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0) translateX(0);
@@ -231,6 +235,7 @@
 /* ========== LED & INDICATOR ANIMATIONS ========== */
 
 @keyframes ledBlink {
+
   0%,
   100% {
     opacity: 1;
@@ -242,6 +247,7 @@
 }
 
 @keyframes ledPulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -277,6 +283,7 @@
 }
 
 @keyframes textGlow {
+
   0%,
   100% {
     text-shadow:
@@ -293,6 +300,7 @@
 }
 
 @keyframes glitch {
+
   0%,
   100% {
     transform: translate(0);
@@ -338,6 +346,7 @@
 }
 
 @keyframes dots {
+
   0%,
   20% {
     content: '.';
@@ -448,12 +457,10 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%);
   background-size: 200% 100%;
   animation: shimmer 3s infinite;
 }
@@ -549,6 +556,7 @@
 
 /* Mobile overflow: allow scrolling when content exceeds viewport */
 @media (max-width: 768px) {
+
   html,
   body {
     overflow-y: auto !important;
