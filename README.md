@@ -7,13 +7,15 @@ A web-based control panel featuring a broadcast generator and SCP-914 recipe ana
 ## 🎯 Features
 
 ### Broadcast Generator
+
 - **Simple Mode**: Generate standard broadcasts for SCP containment events
-- **Advanced Mode**:  Create custom broadcasts with additional options and Easter eggs
+- **Advanced Mode**: Create custom broadcasts with additional options and Easter eggs
 - Support for multiple SCP breach scenarios (SCP-035, SCP-008, SCP-076, SCP-323, SCP-409, SCP-610, SCP-701, etc.)
 - Site lockdown announcements
 - Customizable event messages
 
 ### SCP-914 Recipes
+
 - Interactive recipe calculator
 - Search and filter inputs/outputs
 - Autocomplete functionality (TAB key)
@@ -21,6 +23,7 @@ A web-based control panel featuring a broadcast generator and SCP-914 recipe ana
 - All recipes sourced from [SCP-914 Wiki](https://scpsiteroleplay.miraheze.org/wiki/SCP-914)
 
 ### Performance Features
+
 - **Performance Mode**: Toggle animations for better performance on lower-end devices
 - **Audio Controls**: Manage sound effects
 - Responsive design for various screen sizes
@@ -29,17 +32,20 @@ A web-based control panel featuring a broadcast generator and SCP-914 recipe ana
 ## 🚀 Getting Started
 
 ### Online Access
-Visit the live site:  [Live Site](https://aresysite.github.io/Broadcast-generator)
+
+Visit the live site: [Live Site](https://aresysite.github.io/Broadcast-generator)
 
 ### Local Development
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/aresysite/Broadcast-generator.git
 cd Broadcast-generator
 ```
 
 2. Open `index.html` in your browser or use a local server:
+
 ```bash
 # Using Python
 python -m http.server 8000
@@ -77,6 +83,7 @@ Broadcast-generator/
 ## 🎮 Usage
 
 ### Broadcast Generator
+
 1. Navigate to the **Broadcast Generator** from the control panel
 2. Choose between Simple or Advanced mode
 3. Select an SCP breach event or site status
@@ -84,6 +91,7 @@ Broadcast-generator/
 5. Copy the generated broadcast for use in-game
 
 ### SCP-914 Recipes
+
 1. Click **SCP-914 RECIPES** from the control panel
 2. Enter an input item in the search field
 3. Enter an output item (optional - leaving blank shows all possible outputs)
@@ -91,6 +99,7 @@ Broadcast-generator/
 5. View the refinement path and settings needed
 
 **Tips:**
+
 - Press TAB to autocomplete
 - Press ENTER to calculate
 - Use CLEAR to reset fields
@@ -113,12 +122,14 @@ Broadcast-generator/
 ## 🔄 Recent Updates
 
 ### January 5, 2026
+
 - Removed icons for status menu
 - Added colors and animations for broadcast simple page menus
 - Added ability to modify simple broadcasts
 - Fixed simple broadcast page UI on low resolutions
 
 ### January 3, 2026
+
 - Advanced mode added
 - New animations
 - New credits page
@@ -150,7 +161,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 🐛 Issues
 
 Found a bug or have a suggestion? Please [open an issue](https://github.com/aresysite/Broadcast-generator/issues).
-
 
 ## ⚠️ Disclaimer
 
