@@ -9,17 +9,17 @@ export const STATUS_MESSAGES = {
     "CHAOS INSURGENCY":
       "Chaos Insurgency activity detected. All armed personnel proceed to intercept and contain threats",
     "NUCLEAR PROTOCOL":
-      "All personnel must evacuate to shelters immediately. Failure to comply will result in fatality",
+      "Nuclear warheads will be detonated in T-minus 120 seconds. Exit the facility or head to the nuclear shelter immediately",
     CLEAR: "All personnel resume normal duties",
     MAINTENANCE: "Facility personnel report to generator room immediately",
     "O5 MEETING": "SID+ meeting scheduled",
   },
   SHORT: {
     "SCP BREACH": "Containment protocols required",
-    "SITE LOCKDOWN": "SITE LOCKDOWN! Multiple breaches detected",
+    "SITE LOCKDOWN": "Multiple breaches detected",
     "CLASS-D ESCAPE": "Class-D personnel escaped",
     "CHAOS INSURGENCY": "Chaos Insurgency activity detected",
-    "NUCLEAR PROTOCOL": "Evacuate to shelters immediately",
+    "NUCLEAR PROTOCOL": "Head to the nuclear shelter immediately",
     CLEAR: "Normal duties resumed",
     MAINTENANCE: "Facility personnel to generator room",
     "O5 MEETING": "SID+ meeting scheduled",

@@ -4,6 +4,11 @@ import {
   STATUS_MESSAGES,
 } from "../data/broadcast-data.js";
 
+// Statuses that must always be announced with at least their SHORT message.
+// They never shrink to MINIMAL (which is empty for statuses), so they can
+// never be silently dropped from the broadcast.
+const CRITICAL_STATUSES = new Set(["NUCLEAR PROTOCOL", "SITE LOCKDOWN"]);
+
 export class BroadcastGenerator {
   constructor() {
     this.maxChars = 200;
@@ -116,13 +121,18 @@ export class BroadcastGenerator {
       initialStatusLevel = "NONE";
     }
 
+    // Critical statuses stop at SHORT: their message must always be included.
+    const statusLevels = CRITICAL_STATUSES.has(normalizedStatus)
+      ? ["LONG", "SHORT"]
+      : ["LONG", "SHORT", "MINIMAL"];
+
     messageParts.push({
       type: "status",
       key: normalizedStatus,
       currentLevel: initialStatusLevel,
       priority: 10,
       get_text: (lvl) => STATUS_MESSAGES[lvl]?.[normalizedStatus] || "",
-      levels: ["LONG", "SHORT", "MINIMAL"],
+      levels: statusLevels,
     });
 
     // 2. Event Messages
@@ -162,8 +172,10 @@ export class BroadcastGenerator {
           if (useNumberFree) {
             if (lvl === "LONG")
               return `Breached: ${count} SCP${count > 1 ? "s" : ""}`;
-            if (lvl === "SHORT") return `${count} breaches`;
-            if (lvl === "MINIMAL") return `${count} breaches`;
+            if (lvl === "SHORT")
+              return count === 1 ? `1 breached` : `${count} breaches`;
+            if (lvl === "MINIMAL")
+              return count === 1 ? `1 breached` : `${count} breaches`;
           }
 
           // Safe to show numbers: Use original format

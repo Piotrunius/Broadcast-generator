@@ -166,9 +166,7 @@ function initializeApp() {
                     : mainBtn.dataset.originalText;
             } else if (panelId === "eventsContent") {
               // Get all currently selected events keys from label text
-              const selectedEventKeys = Array.from(
-                contentPanel.querySelectorAll("input:checked"),
-              ).map((cb) => cb.closest("label").textContent.trim());
+              const selectedEventKeys = getSelectedEventKeys(contentPanel);
               updateEventsLEDColor(led, selectedEventKeys); // Update LED based on selection
               if (textSpan)
                 textSpan.textContent =
@@ -475,6 +473,14 @@ function updateStatusLED(status) {
 
 // --- Main Functions ---
 
+// Event labels can wrap across lines in the HTML (e.g. "Class-D\nRiot"),
+// so collapse internal whitespace to match message keys exactly.
+function getSelectedEventKeys(container) {
+  return Array.from(container.querySelectorAll("input:checked")).map((cb) =>
+    cb.closest("label").textContent.replace(/\s+/g, " ").trim(),
+  );
+}
+
 function getBroadcastOptions() {
   const getSelected = (target) =>
     document.querySelector(`.menu-btn[data-target="${target}"]`)?.dataset
@@ -485,9 +491,7 @@ function getBroadcastOptions() {
   const testing = getSelected("testingContent");
 
   // Events now use checkboxes instead of buttons
-  const events = Array.from(
-    document.querySelectorAll("#eventsContent input:checked"),
-  ).map((cb) => cb.closest("label").textContent.trim());
+  const events = getSelectedEventKeys(document.getElementById("eventsContent"));
   const breachedSCPs = Array.from(
     document.querySelectorAll("#breachedScpsContent input:checked"),
   ).map((cb) => cb.closest("label").textContent.trim());
