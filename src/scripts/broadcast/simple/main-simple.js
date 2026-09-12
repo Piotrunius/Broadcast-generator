@@ -345,7 +345,7 @@ document.getElementById("generateBtn")?.addEventListener("click", () => {
     "CHAOS INSURGENCY":
       "Chaos Insurgency activity detected. All armed personnel proceed to intercept and contain threats",
     "NUCLEAR PROTOCOL":
-      "All personnel must evacuate to shelters immediately. Failure to comply will result in fatality",
+      "Nuclear warheads will be detonated in T-minus 120 seconds. Exit the facility or head to the nuclear shelter immediately",
     CLEAR: "All personnel resume normal duties",
   };
   const eventMessages = {
